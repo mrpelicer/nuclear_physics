@@ -1,17 +1,11 @@
 # nuclear_physics
 
-This code currently calculates the equation of state for the non-linear walecka model in a variety of situations:
+This code is being build during my doctorate to calculate various quantities within the non-linear walecka model, such as:
 
-With density loops:
+(1) The equation of state for baryons (nucleons, hyperons, deltas)in beta-equilibrium. It is possible to include  magnetic fields and/or magnetic moments, but only at T=0 for now. 
 
-(1) For nucleons w/ fixed proton fraction and temperature in the folder:
-"np_fixed_proton_fraction"
+(2) The EoS for nucleons w/ fixed proton fraction at any temperature temperature.
 
-(2) For charge neutral (npe) w/ fixed proton fraction and temperature in the folder:
-"npe_fixed_proton_fraction"
+(3) EoS and radius of the nuclear pasta, w/ fixed proton fraction or beta-equilibrium at any temperature.
 
-(3) For (un)magnetized baryonic matter with or without amm's. One can choose the families in the calculation (nucleons, hyperons and  delta isobars) in beta-equilibrium (ONLY T=0):
-"nyd_betaEq_bfield_amm"
-
-(4) Same as (3) but with 
-nydem_betaEq_bfield_amm: nucleons+hyperons+deltas+electrons+muons
+(4) EoS, stability window and phase diagram of density and temperature dependent quark mass model matter.

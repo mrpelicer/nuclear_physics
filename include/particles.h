@@ -23,23 +23,26 @@ using ceres::Solve;
   
 
 struct particle{
+
   double mass=1., mass_eff=1.;
   double gamma=2.;            //degeneracy
   double spin=1./2., I3=0., Q=0.;         //isospin and charge
   double stg=0;                  //strangeness
   double chemPot=0., chemPot_eff=0., kf=0., kf2=0.;
   double density=0.,  condensate=0., Qdens=0.;//rhob, rhos 
-  double energy=0., pressure=0., entropy=0.; //thermodynamics
+  double energy=0., pressure=0., entropy=0.;   //thermodynamics
   double temperature=0.;
   
   bool doB  =false;
   double Bfield=0;
-  double magnetization=0.;
   int inumax=0;
   double densityPP=0., densityP=0., densityM=0., densityMM=0.;
+  double pressureParallel =0., pressureTransverse =0.;
+  double magnetization=0.;
 
   bool doamm=false;
   double Kb=0.;
+  int inumaxPP=0, inumaxP=0, inumaxM=0, inumaxMM=0;
   
   void calculateProperties();
   void calculateDensity();
@@ -57,6 +60,19 @@ struct particle{
   double pressureT0();
 
 };
+
+struct quark_particle : public particle{
+  double omega0=0.;
+
+  void calculateQProperties();
+
+  double getOmega0(double mueff_, double mass_);
+  double getDOmega0Dmass();
+  double getDOmega0DmuEf();
+  double getDOmega0Dt();
+
+};
+
 
 struct ChemPotFunctor{
 public:

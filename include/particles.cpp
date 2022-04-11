@@ -8,7 +8,7 @@ void particle::calculateProperties(){
   
   if(density>0.){
     if(!doamm){// if do amm==false
-      if(!doB || Q==0){ //if magnetic field = 0 OR mag. field >0 but uncharged particle.
+      if(!doB || Q==0){ //if magnetic field = 0 OR uncharged particle w/ B!=0.
         if(temperature>Tmin_integration){
           energy             = integrate(energyFunc,    this);
           pressure           = integrate(pressureFunc,  this);
@@ -17,34 +17,68 @@ void particle::calculateProperties(){
           energy             = energyT0();
           pressure           = pressureT0();//chemPot*density - energy; 
         }
+        // std::cout << "chargeless?: " <<  Q << " " << kf2 << " " 
+        //           << mass_eff << endl;
+
       
-      }else{//CALCULATING ONLY THE ENERGY FOR B!= 0, GET PRESSURE FROM CHEMICAL POTENTIALS!! 
-        size_t in=0;
+      }else{ // dob, q!=0
+        //size_t in=0;
         double nu_;
-        double ener_=0.;
-        double eB=std::fabs(Bfield*Q*eHL);
-        do{
+        double ener_=0., presst_=0., pressp_=0., mag_=0.;
+        double eB=fabs(Bfield*Q*eHL);
+        // kf2=pow(chemPot_eff, 2.);
+        // std::cout << "test_AA: " << Q  << " " << mass*Mnucleon <<  endl;
+
+        //do{
+        for(int in=0; in<=inumax; in++){
           nu_=(double) in;
-          kf2= pow(chemPot_eff, 2.) -pow(mass_eff, 2.) - 2.*eB*nu_;
+         double Mn2= pow(mass_eff, 2.)  + 2.*nu_*eB;
+         double Mn= sqrt(Mn2);
+
+          kf2= pow(chemPot_eff, 2.) - Mn2;
           kf= (kf2<=0.) ? 0. : sqrt(kf2);
           if(spin>1.){ //if delta
             if(in==0)       gamma=2.;
             else if(in==1)  gamma=3.;
             else            gamma=4.;
+            // in==0 ? gamma=1. : gamma=2.;
           }else{   //spin 1/2 particles
             in==0 ? gamma=1. : gamma=2.;
           }
-          if(kf>0. ){ener_+= gamma*(kf*chemPot_eff+(pow(mass_eff, 2.) + 2.*eB*nu_)*log((kf+chemPot_eff)/sqrt(pow(mass_eff, 2.) + 2.*eB*nu_) ));} 
-          in++;
+          if(kf>=0.){ //&& nu_<inumax
+            // if(spin<1. || in<inumax){
+            ener_  +=gamma*(kf*chemPot_eff + Mn2*log((kf+chemPot_eff)/Mn) ); 
+            pressp_+=gamma*(kf*chemPot_eff - Mn2*log((kf+chemPot_eff)/Mn) );
+            presst_+=gamma*nu_*log((kf+chemPot_eff)/Mn );
+            mag_+=gamma*nu_*log((kf+chemPot_eff)/Mn );
+            // }
+            //if(spin>1){
+                // cout << " testp: " <<  Q << " " << nu_ << " " << inumax << " "  << endl
+                //      << kf2 << " " << kf << " " << gamma << " "  << endl
+                //      << pressp_ << " " << presst_ << " " << mag_ << " " 
+                //      << pressp_/2. -eB*presst_ << endl;
+                    //}
+
+          } //else{cout<< "no sum: " << nu_ << " " << kf2 << " " << kf << endl;}
+         // in++;
           //std::cout << nu_ << " " << in << " " << kf2 << std::endl;
-        }while(kf2>0.);
+      }//}while(kf2>0.);
         energy=  eB*ener_/(4.*pi2);
+        pressureParallel  = eB*pressp_/(4.*pi2); //chemPot_eff*density- energy; 
+        pressureTransverse= pow(eB, 2.)*presst_/(2.*pi2);
+        //  magnetization= -((energy - chemPot_eff*density)
+        //               +pow(eB, 2.)*mag_/(2.*pi2))/Bfield ;
+        magnetization= (pressureParallel - pressureTransverse)/Bfield;
+      // if(spin>1){ cout << " testF: " << inumax << " " << in << " " <<  kf << " " << Q << " "
+      //               <<  energy << " " << pressureParallel << " " 
+      //               << pressureTransverse << " " << magnetization
+      //               << endl;}
       }
 
     }else{// if doamm ==true:
 
       double Delta= -Bfield*Kb;
-      double ener_=0.;
+      double ener_=0.,presst_=0., pressp_=0., mag_=0.;
       double sp= 2.*spin;
 
       if(Q==0){ 
@@ -55,17 +89,29 @@ void particle::calculateProperties(){
           if(kf >0.){
             ener_+= pow(chemPot_eff, 3.)*(kf/2. +2.*s*Delta*(asin(Ms/chemPot_eff) - M_PI/2.)/3. )
                     +(s*Delta/3.- Ms/4.)*(Ms*chemPot_eff*kf + pow(Ms, 3.)*log( (chemPot_eff + kf)/Ms));
+            pressp_+= kf*chemPot_eff*(2.*pow(chemPot_eff, 2.) - 5.*Ms*Ms + 8.*s*Delta*Ms)
+                    + 4.*s*Delta*pow(chemPot_eff, 3.)*(atan(Ms/kf) - M_PI/2.) 
+                    + pow(Ms, 3.)*(3.*Ms - 4.*s*Delta)*log( (chemPot_eff + kf)/Ms);
+            presst_+=kf*chemPot_eff*( 2.*pow(chemPot_eff, 2.) 
+                    - 5.*Ms*Ms + 12.*s*Delta*Ms - 12.*pow(s*Delta, 2.))
+                    + 3.*pow(Ms, 2.)*pow(Ms - 2.*s*Delta, 2.)*log( (chemPot_eff + kf)/Ms);
+            mag_+= s*(  chemPot_eff*kf*(Ms - 3.*s*Delta) 
+                      - pow(chemPot_eff, 3.)*(atan(Ms/kf) - M_PI/2.)  
+                      - pow(Ms, 2.)*(2.*Ms - 3.*s*Delta)*log( (chemPot_eff + kf)/Ms) );
           }
         }
         energy= ener_/(4.*pi2);
+        pressureParallel  =pressp_/(48.*pi2);//chemPot_eff*density- energy; //
+        pressureTransverse=presst_/(48.*pi2);
+        //magnetization=Kb*mag_/(12.*pi2);
+        magnetization= (pressureParallel - pressureTransverse)/Bfield;
 
       }else{
-        size_t in=0;
+        //size_t in=0;
         double nu_;
         double eB=std::fabs(Bfield*Q*eHL);
         double spmin, spmax;
-        do{
-
+        for(int in=0; in<=inumax; in++){
           nu_=(double) in;
 
           if(sp<=1.){//spin 1/2 spin sum limits
@@ -112,12 +158,19 @@ void particle::calculateProperties(){
             kf2= pow(chemPot_eff, 2.) -pow(Ms, 2.);
             kf2<=0. ? kf=0. : kf=sqrt(kf2);
             if(kf>0.){
-              ener_+= kf*chemPot_eff + pow(Ms, 2.)*log( (chemPot_eff + kf)/Ms);
+              ener_  +=kf*chemPot_eff+ pow(Ms, 2.)*log((chemPot_eff + kf)/Ms);
+              pressp_+=kf*chemPot_eff- pow(Ms, 2.)*log((chemPot_eff + kf)/Ms);
+              presst_+=(eB*nu_*Ms/Mn + s*Delta*Ms)*log((chemPot_eff + kf)/Ms);
             }
           }
-          in++;
-       }while(kf2>0.);
+         // in++;
+       //}while(kf2>0.);
+      }
       energy = eB*ener_/(4.*pi2);
+      pressureParallel  =eB*pressp_/(4.*pi2); // chemPot_eff*density- energy; //
+      pressureTransverse=eB*presst_/(2.*pi2);
+      magnetization= (pressureParallel - pressureTransverse)/Bfield;
+
       } //end loop of charged particles
     
     }//end doamm
@@ -147,6 +200,7 @@ void particle::calculateCondensate(){
     condensate = condensateT0();
 	}
 }
+
 void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0, double gbb0){
 //std::cout << doB << std::endl;
   chemPot= mub_+Q*muq_;
@@ -161,20 +215,33 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
       kf2<=0. ? kf=0. : kf=sqrt(kf2);
       calculateDensity();
       calculateCondensate();
-    
-    }else{
-      int in=0;
+
+      double sp= 2.*spin;
+      if(sp<=1.){//spin 1/2 spin sum limits
+        densityP=density/2.;
+        densityM=density/2.;
+      }else{//spin 3/2 spin sum limits
+        densityPP=density/4.;
+        densityP =density/4.;
+        densityM =density/4.;
+        densityMM=density/4.;
+      }
+
+    }else{ //if do B and Q!= 0
+      // int in=0;
       double nu_;
       double rho_=0.;
       double rhos_=0.;
       double eB=std::fabs(Bfield*Q*eHL);
       double sp= 2.*spin;
       densityPP=0.;
-      densityP=0.;
-      densityM=0.;
+      densityP =0.;
+      densityM =0.;
       densityMM=0.;
-      //std::cout << mass*939. << " " << Q << " " << eB << std::endl << std::endl;
-      do{
+      inumax= floor((pow(chemPot_eff, 2.)  - pow(mass_eff, 2.))/(2.*eB));
+
+      // do{
+      for(int in=0; in<=inumax; in++){
         nu_=(double) in;
         kf2= pow(chemPot_eff, 2.) -pow(mass_eff, 2.) - 2.*eB*nu_;
         kf= (kf2<=0.) ? 0. : sqrt(kf2);
@@ -186,7 +253,7 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
           in==0 ? gamma=1. : gamma=2.;
         }
 
-        if(kf>0. && mass_eff>0.){//&& mass_eff >0
+        if(kf>0.){//&& mass_eff >0
           rho_+= gamma*kf ;
           rhos_+= gamma*log((kf+chemPot_eff)/sqrt(pow(mass_eff, 2.) + 2.*eB*nu_) );
           if(sp<=1.){//spin 1/2 spin sum limits
@@ -230,9 +297,10 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
             }
           }
         }
-        in++;      
+      //  in++;      
         
-      }while(kf2>0.);
+      //}while(kf2>0.);
+      }
       density=  (rho_>0. && rhos_>0.) ?   eB*rho_/(2.*pi2)  : 0.;
       condensate= (rho_>0.&& rhos_>0.) ? eB*rhos_*mass_eff/(2.*pi2) : 0.;
       densityPP*=eB/(2.*pi2);
@@ -240,11 +308,10 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
       densityM*=eB/(2.*pi2);
       densityMM*=eB/(2.*pi2);
       if(Q!=0.) Qdens= Q*density;
-      inumax= in-2;
-      //if(inumax<0) inumax=0;
-    }
+      //inumax= in-2;
+    }//end doB, Q!=0
 
-  }else{
+  }else{ //if do amm:
     double Delta= -Bfield*Kb;
     double rho_=0.;
     double rhos_=0.;
@@ -254,28 +321,43 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
     densityM=0.;
     densityMM=0.;
 
-    if(Q==0){ 
+    if(Q==0){ //do amm for q=0
       for(double s=-sp; s<=sp; s+=2.){
         // std::cout << sp << " " << s << std::endl;
         double Ms= mass_eff + s*Delta;
         kf2= pow(chemPot_eff, 2.) -pow(Ms, 2.);
         kf2<=0. ? kf=0. : kf=sqrt(kf2);
         if(kf >0. && mass_eff>0.){
-          rho_+= (pow(kf, 3.)/3. +s*Delta*( kf*Ms 
-                                    + pow(chemPot_eff, 2.)*(asin(Ms/chemPot_eff) - M_PI/2.) )/2.);
+          double rho_tmp=(pow(kf, 3.)/3. +s*Delta*( kf*Ms 
+                                    + pow(chemPot_eff, 2.)*(asin(Ms/chemPot_eff) - M_PI/2.) )/2.); 
+          rho_+= rho_tmp;
           rhos_+=chemPot_eff*kf -pow(Ms, 2.)*log( (chemPot_eff + kf)/Ms);
+
+          if(s==-3.){
+              densityMM=rho_tmp;
+            }else if(s==-1.){
+              densityM =rho_tmp;
+            }else if(s==+1.){
+              densityP =rho_tmp;
+            }else if(s==+3.){
+              densityPP=rho_tmp;
+            }
         }
       }
-      density= (rho_>0.&& rhos_>0.) ?    rho_/(2.*pi2) : 0.;      
+      density= (rho_>0.&& rhos_>0.)    ? rho_/(2.*pi2) : 0.;      
       condensate= (rho_>0.&& rhos_>0.) ?  mass_eff*rhos_/(4.*pi2) : 0.;
-      
-    }else{
+      densityMM*=1./(2.*pi2);
+      densityM *=1./(2.*pi2);
+      densityP *=1./(2.*pi2);
+      densityPP*=1./(2.*pi2);
+    }else{ //doamm for Q!=0
       size_t in=0;
       double nu_;
       double eB=std::fabs(Bfield*Q*eHL);
       double spmin, spmax;
+      double kf2P=0., kf2M=0.;
+      double kf2PP=0., kf2MM=0.;
       do{
-
         nu_=(double) in;
         
         if(sp<=1.){//spin 1/2 spin sum limits
@@ -313,7 +395,6 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
               spmax= sp;
             }
           }
-          //  if(in<5) std::cout << in << " " << sp << " " << spmin << " " << spmax << std::endl;
 
         }
         double Mn, Ms, Mn2;
@@ -323,6 +404,16 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
           Ms= Mn+ s*Delta;
           kf2= pow(chemPot_eff, 2.) -pow(Ms, 2.);
           kf2<=0. ? kf=0. : kf=sqrt(kf2);
+          if(s==-3.){//spin 1/2 spin sum limits
+            kf2MM=kf2;
+          }else if(s==-1.){
+            kf2M=kf2;
+          }else if(s==+1.){
+            kf2P=kf2;
+          }else if(s==+3.){
+            kf2PP=kf2;
+          }
+
           if(kf>0. && mass_eff>0.){
             rho_+= kf;
             rhos_+= (1.+ s*Delta/Mn)*log( (chemPot_eff + kf)/Ms);
@@ -339,7 +430,7 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
         }
             in++;
           //std::cout << nu_ << " " << in << " " << kf2 << std::endl;
-      }while(kf2>0. );
+      }while(kf2P>0. || kf2M>0. || kf2PP>0. || kf2MM>0.);
       density   = (rho_>0. && rhos_>0.)   ?  eB*rho_/(2.*pi2)           : 0.;      
       condensate= (rho_>0. && rhos_>0.)  ?  eB*mass_eff*rhos_/(2.*pi2) : 0.;
       densityPP*=eB/(2.*pi2);
@@ -363,12 +454,15 @@ void particle::setLepton(double mul_){
    kf2<=0. ? kf=0. : kf=sqrt(kf2);
    calculateDensity();
   }else if(doB && !doamm){
-    size_t in=0;
+    // size_t in=0;
     double nu_;
     double rho_=0.;
     double eB=std::fabs(Bfield*Q*eHL);
-    do{
-      nu_=(double) in;
+     inumax= floor((pow(chemPot, 2.)  - pow(mass, 2.))/(2.*eB));
+   
+     // do{
+     for(int in=0; in<=inumax; in++){
+       nu_= (double) in;
       kf2= pow(chemPot, 2.) -pow(mass, 2.) - 2.*eB*nu_;
       kf2<=0. ? kf=0. : kf=sqrt(kf2);
       in==0 ? gamma=1. : gamma=2.;
@@ -381,14 +475,14 @@ void particle::setLepton(double mul_){
           densityM+=kf;
         }
       }
-      in++;
-    }while(kf2>0.);
+     //  in++;
+     }//}while(kf2>0.);
 
     rho_>0.  ? density   =eB*rho_/(2.*pi2) : density=0.;
     densityP*=eB/(2.*pi2);
     densityM*=eB/(2.*pi2);
     Qdens=Q*density;
-    inumax= in-2;
+    // inumax= in-2;
     //if(inumax<0) inumax=0;
 
   }else{
@@ -399,6 +493,7 @@ void particle::setLepton(double mul_){
     double sp=2.*spin;
     double Delta= -Bfield*Kb;
     double rho_=0.;
+    double kF2P=0., kF2M=0.;
     do{
       nu_=(double) in;    
       
@@ -417,6 +512,12 @@ void particle::setLepton(double mul_){
         Ms= Mn+ s*Delta;
         kf2= pow(chemPot, 2.) -pow(Ms, 2.);
         kf2<=0. ? kf=0. : kf=sqrt(kf2);
+        if(s==-1.){
+          kF2M=kf2;
+        }else if(s==+1.){
+          kF2P=kf2;
+        }
+
         if(kf>0.){
           rho_+= kf;
           if(s==-1.){
@@ -427,7 +528,9 @@ void particle::setLepton(double mul_){
         } 
       }
     in++;
-    }while(kf2>0. );
+    }while(  kF2P>0.|| kF2M>0.); //
+        // cout << kF2P << " " << kF2M << " " << kf2 << endl;
+
     density   = (rho_>0.)   ?  eB*rho_/(2.*pi2)           : 0.;      
     densityP*=eB/(2.*pi2);
     densityM*=eB/(2.*pi2);
@@ -452,6 +555,7 @@ void particle::setAMM(bool doa_,double kb_){
 //Get the (effective) chemical potential for a particle of given density.
 void particle::solveChemPotEff(){
 	
+  // kf= cbrt(6.*pi2*density/gamma);
 	double nu= hypot(kf, mass_eff);
  
  if(temperature>Tmin_integration){
@@ -546,82 +650,161 @@ double particle::pressureT0(){
 
 
 
+// ============================ DDQM particles =============================
+void quark_particle::calculateQProperties(){
+  energy           = 0.;
+  pressure         = 0.;
+  entropy          = 0.;  
+  if(density>0.){
+
+    if(temperature>Tmin_integration){
+     omega0      = getOmega0(chemPot_eff, mass_eff);
+     entropy     = -getDOmega0Dt();
+     energy      = omega0+ chemPot_eff*density+temperature*entropy;
+     pressure    = -omega0;
+    }else{
+      omega0     = getOmega0(chemPot_eff, mass_eff);
+      energy     = omega0+ chemPot_eff*density; //+temperature*entropy
+      pressure   = -omega0;
+    }
+  }
+}
+
+double quark_particle::getOmega0(double mueff_, double masseff_){
+ double omega=0.;
+ if(temperature<Tmin_integration){
+  double kf2_=pow(mueff_, 2.) - pow(masseff_, 2.);
+  double kf_=(kf2_>0) ? sqrt(kf2_ ) : 0.;
+   if(kf_>0.)
+      omega= -gamma*(mueff_*kf_*(2.*pow(mueff_, 2.) - 5.*pow(masseff_, 2.))
+                     + 3.*pow(masseff_, 4.)*log((mueff_ +kf_)/masseff_ ) )/(48*pi2);
+ }else{
+  double chemPot_eff_Save = chemPot_eff;
+  double mass_eff_Save    = mass_eff;
+  chemPot_eff= mueff_;
+  mass_eff= masseff_;
+  omega= -integrate(pressureFunc,this);
+  chemPot_eff = chemPot_eff_Save;
+  mass_eff    = mass_eff_Save;
+ }
+  return omega;
+}
+
+double quark_particle::getDOmega0Dmass(){
+  double dOmega0dM = ( getOmega0(chemPot_eff, mass_eff-2.*hdif)
+                  - 8.*getOmega0(chemPot_eff, mass_eff-hdif)
+                  + 8.*getOmega0(chemPot_eff, mass_eff+hdif)
+                  - getOmega0(chemPot_eff, mass_eff+2.*hdif))/(12.*hdif);
+  return dOmega0dM;
+
+}
+double quark_particle::getDOmega0DmuEf(){
+  double dOmega0dmuef = ( getOmega0(chemPot_eff-2.*hdif, mass_eff)
+                - 8.*getOmega0(chemPot_eff-hdif, mass_eff)
+                + 8.*getOmega0(chemPot_eff+hdif, mass_eff)
+                - getOmega0(chemPot_eff+2.*hdif, mass_eff))/(12.*hdif);
+  return dOmega0dmuef;
+
+}
+
+double quark_particle::getDOmega0Dt(){
+  double temp_save=temperature;
+  temperature=temp_save+hdif;
+  double omg_p1=  getOmega0(chemPot_eff, mass_eff);
+  temperature=temp_save+2.*hdif;
+  double omg_p2=  getOmega0(chemPot_eff, mass_eff);
+  temperature=temp_save-hdif;
+  double omg_m1=  getOmega0(chemPot_eff, mass_eff);
+  temperature=temp_save-2.*hdif;
+  double omg_m2=  getOmega0(chemPot_eff, mass_eff);
+
+  double dOmega0dT = ( omg_m2 
+                  - 8.*omg_m1
+                  + 8.*omg_p1
+                  - omg_p2)/(12.*hdif);
+
+  temperature=temp_save;  
+
+  return dOmega0dT;
+}
+
+
 // ================= GSL functions to be integrated - T >0 =================
 
 double densityFunc(double x, void *p){
-  particle &gas= *reinterpret_cast<particle*>(p);
-  double ener= sqrt ( pow(x, 2.) + pow(gas.mass_eff, 2.) );
+  particle &part_= *reinterpret_cast<particle*>(p);
+  double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F;
 
-  if(gas.temperature!=0){
+  if(part_.temperature!=0){
     double fdp, fdm;
-    fdp= fermiDirac(ener, gas.chemPot_eff, gas.temperature);
-    fdm= fermiDirac(ener, -gas.chemPot_eff, gas.temperature);
+    fdp= fermiDirac(ener, part_.chemPot_eff, part_.temperature);
+    fdm= fermiDirac(ener, -part_.chemPot_eff, part_.temperature);
     F=fdp-fdm;
   }else{
     F=1.;
   }
 
-  return pow(x, 2.)*F/pi2;
+  return part_.gamma*pow(x, 2.)*F/(2.*pi2);
 }
 
 double density_condensateFunc(double x, void *p){
-  particle &gas= *reinterpret_cast<particle*>(p);
-  double ener= sqrt ( pow(x, 2.) + pow(gas.mass_eff, 2.) );
+  particle &part_= *reinterpret_cast<particle*>(p);
+  double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F;
 
-  if(gas.temperature!=0){
+  if(part_.temperature!=0){
     double fdp, fdm;
-    fdp= fermiDirac(ener, gas.chemPot_eff, gas.temperature);
-    fdm= fermiDirac(ener, -gas.chemPot_eff, gas.temperature);
+    fdp= fermiDirac(ener, part_.chemPot_eff, part_.temperature);
+    fdm= fermiDirac(ener, -part_.chemPot_eff, part_.temperature);
     F=fdp+fdm;
   }else{
     F=1.;
   }
 
-  return pow(x, 2.)*gas.mass_eff*F/(ener*pi2);
+  return part_.gamma*pow(x, 2.)*part_.mass_eff*F/(2.*ener*pi2);
 }
 
 double energyFunc(double x, void *p){
-  particle &gas= *reinterpret_cast<particle*>(p);
-  double ener= sqrt ( pow(x, 2.) + pow(gas.mass_eff, 2.) );
+  particle &part_= *reinterpret_cast<particle*>(p);
+  double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F;
 
-  if(gas.temperature!=0){
+  if(part_.temperature!=0){
     double fdp, fdm;
-    fdp= fermiDirac(ener, gas.chemPot_eff, gas.temperature);
-    fdm= fermiDirac(ener, -gas.chemPot_eff, gas.temperature);
+    fdp= fermiDirac(ener, part_.chemPot_eff, part_.temperature);
+    fdm= fermiDirac(ener, -part_.chemPot_eff, part_.temperature);
     F=fdp+fdm;
   }else{
     F=1.;
   }
 
-  return pow(x, 2.)*ener*F/pi2;
+  return part_.gamma*pow(x, 2.)*ener*F/(2.*pi2);
 }
 
 double pressureFunc(double x, void *p){
-  particle &gas= *reinterpret_cast<particle*>(p);
-  double ener= sqrt ( pow(x, 2.) + pow(gas.mass_eff, 2.) );
+  particle &part_= *reinterpret_cast<particle*>(p);
+  double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F;
 
-  if(gas.temperature!=0){
+  if(part_.temperature!=0){
     double fdp, fdm;
-    fdp= fermiDirac(ener,  gas.chemPot_eff, gas.temperature);
-    fdm= fermiDirac(ener, -gas.chemPot_eff, gas.temperature);
+    fdp= fermiDirac(ener,  part_.chemPot_eff, part_.temperature);
+    fdm= fermiDirac(ener, -part_.chemPot_eff, part_.temperature);
     F=fdp+fdm;
   }else{
     F=1.;
   }
 
-  return pow(x, 4.)*F/(3.*pi2*ener);
+  return part_.gamma*pow(x, 4.)*F/(6.*pi2*ener);
 }
 
 double entropyFunc(double x, void *p){
-  particle &gas= *reinterpret_cast<particle*>(p);
-  double ener= sqrt ( pow(x, 2.) + pow(gas.mass_eff, 2.) );
+  particle &part_= *reinterpret_cast<particle*>(p);
+  double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
 
-  double fdp= fermiDirac(ener, +gas.chemPot_eff, gas.temperature);
-  double fdm= fermiDirac(ener, -gas.chemPot_eff, gas.temperature);
+  double fdp= fermiDirac(ener, +part_.chemPot_eff, part_.temperature);
+  double fdm= fermiDirac(ener, -part_.chemPot_eff, part_.temperature);
   double tp, tm;
 
   if(fdp==1. || fdp==0.){
@@ -638,7 +821,7 @@ double entropyFunc(double x, void *p){
 
   double F = tp + tm;
 
-  return -pow(x, 2.)*F/(pi2);
+  return -part_.gamma*pow(x, 2.)*F/(2.*pi2);
 }
 
 double fermiDirac(double ener, double chemPotEff, double T){

@@ -1,0 +1,10 @@
+// Workspace settings
+{
+  // The following will hide the js and map files in the editor
+  "files.exclude": {
+      "**/*.png": true,
+      "**/*.pdf": true,
+      "**/*.avi": true,
+      "**/*.zip": true
+  }
+}

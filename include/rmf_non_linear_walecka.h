@@ -26,9 +26,9 @@ public:
   double rhoB, rhoS, rho3, rhoQ, Yp, temperature;
 	double rhoB_integrated, rhoS_integrated, rho3_integrated, rhoq_integrated; 
 	double rhoB_eff, rhoS_eff, rho3_eff;// w/ hyperon couplings
-	double muB, muQ;
+	double muB, muQ, PressureTot;
 
-	//double yN, yY, yD;
+	double yN, yH, yD;
 //Particles
 	particle proton, neutron;
 	particle lambda0, sigmap, sigma0, sigmam, xi0, xim;
@@ -59,7 +59,8 @@ public:
 	void setEOS_neutrons(double rhoB_, double temp_, particle &electron_, particle &muon_);
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_, particle &muon_);
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_);
-
+	void setEOS_betaEq_PressureFixed(double press_, double temp_,	
+																		particle &electron_, particle &muon_);
 //Set EOS for the pasta solver: input effective chemical potentials and mass.
 	void setEOS_coexistence(double nup_, double nun_, double mef_);	
 
@@ -102,6 +103,9 @@ public:
   double getPressure(void);
   double getEntropy(void);
 
+  double getPressureParallel(void);
+  double getPressureTransverse(void);
+	double getMagnetization(void);
 };
 
 // Functor for Ceres:
@@ -192,93 +196,35 @@ public:
 		particle 	 &electron;
 };
 
+struct BetaEqFunctor_PressFixed{
+	public:
+	BetaEqFunctor_PressFixed(nlwm_class &baryons_, particle &electron_, particle &muon_):
+													baryons(baryons_), electron(electron_), muon(muon_)
+	{}
 
-
-
-// struct phase_coexistence_class{
-// public:	
-// 	phase_coexistence_class(nlwm_class &cluster_, nlwm_class &gas_);
-// 	~phase_coexistence_class(void){};
+  template <typename T>
+  bool operator()(const T* x, T* residuals) const;
 	
-// 	void solveCPA(double rhoB_, double Yp_, double temp_, 
-// 								std::vector<double>initial_guess_);
+  private:
+		nlwm_class 	&baryons;
+		particle 		&electron;
+		particle 		&muon;
+};
 
-// 	void solveCPA_betaEq(double rhoB_, double temp_, particle &electron_,
-// 								std::vector<double>initial_guess_);
-									
-// 	void solveSNA(double rhoB_, double Yp_, double temp_, 
-// 								double dim_, int it_,
-// 								std::vector<double>initial_guess_);
+struct BetaEqFunctor2_PressFixed{
+	public:
+	BetaEqFunctor2_PressFixed(nlwm_class &baryons_, particle &electron_, particle &muon_):
+													baryons(baryons_), electron(electron_), muon(muon_)
+	{}
+
+  template <typename T>
+  bool operator()(const T* x, T* residuals) const;
 	
-// 	double rhoB, YpG, temperature, dim;
-// 	int iType;
-// 	double nup1_guess, nun1_guess, Mef1_guess, nup2_guess, nun2_guess, Mef2_guess;
-// 	double f, Rd, Rw, VN, Vw;
-// 	nlwm_class &cluster;
-// 	nlwm_class &gas;
-		
-// };
-
-
-// struct cpaFunctor{
-// public:
-// 	cpaFunctor(phase_coexistence_class & cpa_): cpa(cpa_){
-// 	}
-
-// 	template <typename T>
-// 	bool operator()(const T* x, T* residuals) const;
-  
-
-// private:
-// 		phase_coexistence_class &cpa;
-// };
-
-
-// struct cpaFunctor_betaEq{
-// public:
-// 	cpaFunctor_betaEq(phase_coexistence_class & cpa_, particle &electron_): cpa(cpa_), electron(electron_){
-// 	}
-
-// 	template <typename T>
-// 	bool operator()(const T* x, T* residuals) const;
-  
-
-// private:
-// 		phase_coexistence_class &cpa;
-// 		particle &electron;
-// };
-
-// struct snaFunctor{
-// public:
-// 	snaFunctor(phase_coexistence_class & sna_): sna(sna_){
-// 	}
-
-// 	template <typename T>
-// 	bool operator()(const T* x, T* residuals) const;
-  
-
-// private:
-// 		phase_coexistence_class &sna;
-// };
-
-
-// double getSurfaceTension(nlwm_class &cluster_, double Yp_, double temp_);
-
-// double getSurfaceTensionDerivative(nlwm_class &cluster_, double Yp_, double temp_);
-
-// void setSurfaceParameters(nlwm_class &cluster_, double &sigma0, double &sigma1, 
-// 			double &sa1, double &sa2, double &sa3, double &sa4, double &sa5, double &sa6,
-//   		double &aa0, double &aa1, double &aa2, double &aa3, double &aa4, double &aa5,
-//   		double &ba0, double &ba1, double &ba2, double &ba3, double &ba4, double &ba5,
-//   		double &ca0, double &ca1, double &ca2, double &ca3, double &ca4, double &ca5);
-
-// double getPhiFunc(double dim_, double u_);	
-
-// double getPhiFuncDerivative(double dim_, double u_);
-
-// double getRadiusD(double dim_, double beta_, double Yp_, 
-// 									nlwm_class &cluster_, nlwm_class &gas_);
-	
+  private:
+		nlwm_class 	&baryons;
+		particle 		&electron;
+		particle 		&muon;
+};
 
 
 #endif

@@ -3,7 +3,7 @@
 nlwm_class::nlwm_class(std::string parametrization_){
   setParametrization(parametrization_);
 	proton.spin		= 1./2.;	proton.I3			= 1./2.;	proton.Q			= 1.;
-	neutron.spin	= 1./2.;	neutron.I3		=-1./2.;	neutron.Q			= 0;
+	neutron.spin	= 1./2.;	neutron.I3		=-1./2.;	neutron.Q			= 0.;
 }
 
 //=============== Set RMF parameters: nucleons/meson couplings and masses  ===============
@@ -156,11 +156,12 @@ void nlwm_class::setParametrization(std::string parametrization_){
 	//===== FSU2h =========
 	if(parametrization_=="fsu2h")		//Astron.Soc.Austral. 34 e065 
 	{
-		Mn=939.000;
-		Mstar=0.593;
+		Mn=939.;
+		// Mstar=0.593;
 		Ms=497.479/Mn;
 		Mv=782.500/Mn;
 		Mb=763.000/Mn;
+		Mt=1020.00/Mn;
 		gs=sqrt(102.7200);
 		gv=sqrt(169.5315);
 		gb=sqrt(197.2692);      
@@ -194,6 +195,9 @@ void nlwm_class::setParametrization(std::string parametrization_){
 
 //=============== Set RMF parameters: hyperons couplings and masses  ===============
 void nlwm_class::includeHyperons(bool do_, std::string parameters_){
+	doHyperons=do_;
+	std::cout << "do Hyperons! " << doHyperons << std::endl;
+
 	lambda0.mass=1116./Mn;
 	sigmam.mass =1193./Mn;
 	sigma0.mass =1193./Mn;
@@ -202,12 +206,11 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 	xi0.mass		=1318./Mn;
 
 	lambda0.spin	= 1./2.;			 	lambda0.I3	= 0.;			lambda0.Q		= 0;  lambda0.stg =-1;
-	sigmam.spin		= 1./2.;				sigmam.I3		=-1.;			sigmam.Q		=-1.;	sigmam.stg	=-1;
-	sigma0.spin		=	1./2.;			 	sigma0.I3		=	0.;			sigma0.Q		= 0; 	sigma0.stg	=-1;
 	sigmap.spin		=	1./2.;			 	sigmap.I3		=	1.;			sigmap.Q		= 1.;	sigmap.stg	=-1;
-	xim.spin			= 1./2.;				xim.I3			=-1./2.;	xim.Q				=-1.;	xim.stg			=-2;
+	sigma0.spin		=	1./2.;			 	sigma0.I3		=	0.;			sigma0.Q		= 0; 	sigma0.stg	=-1;
+	sigmam.spin		= 1./2.;				sigmam.I3		=-1.;			sigmam.Q		=-1.;	sigmam.stg	=-1;
 	xi0.spin			=	1./2.;				xi0.I3			=	1./2.;	xi0.Q				= 0; 	xi0.stg			=-2;
-	
+	xim.spin			= 1./2.;				xim.I3			=-1./2.;	xim.Q				=-1.;	xim.stg			=-2;
 
 	parhyp= parameters_;
 
@@ -262,6 +265,7 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 	else if(parhyp=="l3wr1"){
 		double av=1.;
 		double as=1.582;
+	
 		xsl= (10.+6.*as)/(13.+12.*as); 		 xss= (22.-6.*as)/(13.+12.*as); 			xsx=(13.-6.*as)/(13.+12.*as);
 		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
 		xvl=(4.+2.*av)/(5+4.*av);					 xvs=(8.-2.*av)/(5+4.*av); 						xvx=(5.-2.*av)/(5+4.*av);
@@ -309,16 +313,16 @@ void nlwm_class::includeDeltas(bool do_, std::string parameters_){
 	delta0.mass	=mdl;
 	deltam.mass	=mdl;
 
-	deltam.spin		= 3./2.;	deltam.I3		=-3./2.;		deltam.Q		=-1.;  deltam.gamma =4.;
-	delta0.spin		= 3./2.;	delta0.I3		=-1./2.;		delta0.Q		= 0.;  delta0.gamma =4.;
-	deltap.spin		= 3./2.;	deltap.I3		=	1./2.;		deltap.Q		= 1.;  deltap.gamma =4.;
 	deltapp.spin	= 3./2.;	deltapp.I3	= 3./2.;		deltapp.Q		= 2.;  deltapp.gamma=4.;
+	deltap.spin		= 3./2.;	deltap.I3		=	1./2.;		deltap.Q		= 1.;  deltap.gamma =4.;
+	delta0.spin		= 3./2.;	delta0.I3		=-1./2.;		delta0.Q		= 0.;  delta0.gamma =4.;
+	deltam.spin		= 3./2.;	deltam.I3		=-3./2.;		deltam.Q		=-1.;  deltam.gamma =4.;
 	
 
 
 	pardelta= parameters_;
 	if(pardelta=="su6"){ //SU(6) symmetry
-		xsd=1.; xvd=1.; xbd=1.;
+		xsd=1.2; xvd=1.2; xbd=1.;
 	}
 	if(pardelta=="prd89_1"){ //PRD89, 043014
 		xsd=1.25; xvd=1.; xbd=1.;
@@ -341,22 +345,22 @@ void nlwm_class::printParameters(void){
   if(parametrization== ""){std::cout << "You have not chosen a valid parameter set!" 
 																		 << std::endl;}
   else{
-    std::cout << "Masses (Mn, Ms, Mv, Mb, Mstar): " 
+    std::cout << "Masses (Mn, Ms, Mv, Mb, Mstar): "  << endl
 							<< Mn << " " << Ms << " " << Mv << " " << Mb << " " << Mstar <<
-    std::endl << "Couplings (gs, gv, gb, gs3, gs4, xsi, Lv): " 
+    std::endl << "Couplings (gs, gv, gb, gs3, gs4, xsi, Lv): "  << endl
 							<< gs << " " << gv << " " << gb << " " 
               << gs3 << " " << gs4 << " " << xsi << " " << Lv 
 		<< std::endl;
 
 	if(doHyperons){
-	    std::cout << "Hyperons: " 
+	    std::cout << "Hyperons: " << endl
 							<< xsl << " " << xss << " " << xsx << std::endl
 							<< xvl << " " << xvs << " " << xvx << std::endl
 							<< xbl << " " << xbs << " " << xbx << std::endl
 							<< xtl << " " << xts << " " << xtx << std::endl;
 	}
 	if(doDeltas){
-	    std::cout << "Deltas: " 
+	    std::cout << "Deltas: " << endl
 							<< xsd << " " << xvd << " " << xbd << std::endl;
 	}
 
@@ -376,7 +380,7 @@ void nlwm_class::setThermodynamics(){
 		xi0.calculateProperties();
 		xim.calculateProperties();
 	}
-	if(doHyperons){
+	if(doDeltas){
 		deltapp.calculateProperties();
 		deltap.calculateProperties();
 		delta0.calculateProperties();
@@ -390,16 +394,21 @@ void nlwm_class::setTemperature(double temp_){
   temperature=temp_;
   proton.temperature 	=temperature; 
 	neutron.temperature	=temperature;
-	lambda0.temperature	=temperature;
-	sigmap.temperature	=temperature;
-	sigma0.temperature	=temperature;
-	sigmam.temperature	=temperature;
-	xi0.temperature			=temperature;
-	xim.temperature			=temperature;
-	deltapp.temperature	=temperature;
-	deltap.temperature	=temperature;
-	delta0.temperature	=temperature;
-	deltam.temperature	=temperature;
+	if(doHyperons){
+		lambda0.temperature	=temperature;
+		sigmap.temperature	=temperature;
+		sigma0.temperature	=temperature;
+		sigmam.temperature	=temperature;
+		xi0.temperature			=temperature;
+		xim.temperature			=temperature;
+	}
+	if(doDeltas){
+		deltapp.temperature	=temperature;
+		deltap.temperature	=temperature;
+		delta0.temperature	=temperature;
+		deltam.temperature	=temperature;
+	}
+
 }
 
 
@@ -429,6 +438,8 @@ void nlwm_class::setBfield(bool dob_, double B_){
 void nlwm_class::setAMM(bool doa_){							//MUB			Kb
 		proton.setAMM(doa_, 1.79);									// 2.79     1.79 
 		neutron.setAMM(doa_, -1.91);								//-1.91		 -1.91
+		// proton.setAMM(doa_, 0.);									// 2.79     1.79 
+		// neutron.setAMM(doa_,0.);								//-1.91		 -1.91
 
 	if(doHyperons){ //PhysRevC.79.025803
 		lambda0.setAMM(doa_, -0.61);								//-0.61    -0.61
@@ -448,7 +459,7 @@ void nlwm_class::setAMM(bool doa_){							//MUB			Kb
 		deltapp.setAMM(doa_, 3.47);										//4.99			3.47
 		deltap.setAMM(doa_,  1.73);										//2.49  		1.73
 		delta0.setAMM(doa_,  0.06);										//0.06			0.06
-		deltam.setAMM(doa_, -0.6);										//-2.45		 -1.69
+		deltam.setAMM(doa_, -1.69);										//-2.45		 -1.69
 		// deltapp.setAMM(doa_,0.);
 		// deltap.setAMM( doa_,0.);
 		// delta0.setAMM( doa_,0.);
@@ -478,7 +489,7 @@ void nlwm_class::setEOS_nucleons(double rhoB_, double Yp_, double temp_){
 	
   proton.solveChemPotEff();
   neutron.solveChemPotEff();
-	
+
   proton.chemPot  =  proton.chemPot_eff  + gv*V0 + gb*b0*proton.I3;
   neutron.chemPot =  neutron.chemPot_eff + gv*V0 + gb*b0*neutron.I3;
 	muB = neutron.chemPot;
@@ -487,9 +498,9 @@ void nlwm_class::setEOS_nucleons(double rhoB_, double Yp_, double temp_){
 	proton.calculateCondensate();
 	neutron.calculateCondensate();
 	rhoS= proton.condensate + neutron.condensate;
-
-  proton.calculateProperties();
+	proton.calculateProperties();
   neutron.calculateProperties();
+
 }
 
 
@@ -727,12 +738,12 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 	double v0_ ;       
 	double b0_;
 	double theta0_=0.;
-	
+	// if(rhoB<rho0){doHyperons=false;}
 	if(firstRun){
 		if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
 		else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
-		
-		if(parametrization=="fsu2h" || parametrization=="l3wr") theta0_ = -0.0118828;
+		if(parametrization=="fsu2h")theta0_ = -0.0252404;
+		if(parametrization=="l3wr") theta0_ = -0.0118828;
 	}else{
 		mub_	= muB;
 		mue_= electron_.chemPot;
@@ -755,7 +766,6 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 	if(parametrization=="fsu2h" || parametrization=="l3wr"){ 
 		//must solve 4 meson equations
 		double x[]={mub_, mue_, phi0_, v0_, b0_, theta0_};
-		
 
 		Problem pBetaEq;
 		CostFunction* costBetaEq= 
@@ -773,7 +783,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		// Set solver
 		Solver::Options optionsBetaEq;
 	//if(parametrization!="iufsu"){
-		optionsBetaEq.parameter_tolerance = 1e-10;
+		optionsBetaEq.parameter_tolerance = 1e-8;
 		optionsBetaEq.function_tolerance = 1e-10;
 		optionsBetaEq.gradient_tolerance=1e-12;
 		if(rhoB*pow(Mn/hc, 3.) < (5.e-4) ){
@@ -817,7 +827,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 
 		//Print if convergence was achieved.
 		std::cout << summaryBetaEq.BriefReport() << "\n";
-		std::cout << "rhob= " << rhoB*pow(Mn/hc, 3) << std::endl;
+		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
 		std::cout << mub_ << " " << mue_ << " " 
 							<< phi0_ << " " << v0_  << " " << b0_ <<  " " << theta0_ << 
 		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]  << " " << x[5]
@@ -926,16 +936,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 	electron_.calculateProperties();
 	muon_.setLepton(mue_);
 	muon_.calculateProperties();
-
-	//  std::cout << 
-	//   rhoB 		-	getBaryonDens() << " "  <<
-	//   getChargeDens() +	electron_.Qdens + muon_.Qdens << " "  <<
-	//   sigmaMeson_eom_residue(	getSigmaEffDens()) << " "  <<
-	//   omegaMeson_eom_residue(	getOmegaEffDens()) << " "  <<
-	//   rhoMeson_eom_residue(		getIsoEffDens()) << " " << std::endl;
-// std::cout << "test: " << x[5] << std::endl;
-// 	Yp= (electron_.density + muon_.density)/rhoB;
-	 	firstRun=false;
+ 	firstRun=false;
 
 }
 //=============== Functor beta-equilibrium for Ceres w/ 3 mesons: ===============
@@ -1076,10 +1077,246 @@ bool BetaEqFunctor3::operator()(const T* x, T* residuals) const{
 	return true;
 }
 
+void nlwm_class::setEOS_betaEq_PressureFixed(double press_, double temp_,	
+																	particle &electron_, particle &muon_){
+
+
+	PressureTot=press_;
+	setTemperature(temperature);
+  
+	double mub_;
+	double mue_;
+	double phi0_ ;
+	double v0_ ;       
+	double b0_;
+	double theta0_=0.;
+	
+	if(firstRun){
+		if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+		else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+		
+		if(parametrization=="fsu2h" || parametrization=="l3wr") theta0_ = -0.0118828;
+	}else{
+		mub_	= muB;
+		mue_= electron_.chemPot;
+		phi0_=phi0 ;
+		v0_	=V0;       
+		b0_	= b0;
+		if(parametrization=="fsu2h" || parametrization=="l3wr") theta0_=theta0;
+	}
+	
+	if(parametrization=="fsu2h" || parametrization=="l3wr"){ 
+		//must solve 4 meson equations
+		double x[]={mub_, mue_, phi0_, v0_, b0_, theta0_};
+		
+
+		Problem pBetaEq;
+		CostFunction* costBetaEq= 
+								new NumericDiffCostFunction<BetaEqFunctor2_PressFixed,ceres::CENTRAL, 6, 6>
+								(new  BetaEqFunctor2_PressFixed(*this, electron_, muon_));
+
+		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
+
+		// if(temperature<Tmin_integration){
+		//  	pBetaEq.SetParameterLowerBound(x, 0, 0.);
+		// 	pBetaEq.SetParameterLowerBound(x, 1, electron_.mass_eff);
+		//  	pBetaEq.SetParameterLowerBound(x, 2, 0.);
+		//pBetaEq.SetParameterLowerBound(x, 3, 0.);
+		// }
+		// Set solver
+		Solver::Options optionsBetaEq;
+	//if(parametrization!="iufsu"){
+		optionsBetaEq.parameter_tolerance = 1e-12;
+		optionsBetaEq.function_tolerance = 1e-12;
+		optionsBetaEq.gradient_tolerance=1e-15;
+	// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
+	// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
+		
+		
+		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
+		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
+		optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
+		optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
+		optionsBetaEq.use_nonmonotonic_steps= true;
+		optionsBetaEq.update_state_every_iteration = true;
+		
+		optionsBetaEq.minimizer_progress_to_stdout = false;
+		Solver::Summary summaryBetaEq;
+		optionsBetaEq.max_num_iterations=1e5;	
+
+		//Run
+		Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
+
+		//Print if convergence was achieved.
+		std::cout << summaryBetaEq.BriefReport() << "\n";
+		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
+		std::cout << mub_ << " " << mue_ << " " 
+							<< phi0_ << " " << v0_  << " " << b0_ <<  " " << theta0_ << 
+		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]  << " " << x[5]
+		<< std::endl << std::endl;
+				
+		mub_	 =x[0];
+		mue_	 =x[1];
+		phi0_	 =x[2];
+		v0_		 =x[3];
+		b0_		 =x[4];
+		theta0_=x[5];
+
+		setDensities(mub_, -mue_,  phi0_,  v0_, b0_, theta0_);
+
+	}else{
+	
+		double x[]={mub_, mue_, phi0_, v0_, b0_};
+		
+
+		Problem pBetaEq;
+		CostFunction* costBetaEq= 
+								new NumericDiffCostFunction<BetaEqFunctor_PressFixed,ceres::CENTRAL, 5, 5>
+								(new  BetaEqFunctor_PressFixed(*this, electron_, muon_));
+
+		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
+
+		// if(temperature<Tmin_integration){
+		// 	pBetaEq.SetParameterLowerBound(x, 0, 0.);
+		//	pBetaEq.SetParameterLowerBound(x, 1, electron_.mass_eff);
+		// 	pBetaEq.SetParameterLowerBound(x, 2, 0.);
+		// 	pBetaEq.SetParameterLowerBound(x, 3, 0.);
+		// }
+		// Set solver
+		Solver::Options optionsBetaEq;
+	//if(parametrization!="iufsu"){
+		optionsBetaEq.parameter_tolerance = 1e-10;
+		optionsBetaEq.function_tolerance = 1e-10;
+		optionsBetaEq.gradient_tolerance=1e-12;
+		optionsBetaEq.max_num_iterations=1e6;	
+
+	
+	//}
+		// optionsBetaEq.line_search_direction_type= ceres::STEEPEST_DESCENT;
+		// optionsBetaEq.line_search_type=ceres::ARMIJO;
+
+		// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
+		// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
+		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
+		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
+		// optionsBetaEq.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT;
+		
+		optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
+		optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
+		
+		optionsBetaEq.use_nonmonotonic_steps= true;
+		optionsBetaEq.update_state_every_iteration = true;
+		// optionsBetaEq.use_explicit_schur_complement= true;
+		
+
+		optionsBetaEq.minimizer_progress_to_stdout = false;
+		Solver::Summary summaryBetaEq;
+
+		//Run
+		Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
+
+		//Print if convergence was achieved.
+		std::cout << summaryBetaEq.BriefReport() << "\n";
+		std::cout << "rhob= " << rhoB*pow(Mn/hc, 3) << std::endl;
+		std::cout << mub_ << " " << mue_ << " " << phi0_ << " " << v0_  << " " << b0_ << 
+			"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4] 
+		<< std::endl << std::endl;
+				
+		mub_	=x[0];
+		mue_	=x[1];
+		phi0_	=x[2];
+		v0_		=x[3];
+		b0_		=x[4];
+
+		setDensities(mub_, -mue_,  phi0_,  v0_, b0_);
+	}
+	
+	setThermodynamics();
+	rhoB=getBaryonDens();
+	electron_.setLepton(mue_);
+	electron_.calculateProperties();
+	muon_.setLepton(mue_);
+	muon_.calculateProperties();
+ 	firstRun=false;
+
+}
+//=============== Functor beta-equilibrium for Ceres w/ 3 mesons: ===============
+template <typename T>
+bool BetaEqFunctor_PressFixed::operator()(const T* x, T* residuals) const{
+
+	electron.setLepton(x[1]);
+	muon.setLepton(x[1]);
+	baryons.setDensities(x[0], -x[1], x[2], x[3], x[4]);
+	
+	baryons.setThermodynamics();
+	electron.calculateProperties();
+	muon.calculateProperties();
+
+											//mub, muq, phi0,  v0,    b0
+	// double  bar_press= - baryons.getEnergy() + baryons.temperature*baryons.getentropy();
+	
+	residuals[0] = baryons.PressureTot -	baryons.getPressure() - electron.pressure - muon.pressure;
+	residuals[1] = baryons.getChargeDens() +	electron.Qdens + muon.Qdens;
+	residuals[2] = baryons.sigmaMeson_eom_residue(	baryons.getSigmaEffDens());
+	residuals[3] = baryons.omegaMeson_eom_residue(	baryons.getOmegaEffDens());
+	residuals[4] = baryons.rhoMeson_eom_residue(		baryons.getIsoEffDens());
+	return true;
+}
+//=============== Functor beta-equilibrium for Ceres w/ 4 mesons: ===============
+template <typename T>
+bool BetaEqFunctor2_PressFixed::operator()(const T* x, T* residuals) const{
+
+	electron.setLepton(x[1]);
+	muon.setLepton(x[1]);
+	baryons.setDensities(x[0], -x[1], x[2], x[3], x[4], x[5]);
+											//mub, muq, phi0,  v0,    b0, theta0
+
+	residuals[0] = baryons.PressureTot -	baryons.getPressure() - electron.pressure - muon.pressure;
+	residuals[1] = baryons.getChargeDens() +	electron.Qdens + muon.Qdens;
+	residuals[2] = baryons.sigmaMeson_eom_residue(	baryons.getSigmaEffDens());
+	residuals[3] = baryons.omegaMeson_eom_residue(	baryons.getOmegaEffDens());
+	residuals[4] = baryons.rhoMeson_eom_residue(		baryons.getIsoEffDens());
+	residuals[5] = baryons.thetaMeson_eom_residue(	baryons.getThetaEffDens()) ;
+	return true;
+}
+
+
 
 //=============== Set nucleon EoS inputing effective chemical potentials/mass ===============
 void nlwm_class::setEOS_coexistence(double nup_, double nun_, double mef_){
 	
+  // proton.chemPot_eff= nup_;
+  // proton.mass_eff= mef_;
+  
+	// proton.kf2= proton.chemPot_eff*proton.chemPot_eff -proton.mass_eff*proton.mass_eff;
+  // proton.kf2<=0. ? proton.kf=0. : proton.kf=sqrt(proton.kf2);
+	// proton.calculateDensity();  
+  // proton.calculateProperties();
+	// proton.calculateCondensate();
+
+  // neutron.chemPot_eff= nun_;
+  // neutron.mass_eff= mef_;
+
+  // neutron.kf2= neutron.chemPot_eff*neutron.chemPot_eff -neutron.mass_eff*neutron.mass_eff;
+  // neutron.kf2<0. ? neutron.kf=0	: neutron.kf=sqrt(neutron.kf2);
+	// neutron.calculateDensity();  
+	// neutron.calculateProperties();
+	// neutron.calculateCondensate();
+
+  // rhoB= proton.density + neutron.density;
+  // rho3= proton.I3*proton.density + neutron.I3*neutron.density;
+	// rhoS= proton.condensate + neutron.condensate;
+  // //rhoS= integrate(density_condensateFunc, &proton)+
+	// //			integrate(density_condensateFunc, &neutron);
+	// Yp = proton.density/rhoB;	
+	
+	// Mef=mef_;
+	// phi0=(1.-mef_	)/gs;
+	// setVectorMeanFields();
+	
+  // proton.chemPot  = proton.chemPot_eff  + gv*V0 + proton.I3	*gb*b0;
+  // neutron.chemPot = neutron.chemPot_eff + gv*V0 + neutron.I3*gb*b0;
+
   proton.chemPot_eff= nup_;
   proton.mass_eff= mef_;
   proton.kf2= proton.chemPot_eff*proton.chemPot_eff -proton.mass_eff*proton.mass_eff;
@@ -1111,12 +1348,12 @@ void nlwm_class::setEOS_coexistence(double nup_, double nun_, double mef_){
 	Yp = proton.density/rhoB;	
 	
 	Mef=mef_;
-	phi0=(1.-mef_	)/gs ;
+	phi0=(1.-mef_	)/gs;
 	setVectorMeanFields();
 	
   proton.chemPot  = proton.chemPot_eff  + gv*V0 + gb*b0/2.;
   neutron.chemPot = neutron.chemPot_eff + gv*V0 - gb*b0/2.;
-	
+
 }
 
 
@@ -1180,6 +1417,10 @@ void nlwm_class::setDensities(double mub_, double muq_, double phi0_, double v0_
 		deltapp.setBaryonEff(	muB, muQ, gs*xsd*phi0, gv*xvd*V0, gb*xbd*b0);
 	}
 
+	yN=(proton.density + neutron.density)/getBaryonDens();
+	yH=(lambda0.density+ sigmap.density+ sigma0.density+ sigmam.density
+													+ xi0.density+ xim.density)/getBaryonDens();
+	yD=(deltapp.density + deltap.density+ delta0.density + deltam.density)/getBaryonDens();
 }
 
 
@@ -1209,11 +1450,17 @@ void nlwm_class::setInitial_hd(double &mub_, double &mue_, double  &phi0_, doubl
 	 	v0_	=0.08;  	// 0.1 low densities 			.15			
 	 	b0_	= -0.003;	// -1e-5 low dens				
 	}else if(parametrization=="fsu2h"){
-		mub_=1.45583;//1.45583 0.0638229 0.0984247 0.0822707 -0.00164294 -0.00889494
-		mue_= 0.0638229;
-		phi0_= 0.0984247;
-		v0_= 0.0822707;
-		b0_= -0.00164294;		
+		// mub_=1.45583;//1.45583 0.0638229 0.0984247 0.0822707 -0.00164294 -0.00889494
+		// mue_= 0.0638229;
+		// phi0_= 0.0984247;
+		// v0_= 0.0822707;
+		// b0_= -0.00164294;	
+		mub_	=1.72376;	//1.5 1.42001 0.0749067 0.100246 0.0771754 -0.00261042
+		mue_=		 0.13766; 			//0.1								
+	 	phi0_=		 0.0953097;// 0.1 low densities		.2							
+	 	v0_	=		0.0952903;   	// 0.1 low densities 			.15			
+	 	b0_	=-0.00105593 ;	// -1e-5 low dens				
+	
 	}else if (parametrization=="nl3"){
 		mub_=1.40371;
 		mue_= 0.125273;
@@ -1509,7 +1756,7 @@ double nlwm_class::getThetaEffDens(){
 	double denst_=0.;
 	
 	if(doHyperons){
-		denst_+= 	xtl*lambda0.density 
+		denst_= 	xtl*lambda0.density 
 						+ xts*(sigmap.density + sigma0.density + sigmam.density )
 						+ xtx*(xi0.density + xim.density);
 	}
@@ -1536,49 +1783,123 @@ double nlwm_class::rhoMeson_eom_residue(double rho3_){
 
 //=============== Calculate residue of strange-scalar meson eom: ===============
 double nlwm_class::thetaMeson_eom_residue(double rhoT_){
+
 	return gv*rhoT_ - pow(Mt, 2.)*theta0;
 }
 
 
 //=============== Calculate total baryonic energy: ===============
 double nlwm_class::getEnergy(void){
-  double ener= proton.energy + neutron.energy 
-              +pow(Ms*phi0, 2)/2. + gs3*pow(phi0, 3.)/6.+ gs4*pow(phi0, 4)/24.
+  double ener= proton.energy + neutron.energy ;
+              
+	double enerMeson= pow(Ms*phi0, 2)/2. + gs3*pow(phi0, 3.)/6.+ gs4*pow(phi0, 4)/24.
               +pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/8.+ pow(Mt*theta0, 2)/2.
               +pow(Mb*b0, 2)/2. 	+ 3.*Lv*pow(gv*gb*V0*b0, 2);//+ pow(Bfield, 2.)/2.;
+
 	if(doHyperons){
 		ener+= lambda0.energy+ sigmap.energy + sigma0.energy + sigmam.energy + xi0.energy + xim.energy;
 	}
 	if(doDeltas){
 		ener+= deltapp.energy + deltap.energy + delta0.energy + deltam.energy;
 	}
-	return ener;
+	return ener+ enerMeson;
 }
 
 
 //=============== Calculate total baryonic pressure: ===============
 double nlwm_class::getPressure(void){
  
-    //  return proton.pressure + neutron.pressure 
+    // double  	Emeson=
 		// 					-pow(Ms*phi0, 2)/2. - gs3*pow(phi0, 3)/6.- gs4*pow(phi0, 4)/24.
-    //       		+pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24.
+    //       		+pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24. + pow(Mt*theta0, 2)/2.
     //       		+pow(Mb*b0, 2)/2. 	+ Lv*pow(gv*gb*V0*b0, 2);
-  		
+
 	double press= proton.chemPot*proton.density+ neutron.chemPot*neutron.density 
  					- getEnergy();
-					 
-	if(temperature>0.){press+=temperature*getEntropy();}
+	// double press= proton.pressure+ neutron.pressure ;
+	if(temperature>Tmin_integration){press+=temperature*getEntropy();}
 	
 	if(doHyperons){
 		press+= lambda0.chemPot*lambda0.density + sigmap.chemPot*sigmap.density 
 					+ sigma0.chemPot*sigma0.density + sigmam.chemPot*sigmam.density 
-						+ xi0.chemPot*xi0.density+ xim.chemPot*xim.density;
+					+ xi0.chemPot*xi0.density+ xim.chemPot*xim.density;
+		// press+= lambda0.pressure + sigmap.pressure 
+		// 			+ sigma0.pressure + sigmam.pressure 
+		// 			+ xi0.pressure+ xim.pressure;
 		}
 	if(doDeltas){
 		press+= deltapp.chemPot*deltapp.density + deltap.chemPot*deltap.density 
 					+ delta0.chemPot*delta0.density + deltam.chemPot*deltam.density;
+		// press+= deltapp.chemPot*deltapp.density + deltap.chemPot*deltap.density 
+					// + delta0.chemPot*delta0.density + deltam.chemPot*deltam.density;
+
 	}
 	return press;
+}
+
+//=============== Calculate baryonic pressure parallel to magnetic field: ===============
+double nlwm_class::getPressureParallel(void){
+	 double Lmeson = - pow(Ms*phi0, 2)/2. - gs3*pow(phi0, 3.)/6.- gs4*pow(phi0, 4)/24.
+              +pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24.+ pow(Mt*theta0, 2)/2.
+              +pow(Mb*b0, 2)/2. 	+ Lv*pow(gv*gb*V0*b0, 2);
+
+	double pressp_= proton.pressureParallel + neutron.pressureParallel;
+
+	if(doHyperons){
+		pressp_+= lambda0.pressureParallel+ sigmap.pressureParallel 
+					+ sigma0.pressureParallel + sigmam.pressureParallel 
+					+ xi0.pressureParallel + xim.pressureParallel;
+	}
+	if(doDeltas){
+		pressp_+= deltapp.pressureParallel + deltap.pressureParallel 
+					+ delta0.pressureParallel + deltam.pressureParallel;
+	}
+
+	return pressp_  + Lmeson;
+}
+
+//=============== Calculate baryonic pressure trasnsverse to magnetic field: ===============
+double nlwm_class::getPressureTransverse(void){
+	 double Lmeson = - pow(Ms*phi0, 2)/2. - gs3*pow(phi0, 3.)/6.- gs4*pow(phi0, 4)/24.
+              +pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24.+ pow(Mt*theta0, 2)/2.
+              +pow(Mb*b0, 2)/2. 	+ Lv*pow(gv*gb*V0*b0, 2);
+
+	double presst_= proton.pressureTransverse + neutron.pressureTransverse;
+	
+	 	if(doHyperons){
+		presst_+= lambda0.pressureTransverse+ sigmap.pressureTransverse 
+					+ sigma0.pressureTransverse + sigmam.pressureTransverse 
+					+ xi0.pressureTransverse + xim.pressureTransverse;
+	}
+	if(doDeltas){
+		presst_+= deltapp.pressureTransverse + deltap.pressureTransverse 
+					+ delta0.pressureTransverse + deltam.pressureTransverse;
+	}
+	//double press_meson= -(+pow(Ms*phi0, 2)/2. + gs3*pow(phi0, 3.)/6.+ gs4*pow(phi0, 4)/24.
+              //+pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24.+ pow(Mt*theta0, 2)/2.
+              //+pow(Mb*b0, 2)/2. 	+ 3.*Lv*pow(gv*gb*V0*b0, 2));
+	return presst_  + Lmeson;
+
+}
+
+double nlwm_class::getMagnetization(void){
+	// double emeson = pow(Ms*phi0, 2)/2. + gs3*pow(phi0, 3.)/6.+ gs4*pow(phi0, 4)/24.
+              // +pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/8.+ pow(Mt*theta0, 2)/2.
+              // +pow(Mb*b0, 2)/2. 	+ 3.*Lv*pow(gv*gb*V0*b0, 2);
+
+	double mag_= proton.magnetization + neutron.magnetization;
+	
+	if(doHyperons){
+		mag_+= lambda0.magnetization+ sigmap.magnetization 
+				+ sigma0.magnetization + sigmam.magnetization 
+				+ xi0.magnetization + xim.magnetization;
+	}
+	if(doDeltas){
+		mag_+= deltapp.magnetization + deltap.magnetization 
+				+ delta0.magnetization + deltam.magnetization;
+	}
+	return mag_ ;
+
 }
 
 
@@ -1595,560 +1916,3 @@ double nlwm_class::getEntropy(void){
 	return entrp;
 }
 
-
-// phase_coexistence_class::phase_coexistence_class(nlwm_class &cluster_, nlwm_class &gas_):cluster(cluster_), gas(gas_){
-// //
-// }
-											
-// void phase_coexistence_class::solveCPA(double rhoB_, double Yp_, double temp_, 
-// 												std::vector<double>initial_guess){
-								
-// 	rhoB=rhoB_;
-// 	YpG=Yp_;
-// 	temperature=temp_;
-// 	cluster.setTemperature(temperature);
-// 	gas.setTemperature(temperature);
-	
-// 	double x[]={initial_guess[0], initial_guess[1], initial_guess[2], 
-// 							initial_guess[3], initial_guess[4], initial_guess[5]};
-
-
-// 	Problem pCPA;
-// 	CostFunction* costCPA =	new NumericDiffCostFunction<cpaFunctor, ceres::CENTRAL, 6, 6>
-// 																														(new cpaFunctor(*this));
-	
-// 	pCPA.AddResidualBlock(costCPA, NULL, x);
-
-// 	pCPA.SetParameterLowerBound(x, 0, 0.);
-// 	pCPA.SetParameterLowerBound(x, 1, 0.);
-// 	pCPA.SetParameterLowerBound(x, 2, 0.);
-// 	pCPA.SetParameterUpperBound(x, 2, 1.);
-
-// 	pCPA.SetParameterLowerBound(x, 3, 0.);
-// 	pCPA.SetParameterLowerBound(x, 4, 0.);
-// 	pCPA.SetParameterLowerBound(x, 5, 0.);
-// 	pCPA.SetParameterUpperBound(x, 5, 1.);
-
-	
-// 	Solver::Options optionsCPA; 							//default:		
-// 	optionsCPA.dense_linear_algebra_library_type=ceres::LAPACK;
-	
-// 	optionsCPA.parameter_tolerance = 1e-8;	 		//1e-8					
-// 	optionsCPA.function_tolerance = 1e-6;			//1e-6				
-// 	optionsCPA.gradient_tolerance=1e-10;			//1e-10			
-// 	optionsCPA.max_num_iterations=1e3;	
-	
-// 	optionsCPA.use_nonmonotonic_steps=true;	
-// 	optionsCPA.linear_solver_type= ceres::DENSE_QR;
-// 	//optionsCPA.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT; //default
-// 	//optionsCPA.dogleg_type = ceres::TRADITIONAL_DOGLEG;// default	
-
-// 	//optionsCPA.minimizer_type= ceres::LINE_SEARCH;
-// 	//optionsCPA.line_search_direction_type= 	ceres::NONLINEAR_CONJUGATE_GRADIENT;
-// 	//optionsCPA.line_search_type= ceres::ARMIJO;
-// 	//optionsCPA.trust_region_strategy_type = ceres::DOGLEG;
-// 	//optionsCPA.dogleg_type = ceres::SUBSPACE_DOGLEG;
-	
-	
-// 	optionsCPA.minimizer_progress_to_stdout = true;	
-	
-// 	Solver::Summary summaryCPA;
-// 	Solve(optionsCPA, &pCPA, &summaryCPA);
-// 	//
-// 	std::cout << summaryCPA.BriefReport() << "\n";
-
-// 	 std::cout << "Solution-> "  << initial_guess[0] <<  " " << initial_guess[1] << " " << initial_guess[2] <<  " "
-// 	 					<< initial_guess[3] <<  " " << initial_guess[4] << " " << initial_guess[5] << std::endl;
-// 	 std::cout << "----> " << x[0] <<  " " << x[1] << " " << x[2] <<  " "
-// 	 					<< x[3] <<  " " << x[4] << " " << x[5] << std::endl;
-
-// 	cluster.setEOS_coexistence(x[0], x[1], x[2]);
-// 	gas.setEOS_coexistence(x[3], x[4], x[5]);
-// 	f= (rhoB- gas.rhoB)/(cluster.rhoB-gas.rhoB);
-	
-
-// }
-
-// template <typename T>
-// bool cpaFunctor::operator()(const T* x, T* residuals) const{
-// 		cpa.cluster.setEOS_coexistence(x[0], x[1], x[2]);
-// 		cpa.gas.setEOS_coexistence(x[3], x[4], x[5]);
-// 		double u= (cpa.rhoB- cpa.gas.rhoB)/(cpa.cluster.rhoB - cpa.gas.rhoB);
-		
-// 		residuals[0] = cpa.cluster.proton.chemPot -  cpa.gas.proton.chemPot;
-// 		residuals[1] = cpa.cluster.neutron.chemPot -  cpa.gas.neutron.chemPot;
-// 		residuals[2] = cpa.cluster.getPressure() - cpa.gas.getPressure();
-// 		residuals[3] = u*cpa.cluster.proton.density + (1.-u)*cpa.gas.proton.density
-// 																																-cpa.YpG*cpa.rhoB;
-// 		residuals[4] = cpa.cluster.sigmaMeson_eom_residue(cpa.cluster.rhoS);
-// 		residuals[5] = cpa.gas.sigmaMeson_eom_residue(cpa.gas.rhoS);
-		
-// 		return true;
-// }
-
-
-// template <typename T>
-// bool cpaFunctor_betaEq::operator()(const T* x, T* residuals) const{
-// 		cpa.cluster.setEOS_coexistence(x[0], x[1], x[2]);
-// 		cpa.gas.setEOS_coexistence(x[3], x[4], x[5]);
-// 		electron.setLepton(x[6]);
-// 		electron.calculateProperties();
-// 		//electron
-// 		double u= (cpa.rhoB- cpa.gas.rhoB)/(cpa.cluster.rhoB - cpa.gas.rhoB);
-		
-// 		residuals[0] = cpa.cluster.proton.chemPot -  cpa.gas.proton.chemPot;
-// 		residuals[1] = cpa.cluster.neutron.chemPot -  cpa.gas.neutron.chemPot;
-// 		residuals[2] = cpa.cluster.getPressure() - cpa.gas.getPressure();
-// 		residuals[3] = u*cpa.cluster.proton.density + (1.-u)*cpa.gas.proton.density-electron.density;
-// 		residuals[4] = cpa.cluster.sigmaMeson_eom_residue(cpa.cluster.rhoS);
-// 		residuals[5] = cpa.gas.sigmaMeson_eom_residue(cpa.gas.rhoS);
-// 		residuals[6]	=electron.chemPot + cpa.cluster.proton.chemPot - cpa.cluster.neutron.chemPot;
-// 		return true;
-// }
-// void phase_coexistence_class::solveCPA_betaEq(double rhoB_, double temp_, particle &electron_,
-// 								std::vector<double>initial_guess){
-							
-// 	rhoB=rhoB_;
-// 	temperature=temp_;
-// 	cluster.setTemperature(temperature);
-// 	gas.setTemperature(temperature);
-	
-// 	double x[]={initial_guess[0], initial_guess[1], initial_guess[2], 
-// 							initial_guess[3], initial_guess[4], initial_guess[5], initial_guess[6]};
-
-
-// 	Problem pCPA;
-// 	CostFunction* costCPA =	new NumericDiffCostFunction<cpaFunctor_betaEq, ceres::CENTRAL, 7, 7>
-// 																														(new cpaFunctor_betaEq(*this, electron_));
-	
-// 	pCPA.AddResidualBlock(costCPA, NULL, x);
-
-// 	//pCPA.SetParameterLowerBound(x, 0, 0.);
-// 	//pCPA.SetParameterLowerBound(x, 1, 0.);
-// 	//pCPA.SetParameterLowerBound(x, 2, 0.);
-// 	//pCPA.SetParameterUpperBound(x, 2, 1.);
-// //
-// 	//pCPA.SetParameterLowerBound(x, 3, 0.);
-// 	//pCPA.SetParameterLowerBound(x, 4, 0.);
-// 	//pCPA.SetParameterLowerBound(x, 5, 0.);
-// 	//pCPA.SetParameterUpperBound(x, 5, 1.);
-
-	
-// 	Solver::Options optionsCPA; 							//default:		
-// 	optionsCPA.dense_linear_algebra_library_type=ceres::LAPACK;
-	
-// 	optionsCPA.parameter_tolerance = 1e-8;	 		//1e-8					
-// 	optionsCPA.function_tolerance = 1e-6;			//1e-6				
-// 	optionsCPA.gradient_tolerance=1e-10;			//1e-10			
-// 	optionsCPA.max_num_iterations=5e3;	
-	
-// 	optionsCPA.linear_solver_type= ceres::DENSE_QR;
-
-// 	// optionsCPA.dense_linear_algebra_library_type=ceres::LAPACK;
-	
-// 	//optionsCPA.trust_region_strategy_type = ceres::DOGLEG;
-// 	//optionsCPA.dogleg_type = ceres::SUBSPACE_DOGLEG;
-		
-// 	//optionsCPA.use_nonmonotonic_steps= true;
-// 	//optionsCPA.update_state_every_iteration = true;
-// 	//optionsCPA.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT; //default
-// 	//optionsCPA.dogleg_type = ceres::TRADITIONAL_DOGLEG;// default	
-
-// 	//optionsCPA.minimizer_type= ceres::LINE_SEARCH;
-// 	//optionsCPA.line_search_direction_type= 	ceres::NONLINEAR_CONJUGATE_GRADIENT;
-// 	//optionsCPA.line_search_type= ceres::ARMIJO;
-// 	//optionsCPA.trust_region_strategy_type = ceres::DOGLEG;
-// 	//optionsCPA.dogleg_type = ceres::SUBSPACE_DOGLEG;
-	
-	
-// 	optionsCPA.minimizer_progress_to_stdout = true;	
-	
-// 	Solver::Summary summaryCPA;
-// 	Solve(optionsCPA, &pCPA, &summaryCPA);
-// 	//
-// 	std::cout << summaryCPA.BriefReport() << "\n";
-
-// 	std::cout << "Solution-> "  << initial_guess[0] <<  " " << initial_guess[1] << " " 
-// 		<< initial_guess[2] << " " << initial_guess[3] <<  " " << initial_guess[4] << " " 
-// 	 << initial_guess[5] << " " << initial_guess[6]
-// 	 <<  std::endl;
-	
-// 	std::cout << "----> " << x[0] <<  " " << x[1] << " " << x[2] <<  " "
-// 	 					<< x[3] <<  " " << x[4] << " " << x[5] << " " << x[6] << std::endl;
-
-// 	cluster.setEOS_coexistence(x[0], x[1], x[2]);
-// 	gas.setEOS_coexistence(x[3], x[4], x[5]);
-// 	f= (rhoB- gas.rhoB)/(cluster.rhoB-gas.rhoB);
-// 	electron_.setLepton(x[6]);
-// 	electron_.calculateProperties();
-
-// }
-
-// void phase_coexistence_class::solveSNA(double rhoB_, double Yp_, double temp_, 
-// 												double dim_, int itype_,
-// 												std::vector<double>initial_guess){
-								
-// 	rhoB=rhoB_;
-// 	YpG=Yp_;
-// 	temperature=temp_;
-// 	dim=dim_;
-// 	iType=itype_;
-// 	cluster.setTemperature(temperature);
-// 	gas.setTemperature(temperature);
-	
-// 	double x[]={initial_guess[0], initial_guess[1], initial_guess[2], 
-// 							initial_guess[3], initial_guess[4], initial_guess[5]};
-
-
-// 	Problem pSNA;
-// 	CostFunction* costSNA =	new NumericDiffCostFunction<snaFunctor, ceres::CENTRAL, 6, 6>
-// 																														(new snaFunctor(*this));
-// 	pSNA.AddResidualBlock(costSNA, NULL, x);
-// 	//pSNA.SetParameterLowerBound(x, 0, 0.);
-// 	//pSNA.SetParameterLowerBound(x, 1, 0.);
-// 	//pSNA.SetParameterLowerBound(x, 2, 0.);
-// 	//pSNA.SetParameterUpperBound(x, 2, 1.);
-// //
-// 	//pSNA.SetParameterLowerBound(x, 3, 0.);
-// 	//pSNA.SetParameterLowerBound(x, 4, 0.);
-// 	//pSNA.SetParameterLowerBound(x, 5, 0.);
-// 	//pSNA.SetParameterUpperBound(x, 5, 1.);
-// //
-	
-// 	Solver::Options optionsSNA; 							//default:	0.5 fluc	
-// 	optionsSNA.parameter_tolerance = 1e-10; 		//1e-8			9 			
-// 	optionsSNA.function_tolerance = 1e-8;			//1e-6			8	
-// 	optionsSNA.gradient_tolerance=1e-10;			//1e-10			12
-
-// 	optionsSNA.max_num_iterations=1e3;
-// 	// optionsSNA.use_nonmonotonic_steps=true;	
-// 	optionsSNA.linear_solver_type= ceres::DENSE_QR;
-// 	//optionsSNA.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT;
-// 	//optionsSNA.dogleg_type = ceres::SUBSPACE_DOGLEG;
-// 	optionsSNA.minimizer_progress_to_stdout = true;
-// 	//optionsSNA.trust_region_strategy_type = ceres::DOGLEG;
-// 	//optionsSNA.dogleg_type = ceres::TRADITIONAL_DOGLEG;
-	
-// 	Solver::Summary summarySNA;
-// 	Solve(optionsSNA, &pSNA, &summarySNA);
-// 	//
-// 	std::cout << summarySNA.BriefReport() << "\n";
-
-// 	std::cout << "rhoB= " << rhoB*pow(cluster.Mn/hc, 3.) << std::endl;
-// 	 std::cout << "Solution (" << dim << " , " << iType << ") : "  << initial_guess[0] <<  " " << initial_guess[1] << " " << initial_guess[2] <<  " "
-// 	 					<< initial_guess[3] <<  " " << initial_guess[4] << " " << initial_guess[5] << std::endl;
-// 	 std::cout << "----> " << x[0] <<  " " << x[1] << " " << x[2] <<  " "
-// 	 					<< x[3] <<  " " << x[4] << " " << x[5] << std::endl;
-
-// 	cluster.setEOS_coexistence(x[0], x[1], x[2]);
-// 	gas.setEOS_coexistence(x[3], x[4], x[5]);
-// 	f= (rhoB- gas.rhoB)/(cluster.rhoB-gas.rhoB);
-	
-
-// }
-
-
-// template <typename T>
-// bool snaFunctor::operator()(const T* x, T* residuals) const{
-// 		sna.cluster.setEOS_coexistence(x[0], x[1], x[2]);
-// 		sna.gas.setEOS_coexistence(x[3], x[4], x[5]);
-		
-// 		double u= (sna.rhoB- sna.gas.rhoB)/(sna.cluster.rhoB - sna.gas.rhoB);
-// 		double beta=u;
-// 		double sign_=1.;
-	
-// 		if(sna.iType==1){beta=(1.-u); sign_=-1.;}
-		
-// 		double sigma=getSurfaceTension(sna.cluster, sna.YpG, sna.temperature);
-// 		double Phi=getPhiFunc(sna.dim, beta);
-// 		double PhiD=getPhiFuncDerivative(sna.dim, beta);
-		
-// 		double Rd=getRadiusD(sna.dim, beta, sna.YpG, sna.cluster, sna.gas);
-// 		double Fs= sigma*sna.dim/Rd;
-// 		double Fc= Fs/2.;
-// 		double Fsc= Fc+Fs;
-		
-// 		double interfaceMuP=0.;
-// 		double interfacePrs=0.;
-
-// 		//std::cout << Rd << " " << Fc << " " << u << " " << Phi << " " << PhiD << std::endl;
-// 		if(u>0. || u<1.){
-// 			interfaceMuP= 2.*beta*Fc/(u*(1.-u)*(sna.cluster.proton.density-sna.gas.proton.density));
-
-// 			interfacePrs= sign_*(Fsc+beta*Fc*PhiD/Phi)
-// 										-2.*beta*Fc*((1.-u)*sna.cluster.proton.density + u*sna.gas.proton.density)/
-// 											(u*(1.-u)*(sna.cluster.proton.density - sna.gas.proton.density));	
-// 	/*		
-// 			interfacePrs= Fc*(1. +beta*PhiD/Phi- 2.*beta*sna.gas.proton.density/
-// 												(u*(1.-u)*(sna.cluster.proton.density - sna.gas.proton.density)));	
-// 		*/	
-// 		}
-				
-// 		residuals[0] = sna.cluster.proton.chemPot - sna.gas.proton.chemPot+ interfaceMuP;						
-// 		residuals[1] = sna.cluster.neutron.chemPot -  sna.gas.neutron.chemPot ;								
-// 		residuals[2] =-sna.cluster.getPressure() + sna.gas.getPressure() + interfacePrs;
-// 		residuals[3] = u*sna.cluster.proton.density+(1.-u)*sna.gas.proton.density-sna.YpG*sna.rhoB ;
-// 		residuals[4] = sna.cluster.sigmaMeson_eom_residue(sna.cluster.rhoS);
-// 		residuals[5] = sna.gas.sigmaMeson_eom_residue(sna.gas.rhoS);
-		
-// 		return true;
-// }
-
-
-// double getSurfaceTension(nlwm_class &cluster_, double Yp_, double T){
-
-//   double sigma0=0., sigma1, sa1, sa2, sa3, sa4, sa5, sa6;
-//   double aa0, aa1, aa2, aa3, aa4, aa5;
-//   double ba0, ba1, ba2, ba3, ba4, ba5;
-//   double ca0, ca1, ca2, ca3, ca4, ca5;
-
-// 	setSurfaceParameters( cluster_, sigma0, sigma1, sa1, sa2, sa3, sa4, sa5, sa6,
-// 																			  aa0, aa1, aa2, aa3, aa4, aa5,
-//  																			  ba0, ba1, ba2, ba3, ba4, ba5,
-//  																			  ca0, ca1, ca2, ca3, ca4, ca5);
-
-	
-// 	double x=pow(1.-2.*Yp_, 2.);
-// 	double sigma_= sigma0*exp(-sigma1*pow(x, 1.5))
-//                       *(1.+ sa1*x          + sa2*pow(x, 2.)
-//                           + sa3*pow(x, 3.) + sa4*pow(x, 4.)
-//                           + sa5*pow(x, 5.) + sa6*pow(x, 6.)
-// 						);
-// 	if(T!=0.){
-// 		T*=cluster_.Mn;
-// 		double aT= aa0 + aa1*T +aa2*pow(T, 2.) + aa3*pow(T, 3.)
-//                            + aa4*pow(T, 4.) + aa5*pow(T, 5.);
-
-// 		double bT= ba0 + ba1*T +ba2*pow(T, 2.) + ba3*pow(T, 3.)
-//                            + ba4*pow(T, 4.) + ba5*pow(T, 5.);
-
-// 		double cT= ca0 + ca1*T +ca2*pow(T, 2.) + ca3*pow(T, 3.)
-//                            + ca4*pow(T, 4.) + ca5*pow(T, 5.);
-
-// 		sigma_*=(1.- aT*x*T-bT*pow(T, 2.)- cT*T*pow(x, 2.) );
-// 	}
-
-//    return sigma_;
-// }
-
-
-// double getSurfaceTensionDerivative(nlwm_class &cluster_, double Yp_, double T){
-	
-// 	double x=pow(1.-2.*Yp_, 2.);
-
-//   double sigma0=0., sigma1, sa1, sa2, sa3, sa4, sa5, sa6;
-//   double aa0, aa1, aa2, aa3, aa4, aa5;
-//   double ba0, ba1, ba2, ba3, ba4, ba5;
-//   double ca0, ca1, ca2, ca3, ca4, ca5;
-// 	setSurfaceParameters(cluster_, sigma0, sigma1, sa1, sa2, sa3, sa4, sa5, sa6,
-// 																			  aa0, aa1, aa2, aa3, aa4, aa5,
-//  																			  ba0, ba1, ba2, ba3, ba4, ba5,
-//  																			  ca0, ca1, ca2, ca3, ca4, ca5);
-
-// 	double sigma_= sigma0*exp(-sigma1*pow(x, 1.5));
-// 	double SigmaXT=	1.;
-// 	double DSigmaXT=0.;
-	
-// 	double Px= (1.+ sa1*x + sa2*pow(x, 2.)
-// 								+ sa3*pow(x, 3.) + sa4*pow(x, 4.)
-//                 + sa5*pow(x, 5.) + sa6*pow(x, 6.)
-// 						);
-// 	double DPx= (sa1 + 2.*sa2*x
-// 									 + 3.*sa3*pow(x, 2.) + 4.*sa4*pow(x, 3.)
-//                 	 + 5.*sa5*pow(x, 4.) + 6.*sa6*pow(x, 5.)
-// 							);
-							
-// 	double Dsigma_= -4.*(1.-2.*Yp_)*sigma_*(DPx*SigmaXT
-// 																-3.*Px*SigmaXT*sigma1*sqrt(x)/2.);
-																
-// 	if(T!=0.){
-// 		T*=cluster_.Mn;
-// 		double aT= aa0 + aa1*T +aa2*pow(T, 2.) + aa3*pow(T, 3.)
-//                            + aa4*pow(T, 4.) + aa5*pow(T, 5.);
-
-// 		double bT= ba0 + ba1*T +ba2*pow(T, 2.) + ba3*pow(T, 3.)
-//                            + ba4*pow(T, 4.) + ba5*pow(T, 5.);
-
-// 		double cT= ca0 + ca1*T +ca2*pow(T, 2.) + ca3*pow(T, 3.)
-//                            + ca4*pow(T, 4.) + ca5*pow(T, 5.);
-
-// 		SigmaXT= (1.- aT*x*T-bT*pow(T, 2.)- cT*T*pow(x, 2.) );
-// 		DSigmaXT=-(aT*T+2.*cT*T*x );
-// 		Dsigma_= -4.*(1.-2.*Yp_)*sigma_*(DPx*SigmaXT + Px*DSigmaXT
-// 																-3.*Px*SigmaXT*sigma1*sqrt(x)/2.);
-// 	}
-
-//    return Dsigma_;
-// }
-
-
-// double getPhiFunc(double dim_, double u_){
-
-//   double phi=0.;
-//   double Lu=log(u_);
-
-//   if(dim_!=2.){phi=( (2.-dim_*pow(u_, 1.-2./dim_))/(dim_-2.) +u_ )/(dim_+2.);}
-//   else {phi=(u_-1.-Lu)/(dim_+2.);}
-
-//   return phi;
-// }
-
-// double getPhiFuncDerivative(double dim_, double u_){
-// 	double phiD=0.;
-
-//   if(dim_!=2.){phiD=( (dim_*(2./dim_-1.)*pow(u_, -2./dim_) )/(dim_-2.) +1.)/(dim_+2.);}
-//   else {phiD=(1.- 1/u_)/(dim_+2.);}
-// 	return phiD;
-// }
-
-// double getRadiusD(double dim_, double u_, double Yp_, nlwm_class &cluster_, 
-// 																											nlwm_class &gas_){
-
-// 	double sigma_= getSurfaceTension(cluster_, Yp_, cluster_.temperature);
-// 	double PhiFunc_=getPhiFunc(dim_, u_);
-	
-// 	return pow( (sigma_*dim_)/(4.*M_PI*pow(eGS, 2.)*pow((cluster_.proton.density
-// 												 -gas_.proton.density), 2.)*PhiFunc_), 1./3.);
-// }
-
-
-// void setSurfaceParameters(nlwm_class &cluster_, double &sigma0, double &sigma1, 
-// 			double &sa1, double &sa2, double &sa3, double &sa4, double &sa5, double &sa6,
-//   		double &aa0, double &aa1, double &aa2, double &aa3, double &aa4, double &aa5,
-//   		double &ba0, double &ba1, double &ba2, double &ba3, double &ba4, double &ba5,
-//   		double &ca0, double &ca1, double &ca2, double &ca3, double &ca4, double &ca5){
-
-//   if(cluster_.parametrization=="nl3")
-// 	{
-//     sigma0=1.12307/( pow(cluster_.Mn, 3.)/pow(hc, 2.) );
-//     sigma1= 20.7779;
-//     sa1= -5.84915;
-//     sa2= 138.839;
-//     sa3= -1631.42;
-//     sa4= 8900.34;
-//     sa5=-21592.3;
-//     sa6=20858.6;
-
-//     aa0= 0.0121222;
-//     aa1= 0.01664;
-//     aa2= -0.00137266;
-//     aa3= 4.0257e-5;
-//     aa4=0.;
-//     aa5=0.;
-
-//     ba0= 0.00792168;
-//     ba1=-8.2504e-5;
-//     ba2=-4.59336e-6;
-//     ba3=-2.81679e-7;
-//     ba4= 0.;
-//     ba5=0.;
-
-//     ca0=0.;
-//     ca1=0.;
-//     ca2=0.;
-//     ca3=0.;
-//     ca4=0.;
-//     ca5=0.;
-//   }
-// 	// ==== NL3wr ====
-// 	if(cluster_.parametrization=="nl3wr")
-// 	{
-// 	  sigma0=1.12013/( pow(cluster_.Mn, 3.)/pow(hc, 2.) );
-//     sigma1= 14.0774;
-//     sa1=-2.15376;
-//     sa2= 57.8455;
-//     sa3=-431.365;
-//     sa4= 1854.81 ;
-//     sa5=-3653.96;
-//     sa6= 3214.82;
-
-//     aa0=-5.80451e-5;
-//     aa1= 0.0233833;
-//     aa2=-0.00507732;
-//     aa3= 0.000490863;
-//     aa4=-1.59473e-5;
-//     aa5=-7.55062e-8;
-
-//     ba0= 0.00725961;
-//     ba1= 0.000318409;
-//     ba2=-0.000104941;
-//     ba3= 1.19645e-5;
-//     ba4=-7.19099e-7;
-//     ba5= 1.62087e-8;
-
-//     ca0=-0.00259094;
-//     ca1=-0.053756;
-//     ca2= 0.0114598;
-//     ca3=-0.000354375;
-//     ca4=-4.76451e-5;
-//     ca5= 2.28389e-6;
-// 	}
-// // ===FSUGold ====
-// 	if(cluster_.parametrization=="fsu")
-//   {
-//     sigma0= 1.1223/( pow(cluster_.Mn, 3.)/pow(hc, 2.) );
-//     sigma1=-1.45717;
-//     sa1=-3.17729;
-//     sa2=-9.5121;
-//     sa3= 70.5609;
-//     sa4=-155.641;
-//     sa5= 154.691;
-//     sa6=-58.9476;
-
-//     aa0=-0.0133789;
-//     aa1= 0.0330912;
-//     aa2=-0.00786564;
-//     aa3= 0.000902286;
-//     aa4=-4.84828e-5;
-//     aa5= 9.56728e-7;
-
-//     ba0= 0.00773356;
-//     ba1=-0.000240406;
-//     ba2= 4.52523e-5;
-//     ba3=-7.64893e-6;
-//     ba4= 5.33346e-7;
-//     ba5=-1.45394e-8;
-
-//     ca0= 0.0408077;
-//     ca1=-0.0971609;
-//     ca2= 0.0195288;
-//     ca3=-0.00140166;
-//     ca4= 4.97386e-5;
-//     ca5=-1.20803e-6;
-//   }
-	
-// // ===IU-FSU ====
-//   if(cluster_.parametrization=="iufsu")
-//   {
-//     sigma0= 1.16473/( pow(cluster_.Mn, 3.)/pow(hc, 2.) );
-//     sigma1=-0.659167;
-//     sa1=-2.25482;
-//     sa2=-5.64237;
-//     sa3= 37.8471;
-//     sa4=-81.6617;
-//     sa5= 81.2696;
-//     sa6=-31.0227;
-
-//     aa0= 0.00404325;
-//     aa1= 0.00828207;
-//     aa2=-0.00153301;
-//     aa3= 7.26763e-5;
-//     aa4=0.;
-//     aa5=0.;
-
-//     ba0= 0.00767923;
-//     ba1=-8.58068e-5;
-//     ba2= 4.43918e-7;
-//     ba3=-5.44453e-7;
-//     ba4= 0.;
-//     ba5= 0.;
-
-//     ca0= 0.0066774;
-//     ca1=-0.0514285;
-//     ca2= 0.00949505;
-//     ca3=-0.000427613;
-//     ca4= 0.;
-//     ca5= 0.;
-//   }
-
-// }
