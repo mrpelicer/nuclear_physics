@@ -1,6 +1,6 @@
 # nuclear_physics
 
-This code depends on the [gsl library](https://www.gnu.org/software/gsl/) for integration and interpolation, on the [Ceres library ](http://ceres-solver.org/) to solve systems of equations, and on the [Eigen library]() to do some matrix operations Ceres and as a Ceres dependence. `Make sure that the Makefile points to the correct installation folders in your computer.`
+This code depends on the [gsl library](https://www.gnu.org/software/gsl/) for integration and interpolation, on the [Ceres library ](http://ceres-solver.org/) to solve systems of equations, and on the [Eigen library](https://eigen.tuxfamily.org/index.php?title=Main_Page) to do some matrix operations Ceres and as a Ceres dependence. `Before running the code, make sure the Makefile points to the correct installation folder of the above libraries.`
 
 This code is being build during my doctorate to calculate various quantities, such as:
 
