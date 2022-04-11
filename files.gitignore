@@ -23,8 +23,12 @@
 *.app
 *.sh
 
-*.zip
+**/*.zip
+**/*.gp
+**/*.pdf
+**/*.png
+**/*.jpeg
+**/*.sh
 
 # Data and plt folders
 **/plt
-**/data/**
