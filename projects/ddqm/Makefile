@@ -16,7 +16,6 @@ PYTHON_LIB= -I/usr/include/python3.6/ -lpython3.6m
 OBJS = 	$(BUILDDIR)/interpolator.o \
 				$(BUILDDIR)/quark_model.o \
 				$(BUILDDIR)/particles.o \
-				$(BUILDDIR)/quark_hadron_transition.o \
 				$(BUILDDIR)/rmf_non_linear_walecka.o
 
 APP = sym
@@ -51,11 +50,6 @@ $(BUILDDIR)/quark_model.o : $(LIBDIR)/quark_model.h \
 	$(LIBDIR)/particles.h
 	$(CC) -c $(LIBDIR)/quark_model.cpp -o $(BUILDDIR)/quark_model.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
 	
-$(BUILDDIR)/quark_hadron_transition.o : $(LIBDIR)/quark_hadron_transition.h \
-	$(LIBDIR)/quark_hadron_transition.cpp \
-	$(LIBDIR)/quark_hadron_transition.h
-	$(CC) -c $(LIBDIR)/quark_hadron_transition.cpp -o $(BUILDDIR)/quark_hadron_transition.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
-
 $(BUILDDIR)/rmf_non_linear_walecka.o : $(LIBDIR)/rmf_non_linear_walecka.h \
 	$(LIBDIR)/rmf_non_linear_walecka.cpp \
 	$(LIBDIR)/rmf_non_linear_walecka.h
