@@ -507,8 +507,8 @@ void nlwm_class::setEOS_nucleons(double rhoB_, double Yp_, double temp_){
 //=============== Solve for the vector meson fields with Ceres library: ===============
 void nlwm_class::setVectorMeanFields(){
 	
-	double v0_= rhoB*gv/pow(Mv , 2) ;       
-	double b0_= rho3*gb/(pow(Mb, 2) );   
+	double v0_= getOmegaEffDens()*gv/pow(Mv , 2) ;       
+	double b0_= getIsoEffDens()*gb/(pow(Mb, 2) );   
 	// std::cout << " test: " << v0_ << " " << b0_ << std::endl;
 	if(xsi!=0 || Lv!=0){
 		Problem pV;
@@ -533,7 +533,7 @@ void nlwm_class::setVectorMeanFields(){
     Solve(optionsV, &pV, &summaryV);
  //	std::cout << "v: " << summaryV.BriefReport() << "\n";
 
-    b0_= (gb*rho3)/( pow(Mb, 2.)+2.*Lv*pow(gv*gb*v0_, 2.));
+    b0_= (gb*getIsoEffDens())/( pow(Mb, 2.)+2.*Lv*pow(gv*gb*v0_, 2.));
 	
 	}
 	V0=v0_;
@@ -547,7 +547,7 @@ bool VFunctor::operator()(const T* x, T* residuals) const{
 	baryons.b0=(baryons.gb*baryons.rho3)/( pow(baryons.Mb, 2.)
 																+2.*baryons.Lv*pow(baryons.gv*baryons.gb*x[0], 2.));
 
-  residuals[0] = baryons.omegaMeson_eom_residue(baryons.rhoB);
+  residuals[0] = baryons.omegaMeson_eom_residue(baryons.getOmegaEffDens());
 	return true;
 }
 

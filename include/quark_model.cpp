@@ -52,8 +52,7 @@ double quarks_class::getEnergy(){
   if(iFlavour==3) en0+= qs.energy ;
 
   if(temperature>Tmin_integration){
-    double edm=0;
-    edm= iFlavour==3 ? qu.getDOmega0Dmass() +qd.getDOmega0Dmass() +qs.getDOmega0Dmass()
+    double edm= iFlavour==3 ? qu.getDOmega0Dmass() +qd.getDOmega0Dmass() +qs.getDOmega0Dmass()
                       : qu.getDOmega0Dmass() +qd.getDOmega0Dmass();
 
     en0+= edm*getDmassDtemp();
@@ -83,7 +82,7 @@ double quarks_class::getEntropy(){
 
 double quarks_class::getFenergy(){
   double fe_= qu.omega0 + qd.omega0 + qu.chemPot_eff*qu.density + qd.chemPot_eff*qd.density;
-  if(iFlavour==3) fe_+= qs.omega0 + qs.chemPot_eff*qs.density;;
+  if(iFlavour==3) fe_+= qs.omega0 + qs.chemPot_eff*qs.density;
 
   return fe_;
 }
@@ -613,6 +612,18 @@ void quarks_class::setEoSFlavor_PressFixed(double press_, double temp_,
 	  options.parameter_tolerance = 1e-10;
 	  options.function_tolerance = 1e-10;
 	  options.gradient_tolerance=1e-12;
+	  options.max_num_iterations=1e4;	
+
+    // if(PressureTot*Mnucleon*pow(Mnucleon/hc, 3.) < 50. ){
+		//   // optionsBetaEq.parameter_tolerance = 1e-22;
+		// 	// optionsBetaEq.function_tolerance = 1e-22;
+		// 	// optionsBetaEq.gradient_tolerance=1e-25;
+		// 	options.parameter_tolerance = 1e-15;
+		// 	options.function_tolerance = 1e-15;
+		// 	options.gradient_tolerance=1e-16;
+		// 	options.max_num_iterations=1e6;	
+
+		// }	
 	  // options.line_search_direction_type= ceres::STEEPEST_DESCENT;
 	  options.use_nonmonotonic_steps= true;
 	  options.dense_linear_algebra_library_type=ceres::LAPACK;
@@ -627,7 +638,6 @@ void quarks_class::setEoSFlavor_PressFixed(double press_, double temp_,
   
 	  options.minimizer_progress_to_stdout = false;
 	  Solver::Summary summary;
-	  options.max_num_iterations=1e4;	
 
 	  //Run
 	  Solve(options, &p, &summary);
@@ -640,7 +650,8 @@ void quarks_class::setEoSFlavor_PressFixed(double press_, double temp_,
 
 	  rhoB=x[0];
     setEoSFlavorFixed(rhoB, temperature, Yu_, Yd_, Ys_);
-      muB= (getEnergy() +electron_.energy + muon_.energy
+     
+    muB= (getEnergy() +electron_.energy + muon_.energy
       -temperature*(getEntropy()+electron_.entropy + muon_.entropy)
       + getPressure()+electron_.pressure + muon_.pressure)/rhoB;
 

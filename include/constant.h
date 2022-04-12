@@ -29,6 +29,6 @@ const double Gauss_to_Mev2_GS = 6.91e-14;
 const double _fm3_to_g_cm3 = 1.687e15;
 // 
 const double Tmin_integration=0.3/Mnucleon ;  // minimum temperature for fermi dirac integration (in MeV)
-const double hdif= 1e-3;
+const double hdif= 5e-3;
 
 #endif

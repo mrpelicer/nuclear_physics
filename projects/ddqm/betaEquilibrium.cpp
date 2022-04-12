@@ -56,15 +56,15 @@ int main(){
 //to do a single point, i*M=1 and set *Max
 	double tcrit=170./Mnucleon;
 
-	double Cmin=-0.8;
-	double Cmax=0.2;
-	// double Cmax=0.;
-	int iCM= 120;
+	double Cmin=-1;
+	// double Cmax=0.2;
+	double Cmax=0.55;
+	int iCM= 1;
 	double dC= (Cmax-Cmin)/iCM;
-	double Dmin=pow(150., 2.)/pow(Mnucleon, 2);
-	double Dmax=pow(195., 2.)/pow(Mnucleon, 2);
-	// double Dmax=pow(165., 2.)/pow(Mnucleon, 2);
-	int iDM= 120;
+	double Dmin=pow(120., 2.)/pow(Mnucleon, 2);
+	// double Dmax=pow(195., 2.)/pow(Mnucleon, 2);
+	double Dmax=pow(135.	, 2.)/pow(Mnucleon, 2);
+	int iDM= 1;
 	double dD= (Dmax-Dmin)/iDM;
 
 	for(int ic=0; ic< iCM; ic++){
