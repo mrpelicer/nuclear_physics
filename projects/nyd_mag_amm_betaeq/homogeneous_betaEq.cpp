@@ -17,9 +17,9 @@ int main(){
 	nlwm_class hmg_matter(parametrization);
 
 	bool doHyperons	=	true;
-	bool doDeltas		=	true;
-	bool doBfield		= true;
-	bool doamm 			= true;
+	bool doDeltas		=	false;
+	bool doBfield		= false;
+	bool doamm 			= false;
 
 	std::string hyperon_params ="l3wr3"; 
 	std::string delta_params 	 ="su6";  //su6(1.), mplA_1(beta=1.1), mplA_2, prd89_1, prd89_1
@@ -29,7 +29,7 @@ int main(){
 	
 	
 	double rhoBMin=0.*hmg_matter.rho0;
-  double rhoBMax=1./pow(hmg_matter.Mn/hc, 3);///7.5*hmg_matter.rho0;
+  double rhoBMax=1.2/pow(hmg_matter.Mn/hc, 3);///7.5*hmg_matter.rho0;
 	//0.62/pow(hmg_matter.Mn/hc, 3); fsu2h c amm ou b
   int iR=1000;
   double dRho=  (rhoBMax-rhoBMin)/iR;

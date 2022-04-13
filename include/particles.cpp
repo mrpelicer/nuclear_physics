@@ -6,7 +6,6 @@ void particle::calculateProperties(){
   pressure         = 0.;
   entropy          = 0.;  
   
-  if(density>0.){
     if(!doamm){// if do amm==false
       if(!doB || Q==0){ //if magnetic field = 0 OR uncharged particle w/ B!=0.
         if(temperature>Tmin_integration){
@@ -14,14 +13,17 @@ void particle::calculateProperties(){
           pressure           = integrate(pressureFunc,  this);
           entropy            = integrate(entropyFunc,   this);
         }else{
-          energy             = energyT0();
-          pressure           = pressureT0();//chemPot*density - energy; 
+          if(density>0.){
+            energy             = energyT0();
+            pressure           = pressureT0();//chemPot*density - energy; 
+          }
         }
         // std::cout << "chargeless?: " <<  Q << " " << kf2 << " " 
         //           << mass_eff << endl;
 
       
-      }else{ // dob, q!=0
+      }else if(density>0.){
+ // dob, q!=0
         //size_t in=0;
         double nu_;
         double ener_=0., presst_=0., pressp_=0., mag_=0.;
@@ -174,9 +176,6 @@ void particle::calculateProperties(){
       } //end loop of charged particles
     
     }//end doamm
-  
-  }//end loop if(dens>0)
-
 }
 
 
@@ -591,9 +590,9 @@ double integrate(double (func)(double, void *), void *parametersPointer)
   particle &part= *reinterpret_cast<particle*>(parametersPointer);
   double result = 0e0;
   double er_res = 0e0;
-  double err_abs = 1e-13; //1e-13
-  double err_rel = 1e-10; //1e-10;
-  size_t max_steps = 1e8;
+  double err_abs = 1e-11; //1e-13
+  double err_rel = 1e-8; //1e-10;
+  size_t max_steps = 1e6;
 	
   gsl_integration_workspace *w = gsl_integration_workspace_alloc(max_steps);
 

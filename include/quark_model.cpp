@@ -26,7 +26,7 @@ void quarks_class::setDensities(double muef_u, double muef_d, double muef_s){
   qu.calculateDensity();
   qd.calculateDensity();
 
-  if(iFlavour==3){
+  if(iFlavor==3){
     qs.chemPot_eff =muef_s;
     qs.kf2=pow(qs.chemPot_eff, 2.)- pow(qs.mass_eff, 2.);	
     qs.kf2<=0. ? qs.kf=0. : qs.kf=sqrt(qs.kf2);
@@ -38,21 +38,26 @@ void quarks_class::setDensities(double muef_u, double muef_d, double muef_s){
 void quarks_class::setTemperature(double temp_){
   qu.temperature=temp_;
   qd.temperature=temp_;
-  if(iFlavour==3) qs.temperature=temp_;
+  if(iFlavor==3) qs.temperature=temp_;
 }
 
 void quarks_class::setEffectiveMasses(double rhob_, double temp_){
   qu.mass_eff= qu.mass + (D/cbrt(rhob_) + C*cbrt(rhob_))*sigma(temp_);
   qd.mass_eff= qd.mass + (D/cbrt(rhob_) + C*cbrt(rhob_))*sigma(temp_);
-  if(iFlavour==3) qs.mass_eff= qs.mass + (D/cbrt(rhob_) + C*cbrt(rhob_))*sigma(temp_);
+  if(iFlavor==3) qs.mass_eff= qs.mass + (D/cbrt(rhob_) + C*cbrt(rhob_))*sigma(temp_);
 }
 
+double quarks_class::getBaryonDens(){
+  double rho_= qu.density +   qd.density;
+   if(iFlavor==3) rho_+=qs.density;
+   return rho_/3.;
+}
 double quarks_class::getEnergy(){
   double en0= qu.energy + qd.energy;
-  if(iFlavour==3) en0+= qs.energy ;
+  if(iFlavor==3) en0+= qs.energy ;
 
   if(temperature>Tmin_integration){
-    double edm= iFlavour==3 ? qu.getDOmega0Dmass() +qd.getDOmega0Dmass() +qs.getDOmega0Dmass()
+    double edm= iFlavor==3 ? qu.getDOmega0Dmass() +qd.getDOmega0Dmass() +qs.getDOmega0Dmass()
                       : qu.getDOmega0Dmass() +qd.getDOmega0Dmass();
 
     en0+= edm*getDmassDtemp();
@@ -69,10 +74,10 @@ double quarks_class::getEntropy(){
     double s0=0.;
   if(temperature>Tmin_integration){
     s0= qu.entropy + qd.entropy;
-    if(iFlavour==3) s0+= qs.entropy;
+    if(iFlavor==3) s0+= qs.entropy;
 
     double sdm=0;
-    sdm= iFlavour==3 ? qu.getDOmega0Dmass() +qd.getDOmega0Dmass() +qs.getDOmega0Dmass()
+    sdm= iFlavor==3 ? qu.getDOmega0Dmass() +qd.getDOmega0Dmass() +qs.getDOmega0Dmass()
                       : qu.getDOmega0Dmass() +qd.getDOmega0Dmass();
 
     s0-= sdm*getDmassDtemp();
@@ -82,21 +87,21 @@ double quarks_class::getEntropy(){
 
 double quarks_class::getFenergy(){
   double fe_= qu.omega0 + qd.omega0 + qu.chemPot_eff*qu.density + qd.chemPot_eff*qd.density;
-  if(iFlavour==3) fe_+= qs.omega0 + qs.chemPot_eff*qs.density;
+  if(iFlavor==3) fe_+= qs.omega0 + qs.chemPot_eff*qs.density;
 
   return fe_;
 }
 
 double quarks_class::getOmega(){
   double omega_= qu.omega0 + qd.omega0;
-  if(iFlavour==3) omega_+= qs.omega0 ;
+  if(iFlavor==3) omega_+= qs.omega0 ;
 
   double dOmegadMefu= qu.getDOmega0Dmass();
   double dOmegadMefd= qd.getDOmega0Dmass();
   double dOmegadMefs= qs.getDOmega0Dmass();
 
   omega_-= (dOmegadMefu+dOmegadMefd)*getDmassDdens()*rhoB;
-  if(iFlavour==3) omega_-=dOmegadMefs*getDmassDdens()*rhoB;
+  if(iFlavor==3) omega_-=dOmegadMefs*getDmassDdens()*rhoB;
 
   return omega_;
 }
@@ -126,7 +131,7 @@ double quarks_class::getDmassDtemp(){
 
 
 void quarks_class::setEOS_betaEq(double rhob_, double temp_, particle &electron_, particle &muon_){
-  iFlavour=3;
+  iFlavor=3;
   rhoB=rhob_;
   setTemperature(temp_);
   setEffectiveMasses(rhoB, temperature);
@@ -142,8 +147,8 @@ void quarks_class::setEOS_betaEq(double rhob_, double temp_, particle &electron_
 
 	Problem pBetaEq;
 	CostFunction* costBetaEq= 
-							new NumericDiffCostFunction<ThreeFlavourBetaEqFunctor,ceres::CENTRAL, 2, 2>
-							(new  ThreeFlavourBetaEqFunctor(*this, electron_, muon_));
+							new NumericDiffCostFunction<ThreeFlavorBetaEqFunctor,ceres::CENTRAL, 2, 2>
+							(new  ThreeFlavorBetaEqFunctor(*this, electron_, muon_));
 
 	pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
 
@@ -216,7 +221,7 @@ void quarks_class::setEOS_betaEq(double rhob_, double temp_, particle &electron_
 
 
 template <typename T>
-bool ThreeFlavourBetaEqFunctor::operator()(const T* x, T* residuals) const{
+bool ThreeFlavorBetaEqFunctor::operator()(const T* x, T* residuals) const{
 
 	quarks.qu.chemPot_eff =x[0];
   quarks.qd.chemPot_eff =x[1];
@@ -248,7 +253,7 @@ bool ThreeFlavourBetaEqFunctor::operator()(const T* x, T* residuals) const{
 
 
 void quarks_class::setEOS_betaEq_2F(double rhob_, double temp_, particle &electron_, particle &muon_){
-  iFlavour=2;
+  iFlavor=2;
   rhoB=rhob_;
   setTemperature(temp_);
   setEffectiveMasses(rhoB, temperature);
@@ -265,8 +270,8 @@ void quarks_class::setEOS_betaEq_2F(double rhob_, double temp_, particle &electr
 
 	Problem pBetaEq;
 	CostFunction* costBetaEq= 
-							new NumericDiffCostFunction<TwoFlavourBetaEqFunctor,ceres::CENTRAL, 2, 2>
-							(new  TwoFlavourBetaEqFunctor(*this, electron_, muon_));
+							new NumericDiffCostFunction<TwoFlavorBetaEqFunctor,ceres::CENTRAL, 2, 2>
+							(new  TwoFlavorBetaEqFunctor(*this, electron_, muon_));
 
 	pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
 
@@ -324,7 +329,7 @@ void quarks_class::setEOS_betaEq_2F(double rhob_, double temp_, particle &electr
 }
 
 template <typename T>
-bool TwoFlavourBetaEqFunctor::operator()(const T* x, T* residuals) const{
+bool TwoFlavorBetaEqFunctor::operator()(const T* x, T* residuals) const{
 
 	quarks.qu.chemPot_eff =x[0];
   quarks.qd.chemPot_eff =x[1];
@@ -363,7 +368,7 @@ bool TwoFlavourBetaEqFunctor::operator()(const T* x, T* residuals) const{
 
 
 void quarks_class::setEOS_symmetric(double rhob_, double temp_){
-  iFlavour=3; 
+  iFlavor=3; 
   rhoB=rhob_;
   setTemperature(temp_);
   setEffectiveMasses(rhoB, temperature);
@@ -460,8 +465,8 @@ bool SymmetricFunctor::operator()(const T* x, T* residuals) const{
 }
 
 
-void quarks_class::setEOS_2flavour(double rhob_, double temp_){
-  iFlavour=2;
+void quarks_class::setEOS_2Flavor(double rhob_, double temp_){
+  iFlavor=2;
   rhoB=rhob_;
   setTemperature(temp_);
   setEffectiveMasses(rhoB, temperature);
@@ -476,8 +481,8 @@ void quarks_class::setEOS_2flavour(double rhob_, double temp_){
 
 	  Problem p2F;
 	  CostFunction* cost2F= 
-	  						new NumericDiffCostFunction<TwoFlavourSymFunctor,ceres::CENTRAL, 1, 1>
-	  						(new TwoFlavourSymFunctor(*this));
+	  						new NumericDiffCostFunction<TwoFlavorSymFunctor,ceres::CENTRAL, 1, 1>
+	  						(new TwoFlavorSymFunctor(*this));
 
 	  p2F.AddResidualBlock(cost2F, NULL, x);
 
@@ -529,7 +534,7 @@ void quarks_class::setEOS_2flavour(double rhob_, double temp_){
 
 
 template <typename T>
-bool TwoFlavourSymFunctor::operator()(const T* x, T* residuals) const{
+bool TwoFlavorSymFunctor::operator()(const T* x, T* residuals) const{
 
 	quarks.qu.chemPot_eff =x[0];
   quarks.qd.chemPot_eff =x[0];
@@ -550,12 +555,12 @@ bool TwoFlavourSymFunctor::operator()(const T* x, T* residuals) const{
 	return true;
 }
 
-	void 	quarks_class::setEoSFlavorFixed(double rhob_, double temperature_, 
+	void 	quarks_class::setEoSFlavorFixed(double rhob_, double temp_, 
 																	double Yu_,  double Yd_,  double Ys_){
 
-  iFlavour=3; 
+  iFlavor=3; 
   rhoB= rhob_;
-  setTemperature(temperature_);
+  setTemperature(temp_);
   setEffectiveMasses(rhoB, temperature);
   Yu=Yu_; Yd=Yd_; Ys=Ys_;
   qu.density= 3.*Yu_*rhoB;
@@ -588,7 +593,7 @@ void quarks_class::setEoSFlavor_PressFixed(double press_, double temp_,
                                             particle electron_, particle muon_,
                                             double Yu_,  double Yd_,  double Ys_){
 
-  iFlavour=3; 
+  iFlavor=3; 
   PressureTot=press_;
   setTemperature(temp_);
   Yu=Yu_; Yd=Yd_; Ys=Ys_;
@@ -602,16 +607,16 @@ void quarks_class::setEoSFlavor_PressFixed(double press_, double temp_,
 
 	  Problem p;
 	  CostFunction* cost= 
-	  						new NumericDiffCostFunction<QuarkFlavour_PressFixed,ceres::CENTRAL, 1, 1>
-	  						(new QuarkFlavour_PressFixed(*this, electron_, muon_));
+	  						new NumericDiffCostFunction<QuarkFlavor_PressFixed,ceres::CENTRAL, 1, 1>
+	  						(new QuarkFlavor_PressFixed(*this, electron_, muon_));
 
 	  p.AddResidualBlock(cost, NULL, x);
     p.SetParameterLowerBound(x, 0, 0.);
     // p.SetParameterUpperBound(x, 0, 1.5*pow(hc/Mnucleon, 3));
 	  Solver::Options options;
-	  options.parameter_tolerance = 1e-10;
+	  options.parameter_tolerance = 1e-8;
 	  options.function_tolerance = 1e-10;
-	  options.gradient_tolerance=1e-12;
+	  options.gradient_tolerance=1e-10;
 	  options.max_num_iterations=1e4;	
 
     // if(PressureTot*Mnucleon*pow(Mnucleon/hc, 3.) < 50. ){
@@ -661,10 +666,100 @@ void quarks_class::setEoSFlavor_PressFixed(double press_, double temp_,
 
 
 template <typename T>
-bool QuarkFlavour_PressFixed::operator()(const T* x, T* residuals) const{
+bool QuarkFlavor_PressFixed::operator()(const T* x, T* residuals) const{
 
   quarks.setEoSFlavorFixed(x[0], quarks.temperature, quarks.Yu, quarks.Yd, quarks.Ys);
   
   residuals[0] = quarks.getPressure() + electron.pressure+ muon.pressure - quarks.PressureTot;
+  return true;
+}
+
+
+void quarks_class::setEoSFlavor_muBFixed(double mub_, double temp_, 
+                                            particle electron_, particle muon_,
+                                            double Yu_,  double Yd_,  double Ys_){
+
+  iFlavor=3; 
+  muB=mub_;
+  setTemperature(temp_);
+  Yu=Yu_; Yd=Yd_; Ys=Ys_;
+    double rhob_;
+    if(firstRun){
+      rhob_=0.5*pow(hc/Mnucleon, 3);
+    }else{
+      rhob_=rhoB;
+    }
+	  double x[]={rhob_};
+
+	  Problem p;
+	  CostFunction* cost= 
+	  						new NumericDiffCostFunction<QuarkFlavor_muBFixed,ceres::CENTRAL, 1, 1>
+	  						(new QuarkFlavor_muBFixed(*this, electron_, muon_));
+
+	  p.AddResidualBlock(cost, NULL, x);
+    // p.SetParameterLowerBound(x, 0, 0.);
+    // p.SetParameterUpperBound(x, 0, 1.5*pow(hc/Mnucleon, 3));
+	  Solver::Options options;
+	  options.parameter_tolerance = 1e-8;
+	  options.function_tolerance = 1e-10;
+	  options.gradient_tolerance=1e-10;
+	  options.max_num_iterations=1e5;	
+
+    // if(PressureTot*Mnucleon*pow(Mnucleon/hc, 3.) < 50. ){
+		//   // optionsBetaEq.parameter_tolerance = 1e-22;
+		// 	// optionsBetaEq.function_tolerance = 1e-22;
+		// 	// optionsBetaEq.gradient_tolerance=1e-25;
+		// 	options.parameter_tolerance = 1e-15;
+		// 	options.function_tolerance = 1e-15;
+		// 	options.gradient_tolerance=1e-16;
+		// 	options.max_num_iterations=1e6;	
+
+		// }	
+	  // options.line_search_direction_type= ceres::STEEPEST_DESCENT;
+	  options.use_nonmonotonic_steps= true;
+	  options.dense_linear_algebra_library_type=ceres::LAPACK;
+	  options.linear_solver_type= ceres::DENSE_QR;
+    options.update_state_every_iteration = true;
+	  //options.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
+	  //options.linear_solver_type= ceres::DENSE_QR;
+
+	  //options.trust_region_strategy_type = ceres::DOGLEG;
+	  //options.dogleg_type = ceres::TRADITIONAL_DOGLEG;
+
+  
+	  options.minimizer_progress_to_stdout = false;
+	  Solver::Summary summary;
+
+	  //Run
+	  Solve(options, &p, &summary);
+
+	  //Print if convergence was achieved.
+	   std::cout << summary.BriefReport() << "\n";
+	   std::cout  << rhob_ << " ---> " << x[0] 
+	              << std::endl;
+
+
+	  rhoB=x[0];
+    setEoSFlavorFixed(rhoB, temperature, Yu_, Yd_, Ys_);
+     
+    muB= (getEnergy() +electron_.energy + muon_.energy
+      -temperature*(getEntropy()+electron_.entropy + muon_.entropy)
+      + getPressure()+electron_.pressure + muon_.pressure)/rhoB;
+
+    firstRun=false;
+}
+
+
+
+template <typename T>
+bool QuarkFlavor_muBFixed::operator()(const T* x, T* residuals) const{
+
+  quarks.setEoSFlavorFixed(x[0], quarks.temperature, quarks.Yu, quarks.Yd, quarks.Ys);
+
+  double mub_ = (quarks.getEnergy() +electron.energy + muon.energy
+      -quarks.temperature*(quarks.getEntropy()+electron.entropy + muon.entropy)
+      + quarks.getPressure()+electron.pressure + muon.pressure)/quarks.getBaryonDens();
+  residuals[0]=  quarks.muB - mub_;
+  // residuals[0] = quarks.getPressure() + electron.pressure+ muon.pressure - quarks.PressureTot;
   return true;
 }

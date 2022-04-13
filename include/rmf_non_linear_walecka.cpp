@@ -615,7 +615,7 @@ void nlwm_class::setEOS_neutrons(double rhoB_, double temp_, particle &electron_
 
 	rhoB=rhoB_;
 	
-  setTemperature(temperature);
+  setTemperature(temp_);
   
 //	if(rhoB/rho0 < 1.) {doHyperons=false; doDeltas=false;}
 	double mub_;
@@ -730,7 +730,7 @@ bool NeutronFunctor::operator()(const T* x, T* residuals) const{
 void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, particle &muon_){
 
 	rhoB=rhoB_;
-	setTemperature(temperature);
+	setTemperature(temp_);
   
 	double mub_;
 	double mue_;
@@ -786,7 +786,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		optionsBetaEq.parameter_tolerance = 1e-8;
 		optionsBetaEq.function_tolerance = 1e-10;
 		optionsBetaEq.gradient_tolerance=1e-12;
-		if(rhoB*pow(Mn/hc, 3.) < (5.e-4) ){
+		if(rhoB*pow(Mn/hc, 3.) < (1.e-4) ){
 			// optionsBetaEq.parameter_tolerance = 1e-22;
 			// optionsBetaEq.function_tolerance = 1e-22;
 			// optionsBetaEq.gradient_tolerance=1e-25;
@@ -1082,7 +1082,7 @@ void nlwm_class::setEOS_betaEq_PressureFixed(double press_, double temp_,
 
 
 	PressureTot=press_;
-	setTemperature(temperature);
+	setTemperature(temp_);
   
 	double mub_;
 	double mue_;
@@ -1280,6 +1280,168 @@ bool BetaEqFunctor2_PressFixed::operator()(const T* x, T* residuals) const{
 	return true;
 }
 
+void nlwm_class::setEOS_betaEq_muB(double mub_, double temp_,	
+																	particle &electron_, particle &muon_){
+
+
+	muB=mub_;
+	setTemperature(temp_);
+  
+	double mue_;
+	double phi0_ ;
+	double v0_ ;       
+	double b0_;
+	double theta0_=0.;
+	
+	if(firstRun){
+		if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+		else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+		
+		if(parametrization=="fsu2h" || parametrization=="l3wr") theta0_ = -0.0118828;
+	}else{
+		mub_	= muB;
+		mue_= electron_.chemPot;
+		phi0_=phi0 ;
+		v0_	=V0;       
+		b0_	= b0;
+		if(parametrization=="fsu2h" || parametrization=="l3wr") theta0_=theta0;
+	}
+	
+	if(parametrization=="fsu2h" || parametrization=="l3wr"){ 
+		//must solve 4 meson equations
+		double x[]={mub_, mue_, phi0_, v0_, b0_, theta0_};
+		
+
+		Problem pBetaEq;
+		CostFunction* costBetaEq= 
+								new NumericDiffCostFunction<BetaEqFunctor2_PressFixed,ceres::CENTRAL, 6, 6>
+								(new  BetaEqFunctor2_PressFixed(*this, electron_, muon_));
+
+		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
+
+		// if(temperature<Tmin_integration){
+		//  	pBetaEq.SetParameterLowerBound(x, 0, 0.);
+		// 	pBetaEq.SetParameterLowerBound(x, 1, electron_.mass_eff);
+		//  	pBetaEq.SetParameterLowerBound(x, 2, 0.);
+		//pBetaEq.SetParameterLowerBound(x, 3, 0.);
+		// }
+		// Set solver
+		Solver::Options optionsBetaEq;
+	//if(parametrization!="iufsu"){
+		optionsBetaEq.parameter_tolerance = 1e-12;
+		optionsBetaEq.function_tolerance = 1e-12;
+		optionsBetaEq.gradient_tolerance=1e-15;
+	// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
+	// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
+		
+		
+		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
+		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
+		optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
+		optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
+		optionsBetaEq.use_nonmonotonic_steps= true;
+		optionsBetaEq.update_state_every_iteration = true;
+		
+		optionsBetaEq.minimizer_progress_to_stdout = false;
+		Solver::Summary summaryBetaEq;
+		optionsBetaEq.max_num_iterations=1e5;	
+
+		//Run
+		Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
+
+		//Print if convergence was achieved.
+		std::cout << summaryBetaEq.BriefReport() << "\n";
+		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
+		std::cout << mub_ << " " << mue_ << " " 
+							<< phi0_ << " " << v0_  << " " << b0_ <<  " " << theta0_ << 
+		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]  << " " << x[5]
+		<< std::endl << std::endl;
+				
+		mub_	 =x[0];
+		mue_	 =x[1];
+		phi0_	 =x[2];
+		v0_		 =x[3];
+		b0_		 =x[4];
+		theta0_=x[5];
+
+		setDensities(mub_, -mue_,  phi0_,  v0_, b0_, theta0_);
+
+	}else{
+	
+		double x[]={mub_, mue_, phi0_, v0_, b0_};
+		
+
+		Problem pBetaEq;
+		CostFunction* costBetaEq= 
+								new NumericDiffCostFunction<BetaEqFunctor_PressFixed,ceres::CENTRAL, 5, 5>
+								(new  BetaEqFunctor_PressFixed(*this, electron_, muon_));
+
+		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
+
+		// if(temperature<Tmin_integration){
+		// 	pBetaEq.SetParameterLowerBound(x, 0, 0.);
+		//	pBetaEq.SetParameterLowerBound(x, 1, electron_.mass_eff);
+		// 	pBetaEq.SetParameterLowerBound(x, 2, 0.);
+		// 	pBetaEq.SetParameterLowerBound(x, 3, 0.);
+		// }
+		// Set solver
+		Solver::Options optionsBetaEq;
+	//if(parametrization!="iufsu"){
+		optionsBetaEq.parameter_tolerance = 1e-10;
+		optionsBetaEq.function_tolerance = 1e-10;
+		optionsBetaEq.gradient_tolerance=1e-12;
+		optionsBetaEq.max_num_iterations=1e6;	
+
+	
+	//}
+		// optionsBetaEq.line_search_direction_type= ceres::STEEPEST_DESCENT;
+		// optionsBetaEq.line_search_type=ceres::ARMIJO;
+
+		// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
+		// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
+		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
+		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
+		// optionsBetaEq.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT;
+		
+		optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
+		optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
+		
+		optionsBetaEq.use_nonmonotonic_steps= true;
+		optionsBetaEq.update_state_every_iteration = true;
+		// optionsBetaEq.use_explicit_schur_complement= true;
+		
+
+		optionsBetaEq.minimizer_progress_to_stdout = false;
+		Solver::Summary summaryBetaEq;
+
+		//Run
+		Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
+
+		//Print if convergence was achieved.
+		std::cout << summaryBetaEq.BriefReport() << "\n";
+		std::cout << "rhob= " << rhoB*pow(Mn/hc, 3) << std::endl;
+		std::cout << mub_ << " " << mue_ << " " << phi0_ << " " << v0_  << " " << b0_ << 
+			"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4] 
+		<< std::endl << std::endl;
+				
+		mub_	=x[0];
+		mue_	=x[1];
+		phi0_	=x[2];
+		v0_		=x[3];
+		b0_		=x[4];
+
+		setDensities(mub_, -mue_,  phi0_,  v0_, b0_);
+	}
+	
+	setThermodynamics();
+	rhoB=getBaryonDens();
+	electron_.setLepton(mue_);
+	electron_.calculateProperties();
+	muon_.setLepton(mue_);
+	muon_.calculateProperties();
+ 	firstRun=false;
+
+}
 
 
 //=============== Set nucleon EoS inputing effective chemical potentials/mass ===============

@@ -61,6 +61,8 @@ public:
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_);
 	void setEOS_betaEq_PressureFixed(double press_, double temp_,	
 																		particle &electron_, particle &muon_);
+	void setEOS_betaEq_muB(double mub_, double temp_,	
+																		particle &electron_, particle &muon_);
 //Set EOS for the pasta solver: input effective chemical potentials and mass.
 	void setEOS_coexistence(double nup_, double nun_, double mef_);	
 
@@ -211,6 +213,7 @@ struct BetaEqFunctor_PressFixed{
 		particle 		&muon;
 };
 
+
 struct BetaEqFunctor2_PressFixed{
 	public:
 	BetaEqFunctor2_PressFixed(nlwm_class &baryons_, particle &electron_, particle &muon_):
@@ -226,5 +229,34 @@ struct BetaEqFunctor2_PressFixed{
 		particle 		&muon;
 };
 
+struct BetaEqFunctor_muBFixed{
+	public:
+	BetaEqFunctor_muBFixed(nlwm_class &baryons_, particle &electron_, particle &muon_):
+													baryons(baryons_), electron(electron_), muon(muon_)
+	{}
+
+  template <typename T>
+  bool operator()(const T* x, T* residuals) const;
+	
+  private:
+		nlwm_class 	&baryons;
+		particle 		&electron;
+		particle 		&muon;
+};
+
+struct BetaEqFunctor2_muBFixe{
+	public:
+	BetaEqFunctor2_muBFixe(nlwm_class &baryons_, particle &electron_, particle &muon_):
+													baryons(baryons_), electron(electron_), muon(muon_)
+	{}
+
+  template <typename T>
+  bool operator()(const T* x, T* residuals) const;
+	
+  private:
+		nlwm_class 	&baryons;
+		particle 		&electron;
+		particle 		&muon;
+};
 
 #endif

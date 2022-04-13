@@ -14,11 +14,11 @@ CUBA_LIB = -lcuba
 PYTHON_LIB= -I/usr/include/python3.6/ -lpython3.6m
 
 OBJS = 	$(BUILDDIR)/interpolator.o \
-				$(BUILDDIR)/quark_model.o \
+				$(BUILDDIR)/bag_model.o \
 				$(BUILDDIR)/particles.o
 
 OBJS_PT= $(BUILDDIR)/interpolator.o \
-				 $(BUILDDIR)/quark_model.o \
+				 $(BUILDDIR)/bag_model.o \
 				 $(BUILDDIR)/particles.o \
 				 $(BUILDDIR)/rmf_non_linear_walecka.o
 
@@ -31,7 +31,7 @@ all: 	$(APP) $(APP2) $(APP3)
 $(APP) : $(BUILDDIR) \
 	$(OBJS) \
 	symmetricMatter.cpp
-	$(CC) -o $(APP) symmetricMatter.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(EIGEN_LIB) $(WALL) 
+	$(CC) -o $(APP) symmetricMatter.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(WALL) 
 
 $(APP2) : $(BUILDDIR) \
 	$(OBJS) \
@@ -58,10 +58,10 @@ $(BUILDDIR)/particles.o : $(LIBDIR)/particles.h \
 	$(CC) -c $(LIBDIR)/particles.cpp -o $(BUILDDIR)/particles.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
 
 
-$(BUILDDIR)/quark_model.o : $(LIBDIR)/quark_model.h \
-	$(LIBDIR)/quark_model.cpp \
+$(BUILDDIR)/bag_model.o : $(LIBDIR)/bag_model.h \
+	$(LIBDIR)/bag_model.cpp \
 	$(LIBDIR)/particles.h
-	$(CC) -c $(LIBDIR)/quark_model.cpp -o $(BUILDDIR)/quark_model.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
+	$(CC) -c $(LIBDIR)/bag_model.cpp -o $(BUILDDIR)/bag_model.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
 	
 $(BUILDDIR)/rmf_non_linear_walecka.o : $(LIBDIR)/rmf_non_linear_walecka.h \
 	$(LIBDIR)/rmf_non_linear_walecka.cpp \
