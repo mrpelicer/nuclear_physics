@@ -16,22 +16,22 @@ int main(){
 	std::string parametrization= "l3wr";
 	nlwm_class hmg_matter(parametrization);
 
-	bool doHyperons	=	true;
+	bool doHyperons	=	false;
 	bool doDeltas		=	false;
-	bool doBfield		= false;
+	bool doBfield		= true;
 	bool doamm 			= false;
 
 	std::string hyperon_params ="l3wr3"; 
 	std::string delta_params 	 ="su6";  //su6(1.), mplA_1(beta=1.1), mplA_2, prd89_1, prd89_1
 	double rhoB, temperature, Bfield;
-	temperature=150.;
+	temperature=0.;
 	double Bg=3.e18; // Gauss
 	
 	
-	double rhoBMin=0.*hmg_matter.rho0;
-  double rhoBMax=1.2/pow(hmg_matter.Mn/hc, 3);///7.5*hmg_matter.rho0;
-	//0.62/pow(hmg_matter.Mn/hc, 3); fsu2h c amm ou b
-  int iR=1000;
+	double rhoBMin=5e-4/pow(Mnucleon/hc, 3);
+  double rhoBMax=1.2/pow(Mnucleon/hc, 3);///7.5*hmg_matter.rho0;
+	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
+  int iR=240;
   double dRho=  (rhoBMax-rhoBMin)/iR;
 
 	//Construct a gas of p,n,e matter
@@ -48,9 +48,9 @@ int main(){
 	muon.gamma=2.;
 	double Bc=pow(electron.mass_eff, 2.)/eHL;  
 	Bfield=Bg*Bc/4.41e13;
-	//Bfield *= 1.95e-14/pow(hmg_matter.Mn, 2.);  // Conversion factor Gauss to MeV^2 to adim
+	//Bfield *= 1.95e-14/pow(Mnucleon, 2.);  // Conversion factor Gauss to MeV^2 to adim
 	//Define thermodynamic variables
-	double Energy, FreeEn, Pressure, PressureP, PressureT, Entropy;
+	double Energy, FreeEn, Pressure, PressureP, PressureT, Entropy, Magnetization;
 
 	int iRLog= 79;
 
@@ -122,12 +122,12 @@ int main(){
 		std::ofstream outEos(filename4);
 
 		//Adimensional temperature;
-		temperature*=1./hmg_matter.Mn;
+		temperature*=1./Mnucleon;
 		electron.temperature=temperature;
 		muon.temperature=temperature;
 
 		//=== Loop over barionic density
-		for(int irho=0; irho<iR; irho++){
+		for(int irho=0; irho<=iR; irho++){
 			rhoB=rhoBMax- (double)irho*dRho;
 			//  rhoB=rhoBMax+ (double)irho*dRho;
 			
@@ -145,6 +145,7 @@ int main(){
 			//hmg_matter.getPressure()	+ electron.pressure+ muon.pressure;
 			PressureP	= hmg_matter.getPressureParallel()+ electron.pressureParallel+ muon.pressureParallel;
 			PressureT	= hmg_matter.getPressureTransverse()+ electron.pressureTransverse+ muon.pressureTransverse;
+			Magnetization= hmg_matter.getMagnetization() + electron.magnetization+muon.magnetization;
 
 			rhobv.push_back(rhoB);
 			enerv.push_back(Energy/rhoB);
@@ -158,75 +159,82 @@ int main(){
 						+ hmg_matter.xi0.density+ hmg_matter.xim.density)/rhoB;
 			yD= (hmg_matter.deltapp.density + hmg_matter.deltap.density+ hmg_matter.delta0.density+ hmg_matter.deltam.density)/rhoB;
 		  
-			outFile << rhoB*pow(hmg_matter.Mn/hc, 3) << " "
-					<< Pressure*hmg_matter.Mn*pow(hmg_matter.Mn/hc, 3) << " " 
-					<< (FreeEn/rhoB - 1.)*hmg_matter.Mn  << " " 
-					<< Energy*hmg_matter.Mn*pow(hmg_matter.Mn/hc, 3)  << " " <<  hmg_matter.neutron.mass_eff*hmg_matter.Mn << " "
-					<< hmg_matter.neutron.chemPot*hmg_matter.Mn 			<< " " << electron.chemPot*hmg_matter.Mn << " " 
+			outFile << rhoB*pow(Mnucleon/hc, 3) << " "
+					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " " 
+					<< (FreeEn/rhoB - 1.)*Mnucleon  << " " 
+					<< Energy*Mnucleon*pow(Mnucleon/hc, 3)  << " " <<  hmg_matter.neutron.mass_eff*Mnucleon << " "
+					<< hmg_matter.neutron.chemPot*Mnucleon 			<< " " << electron.chemPot*Mnucleon << " " 
 					<< yN << " " << yH << " " << yD 
 					<<std::endl;
 
-			outSpin << rhoB*pow(hmg_matter.Mn/hc, 3) << " " // hmg_matter.rho0 or *pow(hmg_matter.Mn/hc, 3) 
-					<<	hmg_matter.proton.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.proton.densityM*pow(hmg_matter.Mn/hc, 3) << " "
-					<<	hmg_matter.neutron.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.neutron.densityM*pow(hmg_matter.Mn/hc, 3) << " "
-					<<	electron.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	electron.densityM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	muon.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	muon.densityM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.sigmap.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.sigmap.densityM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.sigma0.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.sigma0.densityM*pow(hmg_matter.Mn/hc, 3) << " "
-					<<	hmg_matter.sigmam.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.sigmam.densityM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.xi0.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.xi0.densityM*pow(hmg_matter.Mn/hc, 3) << " "
-					<<	hmg_matter.xim.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.xim.densityM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.deltapp.densityPP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.deltapp.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.deltapp.densityM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.deltapp.densityMM*pow(hmg_matter.Mn/hc, 3) << " "
-					<<	hmg_matter.deltap.densityPP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.deltap.densityP*pow(hmg_matter.Mn/hc, 3) << " "
-					<<	hmg_matter.deltap.densityM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.deltap.densityMM*pow(hmg_matter.Mn/hc, 3) << " "
-					<<	hmg_matter.delta0.densityPP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.delta0.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.delta0.densityM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.delta0.densityMM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.deltam.densityPP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.deltam.densityP*pow(hmg_matter.Mn/hc, 3) << " "
-					<<	hmg_matter.deltam.densityM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.deltam.densityMM*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.lambda0.densityP*pow(hmg_matter.Mn/hc, 3) << " " 
-					<<	hmg_matter.lambda0.densityM*pow(hmg_matter.Mn/hc, 3)
+			outSpin << rhoB*pow(Mnucleon/hc, 3) << " " // hmg_matter.rho0 or *pow(Mnucleon/hc, 3) 
+					<<	hmg_matter.proton.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.proton.densityM*pow(Mnucleon/hc, 3) << " "
+					<<	hmg_matter.neutron.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.neutron.densityM*pow(Mnucleon/hc, 3) << " "
+					<<	electron.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	electron.densityM*pow(Mnucleon/hc, 3) << " " 
+					<<	muon.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	muon.densityM*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.sigmap.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.sigmap.densityM*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.sigma0.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.sigma0.densityM*pow(Mnucleon/hc, 3) << " "
+					<<	hmg_matter.sigmam.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.sigmam.densityM*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.xi0.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.xi0.densityM*pow(Mnucleon/hc, 3) << " "
+					<<	hmg_matter.xim.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.xim.densityM*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.deltapp.densityPP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.deltapp.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.deltapp.densityM*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.deltapp.densityMM*pow(Mnucleon/hc, 3) << " "
+					<<	hmg_matter.deltap.densityPP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.deltap.densityP*pow(Mnucleon/hc, 3) << " "
+					<<	hmg_matter.deltap.densityM*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.deltap.densityMM*pow(Mnucleon/hc, 3) << " "
+					<<	hmg_matter.delta0.densityPP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.delta0.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.delta0.densityM*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.delta0.densityMM*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.deltam.densityPP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.deltam.densityP*pow(Mnucleon/hc, 3) << " "
+					<<	hmg_matter.deltam.densityM*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.deltam.densityMM*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.lambda0.densityP*pow(Mnucleon/hc, 3) << " " 
+					<<	hmg_matter.lambda0.densityM*pow(Mnucleon/hc, 3)
 					<<  std::endl;
 
-			outDens << rhoB*pow(hmg_matter.Mn/hc, 3) 									<< " " // /hmg_matter.rho0 			 << " " // *pow(hmg_matter.Mn/hc, 3) << " " 
-				<< hmg_matter.proton.density	*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.neutron.density	*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< electron.density						*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< muon.density								*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.lambda0.density	*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.sigmap.density	*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.sigma0.density	*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.sigmam.density	*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB	 << " "
-				<< hmg_matter.xi0.density			*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.xim.density			*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.deltapp.density	*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.deltap.density	*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.delta0.density	*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.deltam.density	*pow(hmg_matter.Mn/hc, 3) << " "  // /rhoB  << " "
+			outDens << rhoB*pow(Mnucleon/hc, 3) 									<< " " // /hmg_matter.rho0 			 << " " // *pow(Mnucleon/hc, 3) << " " 
+				<< hmg_matter.proton.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.neutron.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< electron.density						*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< muon.density								*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.lambda0.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.sigmap.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.sigma0.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.sigmam.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB	 << " "
+				<< hmg_matter.xi0.density			*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.xim.density			*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.deltapp.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.deltap.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.delta0.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.deltam.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
 				<< std::endl;
 
-			outEos << iR+iRLog-irho -1<< " " << rhoB*pow(hmg_matter.Mn/hc, 3) << " "
-					<< Energy*hmg_matter.Mn*pow(hmg_matter.Mn/hc, 3)*MeVdivfm3_to_gdivcm3  << " "  
-					<< Pressure*hmg_matter.Mn*pow(hmg_matter.Mn/hc, 3)*MeVdivfm3_to_dyndivcm2
-					<< std::endl;
+			// outEos << rhoB*pow(Mnucleon/hc, 3) << " "
+					// << Energy*Mnucleon*pow(Mnucleon/hc, 3)*MeVdivfm3_to_gdivcm3  << " "  
+					// << Pressure*Mnucleon*pow(Mnucleon/hc, 3)*MeVdivfm3_to_dyndivcm2
+					// << std::endl;
 
+				outEos << rhoB*pow(Mnucleon/hc, 3) << " "
+					<< (Energy+Bfield*Bfield/2.)*Mnucleon*pow(Mnucleon/hc, 3) << " "  
+					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " "
+					<< (PressureP-Bfield*Bfield/2.)*Mnucleon*pow(Mnucleon/hc, 3) << " "
+					<< (PressureT+Bfield*Bfield/2.)*Mnucleon*pow(Mnucleon/hc, 3)
+				<< std::endl;
+				
 		}
 		
 	outFile.close();
@@ -234,8 +242,8 @@ int main(){
 	outDens.close();
 
 	//  double rhoBMaxLog= log10(rhoB);
-	//  std::cout << rhoB*pow(hmg_matter.Mn/hc, 3) << std::endl;
-	//  double rhoBMinLog= log10( (1e-14)/pow(hmg_matter.Mn/hc, 3) );
+	//  std::cout << rhoB*pow(Mnucleon/hc, 3) << std::endl;
+	//  double rhoBMinLog= log10( (1e-14)/pow(Mnucleon/hc, 3) );
 	//  double dlogR= (rhoBMaxLog-rhoBMinLog)/iRLog;
 	//  for(int irl=1; irl<iRLog; irl++){
 	// 		//rhoB=rhoBMax- (double)irho*dRho;
@@ -243,7 +251,7 @@ int main(){
 	 			// hmg_matter.setAMM(false);
 	 			// electron.setAMM(false, 0.);
 	 			// muon.setAMM(false, 0.);
-	 		//  if(rhoB*pow(hmg_matter.Mn/hc, 3) < 1e-4){
+	 		//  if(rhoB*pow(Mnucleon/hc, 3) < 1e-4){
 	  			// hmg_matter.setBfield(	false, Bfield);
 	 			// electron.setBfield(		false, Bfield);
 	  			// muon.setBfield(				false, Bfield);
@@ -259,9 +267,9 @@ int main(){
 	 		// Pressure= hmg_matter.getPressure()+ electron.pressure+ muon.pressure;
 	 		// Entropy= hmg_matter.getEntropy() 	+ electron.entropy + muon.entropy;
 	 		// FreeEn= Energy -temperature*Entropy;
-		 		// outEos << iRLog-irl << " " << rhoB*pow(hmg_matter.Mn/hc, 3) << " "
-	 				// << Energy*hmg_matter.Mn*pow(hmg_matter.Mn/hc, 3)*MeVdivfm3_to_gdivcm3  << " "  
-	 				// << Pressure*hmg_matter.Mn*pow(hmg_matter.Mn/hc, 3)*MeVdivfm3_to_dyndivcm2
+		 		// outEos << iRLog-irl << " " << rhoB*pow(Mnucleon/hc, 3) << " "
+	 				// << Energy*Mnucleon*pow(Mnucleon/hc, 3)*MeVdivfm3_to_gdivcm3  << " "  
+	 				// << Pressure*Mnucleon*pow(Mnucleon/hc, 3)*MeVdivfm3_to_dyndivcm2
 	 				// << std::endl;
 	//  }
 	
@@ -277,90 +285,90 @@ int main(){
 	std::reverse(pressTv.begin(), pressTv.end());
 	
 
-	std::vector<double> enerd1v, enerd2v, enerd3v; 
-	for(int irho=0; irho<iR; irho++){
-		rhoB=	rhobv[0]+irho*dRho;
-		enerd1v.push_back(deriv_func(rhoB, enerv, rhobv));
-	}
-	for(int irho=0; irho<iR; irho++){
-		rhoB=	rhobv[0]+irho*dRho;
-		enerd2v.push_back(deriv_func(rhoB, enerd1v, rhobv));
-	}
-	for(int irho=0; irho<iR; irho++){
-		rhoB=	rhobv[0]+irho*dRho;
-		enerd3v.push_back(deriv_func(rhoB, enerd2v, rhobv));
-	}
+	// std::vector<double> enerd1v, enerd2v, enerd3v; 
+	// for(int irho=0; irho<iR; irho++){
+	// 	rhoB=	rhobv[0]+irho*dRho;
+	// 	enerd1v.push_back(deriv_func(rhoB, enerv, rhobv));
+	// }
+	// for(int irho=0; irho<iR; irho++){
+	// 	rhoB=	rhobv[0]+irho*dRho;
+	// 	enerd2v.push_back(deriv_func(rhoB, enerd1v, rhobv));
+	// }
+	// for(int irho=0; irho<iR; irho++){
+	// 	rhoB=	rhobv[0]+irho*dRho;
+	// 	enerd3v.push_back(deriv_func(rhoB, enerd2v, rhobv));
+	// }
 
-	std::vector<double> k0v, Kv, q0v, k1v, q1v, cs2v, cs2Pv, cs2Tv;
-	double cs2=0., cs2p, cs2t, K_=0.;
+	// std::vector<double> k0v, Kv, q0v, k1v, q1v, cs2v, cs2Pv, cs2Tv;
+	// double cs2=0., cs2p, cs2t, K_=0.;
 
-	for(int irho=0; irho<iR; irho++){
-		rhoB=	rhobv[0]+irho*dRho;
-		k1v.push_back(pow(3.*rhoB, 2.)*enerd2v[irho]);
-		q1v.push_back(pow(3.*rhoB, 3.)*enerd3v[irho]);
-		cs2=deriv_func(rhoB, pressv, rhobv)/deriv_func(rhoB, enerdensv, rhobv);
-		cs2p=deriv_func(rhoB, pressPv, rhobv)/deriv_func(rhoB, enerdensv, rhobv);
-		cs2t=deriv_func(rhoB, pressTv, rhobv)/deriv_func(rhoB, enerdensv, rhobv);
-		K_= deriv_func(rhoB, pressv, rhobv);
-		double h=1e-4;
-		double k0_=0., q0_=0., dpdr=0., dedr=0., cs2_=0.;
-		if( ((rhoB-2.*h) > rhobv[0]) && ((rhoB+2.*h) < rhobv[rhobv.size()-1]) ){ //http://web.media.mit.edu/~crtaylor/calculator.html
-			k0_= (-interpolation_func(rhoB-2.*h, enerv, rhobv)+ 16.*interpolation_func(rhoB-h, enerv, rhobv) 
-									- 30.*interpolation_func(rhoB, enerv, rhobv)
-									+ 16.*interpolation_func(rhoB+h, enerv, rhobv) -interpolation_func(rhoB+2.*h, enerv, rhobv))/(12.*h*h);
-			q0_= (-interpolation_func(rhoB-2.*h, enerv, rhobv)+ 2.*interpolation_func(rhoB-h, enerv, rhobv) 
-									- 2.*interpolation_func(rhoB+h, enerv, rhobv) +interpolation_func(rhoB+2.*h, enerv, rhobv))/(2.*h*h*h);
+	// for(int irho=0; irho<iR; irho++){
+	// 	rhoB=	rhobv[0]+irho*dRho;
+	// 	k1v.push_back(pow(3.*rhoB, 2.)*enerd2v[irho]);
+	// 	q1v.push_back(pow(3.*rhoB, 3.)*enerd3v[irho]);
+	// 	cs2=deriv_func(rhoB, pressv, rhobv)/deriv_func(rhoB, enerdensv, rhobv);
+	// 	cs2p=deriv_func(rhoB, pressPv, rhobv)/deriv_func(rhoB, enerdensv, rhobv);
+	// 	cs2t=deriv_func(rhoB, pressTv, rhobv)/deriv_func(rhoB, enerdensv, rhobv);
+	// 	K_= deriv_func(rhoB, pressv, rhobv);
+	// 	double h=1e-4;
+	// 	double k0_=0., q0_=0., dpdr=0., dedr=0., cs2_=0.;
+	// 	if( ((rhoB-2.*h) > rhobv[0]) && ((rhoB+2.*h) < rhobv[rhobv.size()-1]) ){ //http://web.media.mit.edu/~crtaylor/calculator.html
+	// 		k0_= (-interpolation_func(rhoB-2.*h, enerv, rhobv)+ 16.*interpolation_func(rhoB-h, enerv, rhobv) 
+	// 								- 30.*interpolation_func(rhoB, enerv, rhobv)
+	// 								+ 16.*interpolation_func(rhoB+h, enerv, rhobv) -interpolation_func(rhoB+2.*h, enerv, rhobv))/(12.*h*h);
+	// 		q0_= (-interpolation_func(rhoB-2.*h, enerv, rhobv)+ 2.*interpolation_func(rhoB-h, enerv, rhobv) 
+	// 								- 2.*interpolation_func(rhoB+h, enerv, rhobv) +interpolation_func(rhoB+2.*h, enerv, rhobv))/(2.*h*h*h);
 			
-			dpdr= (interpolation_func(rhoB-2.*h, pressv, rhobv) - 8.*interpolation_func(rhoB-h, pressv, rhobv) 
-									+8.*interpolation_func(rhoB+h, pressv, rhobv) - interpolation_func(rhoB+2.*h, pressv, rhobv))/(12.*h);
-			dedr= (interpolation_func(rhoB-2.*h, enerdensv, rhobv) - 8.*interpolation_func(rhoB-h, enerdensv, rhobv) 
-									+8.*interpolation_func(rhoB+h, enerdensv, rhobv) - interpolation_func(rhoB+2.*h, enerdensv, rhobv))/(12.*h);
-			cs2_= dpdr/dedr;
-		}else{
-			k0_=enerd2v[irho];
-			q0_=enerd3v[irho];
-			cs2_=cs2;
-		}
-		Kv.push_back(9.*K_);
-		k0v.push_back(pow(3.*rhoB, 2.)*k0_);
-		q0v.push_back(pow(3.*rhoB, 3.)*q0_);
-		cs2v.push_back(cs2_);
-		cs2Pv.push_back(cs2p);
-		cs2Tv.push_back(cs2t);
+	// 		dpdr= (interpolation_func(rhoB-2.*h, pressv, rhobv) - 8.*interpolation_func(rhoB-h, pressv, rhobv) 
+	// 								+8.*interpolation_func(rhoB+h, pressv, rhobv) - interpolation_func(rhoB+2.*h, pressv, rhobv))/(12.*h);
+	// 		dedr= (interpolation_func(rhoB-2.*h, enerdensv, rhobv) - 8.*interpolation_func(rhoB-h, enerdensv, rhobv) 
+	// 								+8.*interpolation_func(rhoB+h, enerdensv, rhobv) - interpolation_func(rhoB+2.*h, enerdensv, rhobv))/(12.*h);
+	// 		cs2_= dpdr/dedr;
+	// 	}else{
+	// 		k0_=enerd2v[irho];
+	// 		q0_=enerd3v[irho];
+	// 		cs2_=cs2;
+	// 	}
+	// 	Kv.push_back(9.*K_);
+	// 	k0v.push_back(pow(3.*rhoB, 2.)*k0_);
+	// 	q0v.push_back(pow(3.*rhoB, 3.)*q0_);
+	// 	cs2v.push_back(cs2_);
+	// 	cs2Pv.push_back(cs2p);
+	// 	cs2Tv.push_back(cs2t);
 		
-	}
+	// }
 
-	std::string outbulkfile;
-	if(!doBfield){
-		outbulkfile="data/bulk_"+parametrization+"_noB.txt";
-	}else if(doBfield && !doamm){
-		outbulkfile="data/bulk_"+parametrization+"_wtB.txt";
-	}else{
-		outbulkfile="data/bulk_"+parametrization+"_wtA.txt";
-	}
+	// std::string outbulkfile;
+	// if(!doBfield){
+	// 	outbulkfile="data/bulk_"+parametrization+"_noB.txt";
+	// }else if(doBfield && !doamm){
+	// 	outbulkfile="data/bulk_"+parametrization+"_wtB.txt";
+	// }else{
+	// 	outbulkfile="data/bulk_"+parametrization+"_wtA.txt";
+	// }
 
-	std::ofstream outBulk(outbulkfile);
+	// std::ofstream outBulk(outbulkfile);
 
-	for(int irho=0; irho<iR; irho++){
-		rhoB=	rhobv[0]+irho*dRho;
+	// for(int irho=0; irho<iR; irho++){
+	// 	rhoB=	rhobv[0]+irho*dRho;
 
-		outBulk	<<  rhoB*pow(hmg_matter.Mn/hc, 3) << " " 
-							<< interpolation_func(rhoB, pressv, rhobv)*hmg_matter.Mn*pow(hmg_matter.Mn/hc, 3) << " "
-							<< interpolation_func(rhoB, enerdensv, rhobv)*hmg_matter.Mn*pow(hmg_matter.Mn/hc, 3) << " "
-							<< (interpolation_func(rhoB, enerv, rhobv)-1.)*hmg_matter.Mn << " "
-						 	<< interpolation_func(rhoB, Kv, rhobv)*hmg_matter.Mn << " "
-							<< interpolation_func(rhoB, k0v, rhobv)*hmg_matter.Mn << " "
-							<< interpolation_func(rhoB, cs2v, rhobv) << " " 
-							<< interpolation_func(rhoB, cs2Pv, rhobv) << " " 
-							<< interpolation_func(rhoB, cs2Tv, rhobv) << " " 
-							<< ( interpolation_func(rhoB, cs2Pv, rhobv) + 
-										2.*interpolation_func(rhoB, cs2Tv, rhobv) )/3. 
-							<< std::endl;
-														// << interpolation_func(rhoB, k0v, rhobv)*hmg_matter.Mn << " "
-							// << interpolation_func(rhoB, cs2v, rhobv) << " " 
+	// 	outBulk	<<  rhoB*pow(Mnucleon/hc, 3) << " " 
+	// 						<< interpolation_func(rhoB, pressv, rhobv)*Mnucleon*pow(Mnucleon/hc, 3) << " "
+	// 						<< interpolation_func(rhoB, enerdensv, rhobv)*Mnucleon*pow(Mnucleon/hc, 3) << " "
+	// 						<< (interpolation_func(rhoB, enerv, rhobv)-1.)*Mnucleon << " "
+	// 					 	<< interpolation_func(rhoB, Kv, rhobv)*Mnucleon << " "
+	// 						<< interpolation_func(rhoB, k0v, rhobv)*Mnucleon << " "
+	// 						<< interpolation_func(rhoB, cs2v, rhobv) << " " 
+	// 						<< interpolation_func(rhoB, cs2Pv, rhobv) << " " 
+	// 						<< interpolation_func(rhoB, cs2Tv, rhobv) << " " 
+	// 						<< ( interpolation_func(rhoB, cs2Pv, rhobv) + 
+	// 									2.*interpolation_func(rhoB, cs2Tv, rhobv) )/3. 
+	// 						<< std::endl;
+	// 													// << interpolation_func(rhoB, k0v, rhobv)*Mnucleon << " "
+	// 						// << interpolation_func(rhoB, cs2v, rhobv) << " " 
 
-	}
-	outBulk.close();
+	// }
+	// outBulk.close();
 
   return 0;
 }

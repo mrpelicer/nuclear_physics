@@ -29,14 +29,14 @@ int main(){
 	nlwm_class gas(parametrization);
 	pasta_class pasta(cluster, gas);
 
-	double rhoBMax= 0.093*pow(hc/cluster.Mn, 3);
+	double rhoBMax= 0.093*pow(hc/Mnucleon, 3);
 	// if(temperature>4.){rhoBMax=}
 	int iRhoMax=100;
 	double dRho= rhoBMax/iRhoMax;
 		
 	particle electron;
-	electron.mass= Me/cluster.Mn;
-	electron.mass_eff= Me/cluster.Mn;
+	electron.mass= Me/Mnucleon;
+	electron.mass_eff= Me/Mnucleon;
 	electron.spin=1./2.;
 	electron.Q=-1.;
 
@@ -66,7 +66,7 @@ int main(){
 	// if(Yp<0.5){
 	// 	firstGuess={0.70, 0.73, 0.65,0.92, 0.97, 0.95};
 	// }
-	temperature*=1./cluster.Mn;
+	temperature*=1./Mnucleon;
 	
 	electron.temperature=temperature;
 
@@ -115,16 +115,16 @@ int main(){
 			//Get phase that minimizes energy and fix dimensions:
 			Eigen::MatrixXd::Index minRow, minCol;
 			FreeEn= FreeEnM.minCoeff(&minRow, &minCol);
-			FreeEn*=cluster.Mn;
+			FreeEn*=Mnucleon;
 
-			Pressure=PressureM(minRow, minCol)*cluster.Mn*pow(cluster.Mn/hc, 3.);
-			BulkEn=BulkEnM(minRow, minCol)*cluster.Mn;	
-			GibbsEn=GibbsEnM(minRow, minCol)*cluster.Mn;
+			Pressure=PressureM(minRow, minCol)*Mnucleon*pow(Mnucleon/hc, 3.);
+			BulkEn=BulkEnM(minRow, minCol)*Mnucleon;	
+			GibbsEn=GibbsEnM(minRow, minCol)*Mnucleon;
 			Entropy=EntropyM(minRow, minCol);
-			coulEn=coulEnM(minRow, minCol)*cluster.Mn/rhoB;
-			surfEn=surfEnM(minRow, minCol)*cluster.Mn/rhoB;
-			Rd=RdM(minRow, minCol)*(hc/cluster.Mn) ;
-			Rw=RwM(minRow, minCol)*(hc/cluster.Mn) ;
+			coulEn=coulEnM(minRow, minCol)*Mnucleon/rhoB;
+			surfEn=surfEnM(minRow, minCol)*Mnucleon/rhoB;
+			Rd=RdM(minRow, minCol)*(hc/Mnucleon) ;
+			Rw=RwM(minRow, minCol)*(hc/Mnucleon) ;
 			Ae= AeM(minRow, minCol);
 			Ze= ZeM(minRow, minCol);
 			iDimension=minRow+1;
@@ -140,36 +140,36 @@ int main(){
 		}
 	
 
-		outGlobal << rhoB*pow(cluster.Mn/hc, 3.) << " " << Pressure << " " 
-				  << FreeEn - cluster.Mn << " " << GibbsEn - cluster.Mn << " " 
-				  << BulkEn << " "   << Entropy*temperature*cluster.Mn/rhoB << " " 
+		outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " " << Pressure << " " 
+				  << FreeEn - Mnucleon << " " << GibbsEn - Mnucleon << " " 
+				  << BulkEn << " "   << Entropy*temperature*Mnucleon/rhoB << " " 
 				  << coulEn << " " << surfEn << " "
 				  << f << " " << Rd << " " << Rw << " " << iPlot << " " 
 					<< Ae << " " << Ze
 				  << std::endl;
 
-		outFree << rhoB*pow(cluster.Mn/hc, 3.) << " " 
-				<< FreeEn - cluster.Mn 			<< " " << (FreeEnM(2, 0)-1.)*cluster.Mn << " " 
-				<< (FreeEnM(1, 0)-1.)*cluster.Mn << " " << (FreeEnM(0, 0)-1.)*cluster.Mn << " " 
-				<< (FreeEnM(1, 1)-1.)*cluster.Mn << " " << (FreeEnM(2, 1)-1.)*cluster.Mn 
+		outFree << rhoB*pow(Mnucleon/hc, 3.) << " " 
+				<< FreeEn - Mnucleon 			<< " " << (FreeEnM(2, 0)-1.)*Mnucleon << " " 
+				<< (FreeEnM(1, 0)-1.)*Mnucleon << " " << (FreeEnM(0, 0)-1.)*Mnucleon << " " 
+				<< (FreeEnM(1, 1)-1.)*Mnucleon << " " << (FreeEnM(2, 1)-1.)*Mnucleon 
 			  	<< std::endl;
 
-		outSol  << rhoB*pow(cluster.Mn/hc, 3.) << " " << cluster.Yp << " " 
+		outSol  << rhoB*pow(Mnucleon/hc, 3.) << " " << cluster.Yp << " " 
 				<< cluster.proton.chemPot_eff << " " << cluster.neutron.chemPot_eff << " "
 				<< cluster.proton.mass_eff << " "
 				<< gas.proton.chemPot_eff << " " << gas.neutron.chemPot_eff << " " 
 				<< gas.proton.mass_eff  << " "
 				<< cluster.proton.chemPot << " " << cluster.neutron.chemPot << " "
 				<< gas.proton.chemPot << " " << gas.neutron.chemPot << " "
-				<< cluster.proton.density*pow(cluster.Mn/hc, 3.) << " " 
-				<< cluster.neutron.density*pow(cluster.Mn/hc, 3.) << " " 
-				<< gas.proton.density*pow(cluster.Mn/hc, 3.) << " " 
-				<< gas.neutron.density*pow(cluster.Mn/hc, 3.) << " " 
+				<< cluster.proton.density*pow(Mnucleon/hc, 3.) << " " 
+				<< cluster.neutron.density*pow(Mnucleon/hc, 3.) << " " 
+				<< gas.proton.density*pow(Mnucleon/hc, 3.) << " " 
+				<< gas.neutron.density*pow(Mnucleon/hc, 3.) << " " 
 			    << std::endl;
 
 		}
 		else{
-			std::cout << "no pasta: " << rhoB*pow(cluster.Mn/hc, 3.) << " " << f << std::endl;
+			std::cout << "no pasta: " << rhoB*pow(Mnucleon/hc, 3.) << " " << f << std::endl;
 			//setInitialGibbs(nup1, nun1, Mef1, nup2, nun2, Mef2);
 
 		}

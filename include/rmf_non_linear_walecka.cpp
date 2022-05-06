@@ -14,84 +14,84 @@ void nlwm_class::setParametrization(std::string parametrization_){
 	if(parametrization_=="gm1")		//Phys. Rev. Lett. 67, 2414 (1991)
 	{
 		Mn=938.99; 										//	Mn=938.930;
-		Ms=400./Mn; 									//	Ms=400./Mn;
-		Mv=783./Mn; 									//	Mv=783./Mn;
-		Mb=770./Mn; 									//	Mb=770./Mn;
-		gs=Ms*sqrt(11.785)*Mn/hc; 		//	gs=Ms*sqrt(11.79)*Mn/hc;
-		gv=Mv*sqrt(7.148)*Mn/hc; 	 		//	gv=Mv*sqrt(7.149)*Mn/hc;
-		gb=Mb*sqrt(3.870)*Mn/hc; 			//	gb=Mb*sqrt(4.411)*Mn/hc;
+		Ms=400./Mnucleon; 									//	Ms=400./Mnucleon;
+		Mv=783./Mnucleon; 									//	Mv=783./Mnucleon;
+		Mb=770./Mnucleon; 									//	Mb=770./Mnucleon;
+		gs=Ms*sqrt(11.785)*Mnucleon/hc; 		//	gs=Ms*sqrt(11.785)*Mnucleon/hc;
+		gv=Mv*sqrt(7.148)*Mnucleon/hc; 	 		//	gv=Mv*sqrt(7.148)*Mnucleon/hc;
+		gb=Mb*sqrt(3.870)*Mnucleon/hc; 			//	gb=Mb*sqrt(3.870)*Mnucleon/hc;
 		gs3=2.*pow(gs, 3.)*0.002947;
-		gs4=-6.*pow(gs, 4.)*0.001070;
-		rho0=0.153*pow(hc/Mn, 3); 
+		gs4=-6.*pow(gs, 4.)*0.001071;
+		rho0=0.153*pow(hc/Mnucleon, 3); 
 	}
 	//===== GM1wr =========
 	if(parametrization_=="gm1wr")		//Phys. Rev. Lett. 67, 2414 (1991)
 	{
 		Mn=938.930;
-		Ms=400./Mn;
-		Mv=783./Mn;
-		Mb=770./Mn;
-		gs=Ms*sqrt(11.79)*Mn/hc;
-		gv=Mv*sqrt(7.149)*Mn/hc;
-		gb=Mb*sqrt(4.411)*Mn/hc;
+		Ms=400./Mnucleon;
+		Mv=783./Mnucleon;
+		Mb=770./Mnucleon;
+		gs=Ms*sqrt(11.79)*Mnucleon/hc;
+		gv=Mv*sqrt(7.149)*Mnucleon/hc;
+		gb=Mb*sqrt(4.411)*Mnucleon/hc;
 		gs3=2.*pow(gs, 3.)*0.002947;
 		gs4=-6.*pow(gs, 4.)*0.001070;
 		Lv=0.02015;
-		rho0=0.153*pow(hc/Mn, 3); 
+		rho0=0.153*pow(hc/Mnucleon, 3); 
 	}
 	//===== NL1 =====
 	if(parametrization_=="nl1") 	//see nl3 ref: 	Phys. Rev. C 55, 540 (1997)
 	{
 		Mn=938.000;
 		Mstar=0.57;
-		Ms=492.250/Mn;
-		Mv=783.000/Mn;
-		Mb=763.000/Mn;
+		Ms=492.250/Mnucleon;
+		Mv=783.000/Mnucleon;
+		Mb=763.000/Mnucleon;
 		gs=10.138;
 		gv=13.285;
 		gb=2.*4.976;
-		gs3=2.*(12.172)*hc/Mn;
+		gs3=2.*(12.172)*hc/Mnucleon;
 		gs4=-6.*(36.265);
-		rho0=0.153*pow(hc/Mn, 3);
+		rho0=0.153*pow(hc/Mnucleon, 3);
 	}
 	// ===== NL3 =====
 	if(parametrization_=="nl3") 		//Phys. Rev. C 55, 540 (1997)
 	{
 		Mn=939.000;
 		Mstar=0.60;
-		Ms=508.194/Mn;
-		Mv=782.501/Mn;
-		Mb=763.000/Mn;
+		Ms=508.194/Mnucleon;
+		Mv=782.501/Mnucleon;
+		Mb=763.000/Mnucleon;
 		gs=10.217;
 		gv=12.868;
 		gb=8.948;      
 		gs3=4.384; 
 		gs4=-173.31;
-		rho0=0.148*pow(hc/Mn, 3);
+		rho0=0.148*pow(hc/Mnucleon, 3);
 	}
 	// ==== NL3wr ====
 	if(parametrization_=="nl3wr")		//Phys. Rev. C 55, 540 (1997)
 	{
 		Mn=939.000;
 		Mstar=0.60;
-		Ms=508.194/Mn;
-		Mv=782.501/Mn;
-		Mb=763.000/Mn;
+		Ms=508.194/Mnucleon;
+		Mv=782.501/Mnucleon;
+		Mb=763.000/Mnucleon;
 		gs=10.217;
 		gv=12.868;
 		gb=11.276624779336951;
 		gs3=4.384; //1/MeV
 		gs4=-173.31;
 		Lv=0.03;
-		rho0=0.1481*pow(hc/Mn, 3); 
+		rho0=0.1481*pow(hc/Mnucleon, 3); 
 	}
 	// ===FSUGold ====
 	if(parametrization_=="fsu") 		//Phys. Rev. Lett. 95, 122501 (2005)
 	{
 		Mn=939.000;
-		Ms=491.5/Mn;
-		Mv=782.5/Mn;
-		Mb=763./Mn;
+		Ms=491.5/Mnucleon;
+		Mv=782.5/Mnucleon;
+		Mb=763./Mnucleon;
 		gs=10.592;
 		gv=14.302;
 		gb=11.767;
@@ -99,16 +99,16 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		gs4=299.11;
 		xsi=0.06;
 		Lv=0.03;
-		rho0=0.1484*pow(hc/Mn, 3); 
+		rho0=0.1484*pow(hc/Mnucleon, 3); 
 	}
 
 	// ===IU-FSU ====
 	if(parametrization_=="iufsu")			//Phys. Rev. C 82, 055803 (2010)
 	{
 		Mn=939.000;
-		Ms=491.5/Mn;
-		Mv=782.5/Mn;
-		Mb=763./Mn;
+		Ms=491.5/Mnucleon;
+		Mv=782.5/Mnucleon;
+		Mb=763./Mnucleon;
 		gs=9.971;
 		gv=13.032;
 		gb=13.590;
@@ -116,24 +116,24 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		gs4=2.926;
 		xsi=0.03;
 		Lv=0.046;
-		rho0=0.155*pow(hc/Mn, 3); 
+		rho0=0.155*pow(hc/Mnucleon, 3); 
 	}
 	//===== FSU2R =========
 	if(parametrization_=="fsu2")		//Phys. Rev. C 90, 044305 (2014)
 	{
 		Mn=939.000;
 		Mstar=0.593;
-		Ms=497.479/Mn;
-		Mv=782.500/Mn;
-		Mb=763.000/Mn;
+		Ms=497.479/Mnucleon;
+		Mv=782.500/Mnucleon;
+		Mb=763.000/Mnucleon;
 		gs=sqrt(108.0943);
 		gv=sqrt(183.7893);
 		gb=sqrt(80.4656);      
-		gs3=3.0029*pow(gs, 3.)/Mn; //(1/Mn)
+		gs3=3.0029*pow(gs, 3.)/Mnucleon; //(1/Mn)
 		gs4=-0.000533*pow(gs, 4.);
 		xsi=0.0256;
 		Lv=0.000823;
-		rho0=0.1505*pow(hc/Mn, 3);
+		rho0=0.1505*pow(hc/Mnucleon, 3);
 	}
 
 	//===== FSU2R =========
@@ -141,53 +141,68 @@ void nlwm_class::setParametrization(std::string parametrization_){
 	{
 		Mn=939.000;
 		Mstar=0.593;
-		Ms=497.479/Mn;
-		Mv=782.500/Mn;
-		Mb=763.000/Mn;
+		Ms=497.479/Mnucleon;
+		Mv=782.500/Mnucleon;
+		Mb=763.000/Mnucleon;
 		gs=sqrt(107.5751);
 		gv=sqrt(182.3949);
 		gb=sqrt(206.4260);      
-		gs3=3.0911*pow(gs, 3.)/Mn; //(1/Mn)
+		gs3=3.0911*pow(gs, 3.)/Mnucleon; //(1/Mnucleon)
 		gs4=-0.001680*pow(gs, 4.);
 		xsi=0.024;
 		Lv=0.045;
-		rho0=0.1505*pow(hc/Mn, 3);
+		rho0=0.1505*pow(hc/Mnucleon, 3);
 	}
 	//===== FSU2h =========
 	if(parametrization_=="fsu2h")		//Astron.Soc.Austral. 34 e065 
 	{
 		Mn=939.;
 		// Mstar=0.593;
-		Ms=497.479/Mn;
-		Mv=782.500/Mn;
-		Mb=763.000/Mn;
-		Mt=1020.00/Mn;
+		Ms=497.479/Mnucleon;
+		Mv=782.500/Mnucleon;
+		Mb=763.000/Mnucleon;
+		Mt=1020.00/Mnucleon;
 		gs=sqrt(102.7200);
 		gv=sqrt(169.5315);
 		gb=sqrt(197.2692);      
-		gs3=4.0014*pow(gs, 3.)/Mn; //(1/Mn)
+		gs3=4.0014*pow(gs, 3.)/Mnucleon; //(1/Mnucleon)
 		gs4=-0.013298*pow(gs, 4.);
 		xsi=0.008;
 		Lv=0.045;
-		rho0=0.1505*pow(hc/Mn, 3);
+		rho0=0.1505*pow(hc/Mnucleon, 3);
 	}
 
 	if(parametrization_=="l3wr"){
   	Mn=939.;        
-  	Ms=512./Mn;
-  	Mv=783./Mn;
-  	Mb=770./Mn;
-		Mt=1020.00/Mn;
-  	gs=sqrt(12.108)*Ms*Mn/hc;
-  	gv=sqrt(7.1320)*Mv*Mn/hc;
-  	gb=sqrt(4.8010)*Mb*Mn/hc;
+  	Ms=512./Mnucleon;
+  	Mv=783./Mnucleon;
+  	Mb=770./Mnucleon;
+		Mt=1020.00/Mnucleon;
+  	gs=sqrt(12.108)*Ms*Mnucleon/hc;
+  	gv=sqrt(7.1320)*Mv*Mnucleon/hc;
+  	gb=sqrt(4.8010)*Mb*Mnucleon/hc;
   	gs3=2.*0.004138*pow(gs, 3);
   	gs4=-6.*0.0039*pow(gs, 4.);
   	xsi=0.;
   	Lv=0.0185;
-		rho0=0.1555*pow(hc/Mn, 3);
+		rho0=0.1555*pow(hc/Mnucleon, 3);
 	}
 
+	if(parametrization=="iobp-I"){
+		Mn=939.;        
+		Ms=0.533;
+		Mv=0.833;
+		Mb=0.812;
+		gs=10.417594;
+		gv=13.354502;
+		gb=11.121523;
+		gs3=4.3545284;
+		gs4=-88.51362;
+		xsi=0.017014393;
+		Lv=0.0146;
+		rho0=0.149*pow(hc/Mnucleon, 3);
+		
+	}
   else{parametrization_= "";}
 	std::cout << parametrization << " parametrization." << std::endl;
 }
@@ -198,12 +213,19 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 	doHyperons=do_;
 	std::cout << "do Hyperons! " << doHyperons << std::endl;
 
-	lambda0.mass=1116./Mn;
-	sigmam.mass =1193./Mn;
-	sigma0.mass =1193./Mn;
-	sigmap.mass =1193./Mn;
-	xim.mass		=1318./Mn;
-	xi0.mass		=1318./Mn;
+	// lambda0.mass=1116./Mnucleon;
+	// sigmam.mass =1193./Mnucleon;
+	// sigma0.mass =1193./Mnucleon;
+	// sigmap.mass =1193./Mnucleon;
+	// xim.mass		=1318./Mnucleon;
+	// xi0.mass		=1318./Mnucleon;
+
+	lambda0.mass=1115.7/Mnucleon;
+	sigmam.mass =1197.5/Mnucleon;
+	sigma0.mass =1192.6/Mnucleon;
+	sigmap.mass =1189.4/Mnucleon;
+	xim.mass		=1321.7/Mnucleon;
+	xi0.mass		=1314.9/Mnucleon;
 
 	lambda0.spin	= 1./2.;			 	lambda0.I3	= 0.;			lambda0.Q		= 0;  lambda0.stg =-1;
 	sigmap.spin		=	1./2.;			 	sigmap.I3		=	1.;			sigmap.Q		= 1.;	sigmap.stg	=-1;
@@ -307,7 +329,7 @@ void nlwm_class::includeDeltas(bool do_, std::string parameters_){
 	doDeltas=do_;
 	std::cout << "do Deltas! " << doDeltas << std::endl;
 
-	double mdl=1232./Mn;
+	double mdl=1232./Mnucleon;
 	deltapp.mass=mdl;
 	deltap.mass	=mdl;
 	delta0.mass	=mdl;
@@ -674,7 +696,7 @@ void nlwm_class::setEOS_neutrons(double rhoB_, double temp_, particle &electron_
 
 		//Print if convergence was achieved.
 		std::cout << summaryBetaEq.BriefReport() << "\n";
-		std::cout << "rhob= " << rhoB*pow(Mn/hc, 3) << std::endl;
+		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
 		std::cout << mub_ << " " << mue_ << " " 
 							<< phi0_ << " " << v0_  << " " << b0_ << 
 		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]
@@ -754,7 +776,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 	}
 	
 	// only needed if running for very low densities (for lorene, p.ex.)
-	if( (rhoB>((5e-4)/pow(Mn/hc, 3.)))  && (rhoB<((1e-3)/pow(Mn/hc, 3.))) ){
+	if( (rhoB>((5e-4)/pow(Mnucleon/hc, 3.)))  && (rhoB<((1e-3)/pow(Mnucleon/hc, 3.))) ){
 		// std::cout <<"TESTAO " << std::endl;
 		mub_	= 1.00153;
 		mue_=  0.00300678;
@@ -786,7 +808,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		optionsBetaEq.parameter_tolerance = 1e-8;
 		optionsBetaEq.function_tolerance = 1e-10;
 		optionsBetaEq.gradient_tolerance=1e-12;
-		if(rhoB*pow(Mn/hc, 3.) < (1.e-4) ){
+		if(rhoB*pow(Mnucleon/hc, 3.) < (1.e-5) ){
 			// optionsBetaEq.parameter_tolerance = 1e-22;
 			// optionsBetaEq.function_tolerance = 1e-22;
 			// optionsBetaEq.gradient_tolerance=1e-25;
@@ -796,7 +818,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 			optionsBetaEq.max_num_iterations=1e7;	
 
 		}	
-			if(rhoB*pow(Mn/hc, 3.) < (5.e-7) ){
+			if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-7) ){
 			// optionsBetaEq.parameter_tolerance = 1e-22;
 			// optionsBetaEq.function_tolerance = 1e-22;
 			// optionsBetaEq.gradient_tolerance=1e-25;
@@ -868,7 +890,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		optionsBetaEq.gradient_tolerance=1e-12;
 		optionsBetaEq.max_num_iterations=1e6;	
 
-		if(rhoB*pow(Mn/hc, 3.) < (5.e-4) ){
+		if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-4) ){
 			// optionsBetaEq.parameter_tolerance = 1e-22;
 			// optionsBetaEq.function_tolerance = 1e-22;
 			// optionsBetaEq.gradient_tolerance=1e-25;
@@ -878,7 +900,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 			optionsBetaEq.max_num_iterations=1e7;	
 
 		}	
-			if(rhoB*pow(Mn/hc, 3.) < (5.e-7) ){
+			if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-7) ){
 			// optionsBetaEq.parameter_tolerance = 1e-22;
 			// optionsBetaEq.function_tolerance = 1e-22;
 			// optionsBetaEq.gradient_tolerance=1e-25;
@@ -917,7 +939,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 
 		//Print if convergence was achieved.
 		std::cout << summaryBetaEq.BriefReport() << "\n";
-		std::cout << "rhob= " << rhoB*pow(Mn/hc, 3) << std::endl;
+		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
 		std::cout << mub_ << " " << mue_ << " " << phi0_ << " " << v0_  << " " << b0_ << 
 			"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4] 
 		<< std::endl << std::endl;
@@ -1217,7 +1239,7 @@ void nlwm_class::setEOS_betaEq_PressureFixed(double press_, double temp_,
 
 		//Print if convergence was achieved.
 		std::cout << summaryBetaEq.BriefReport() << "\n";
-		std::cout << "rhob= " << rhoB*pow(Mn/hc, 3) << std::endl;
+		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
 		std::cout << mub_ << " " << mue_ << " " << phi0_ << " " << v0_  << " " << b0_ << 
 			"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4] 
 		<< std::endl << std::endl;
@@ -1419,7 +1441,7 @@ void nlwm_class::setEOS_betaEq_muB(double mub_, double temp_,
 
 		//Print if convergence was achieved.
 		std::cout << summaryBetaEq.BriefReport() << "\n";
-		std::cout << "rhob= " << rhoB*pow(Mn/hc, 3) << std::endl;
+		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
 		std::cout << mub_ << " " << mue_ << " " << phi0_ << " " << v0_  << " " << b0_ << 
 			"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4] 
 		<< std::endl << std::endl;
@@ -1964,6 +1986,7 @@ double nlwm_class::getEnergy(void){
 	if(doDeltas){
 		ener+= deltapp.energy + deltap.energy + delta0.energy + deltam.energy;
 	}
+
 	return ener+ enerMeson;
 }
 

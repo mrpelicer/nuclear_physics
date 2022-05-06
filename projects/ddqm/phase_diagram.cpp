@@ -70,7 +70,7 @@ int main(){
 	// double temperature;
 	double tempMin=0./Mnucleon;
   double tempMax=170./Mnucleon;
-  int itMax=85;
+  int itMax=1;
   double dt=  (tempMax-tempMin)/itMax;
 	// vector<double> tempv={0., 10., 20., 30., 40., 50., 100., 160};
 	// double Press;
@@ -86,7 +86,7 @@ int main(){
 	double rhoB;
 	double rhoBMin=1e-3/pow(Mnucleon/hc, 3);
   double rhoBMax=1.2/pow(Mnucleon/hc, 3);///7.5*hadrons.rho0;
-	//0.62/pow(hadrons.Mn/hc, 3); fsu2h c amm ou b
+	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
   int iR=120;
   double dRho=  (rhoBMax-rhoBMin)/iR;
 	double Yu, Yd, Ys;
@@ -148,10 +148,13 @@ int main(){
 					+		2.*hadrons.xim.density)/(3.*hadrons.getBaryonDens()); 							
 
 			// quarks.setEoSFlavor_PressFixed(PressureH, temperature, electron, muon,
+																			// Yu, Yd, Ys);			
+			
+			// quarks.setEoSFlavor_muBFixed(hadrons.muB, temperature, electron, muon,
 			// 																Yu, Yd, Ys);			
-			// quarks.setEoSFlavorFixed(hadrons.getBaryonDens(), temperature, Yu, Yd, Ys);
-			quarks.setEoSFlavor_muBFixed(hadrons.muB, temperature,electron, muon,
-																			Yu, Yd, Ys);			
+
+			quarks.setEoSFlavorFixed(hadrons.getBaryonDens(), temperature, Yu, Yd, Ys);
+			
 			double PressureQ= quarks.getPressure()+electron.pressure+muon.pressure;
 			
 			quarks.muB= (quarks.getEnergy() +electron.energy + muon.energy
@@ -191,12 +194,12 @@ int main(){
 		reverse(rhobHv.begin(), rhobHv.end());
 		reverse(rhobQv.begin(), rhobQv.end());
 
+		if(mubHv[0] == mubHv[mubHv.size()-1]){
+			break;
+		}else{
 		vector<double> trans_point= findTransition(mubHv, mubQv, pressHv, pressQv, rhobHv, rhobQv);
 		double rhoht= trans_point[0];
 		double rhoqt= trans_point[1];
-				
-			
-			
 
 		cout << "transition: T= " << temperature*Mnucleon << " "  
 			  << rhoht*pow(Mnucleon/hc, 3.)  << " " << rhoqt*pow(Mnucleon/hc, 3.)  << " " 
@@ -219,7 +222,7 @@ int main(){
 						<< rhoht*pow(Mnucleon/hc, 3.)  << " " << rhoqt*pow(Mnucleon/hc, 3.) << " "
 						<< Yu << " " << Yd << " " << Ys
 						<< endl;
-		
+		}
 			outHadron.close();
 			outQuark.close();
 

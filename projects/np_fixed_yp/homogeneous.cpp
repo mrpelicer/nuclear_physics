@@ -15,15 +15,17 @@ using namespace std;
 //===========================main codea =============================
 int main(){
 // //Choose pararametrization
-	string parametrization= "l3wr";
+	string parametrization;
 	
+	cout << "Choose parametrization" << endl;
+	cin >> parametrization;
 // 	//Construct a gas of p,n,e matter
 	nlwm_class qhd(parametrization);
 // 	qhd.printParameters();
-
+	qhd.printParameters();
 //Set system variables
 	double rhoB,Yle=0.5, temperature=0.;
-  double rhoBMax=1./pow(qhd.Mn/hc, 3);
+  double rhoBMax=1./pow(Mnucleon/hc, 3);
   int iR=200;
   double dRho= rhoBMax/iR;
 
@@ -35,16 +37,16 @@ int main(){
 
 	bool doHyperons	=	false;
 	bool doDeltas		=	false;
-	string hyperon_params ="l3wr3";  //gm (Glendenning), su3 (código do Kauan) 
- 	qhd.includeHyperons(doHyperons, hyperon_params);
-	string delta_params 	 ="su6";  //su6(1.), mplA_1(beta=1.1), mplA_2, prd89_1, prd89_1
-	qhd.includeDeltas(		doDeltas, 	delta_params);
+	// string hyperon_params ="gm";  //gm (Glendenning), su3 (código do Kauan) 
+ 	// qhd.includeHyperons(doHyperons, hyperon_params);
+	// string delta_params 	 ="su6";  //su6(1.), mplA_1(beta=1.1), mplA_2, prd89_1, prd89_1
+	// qhd.includeDeltas(		doDeltas, 	delta_params);
 
 	vector<double> Unv, Upv, Ul0v, Usmv, Us0v, Uspv, Uxmv, Ux0v, Udmv, Ud0v, Udpv, Udppv;
 
 	cout << "Yp, T= " << Yle << " " << temperature << endl;
 		
-	string outStr= parametrization+".txt";
+	string outStr= "data/"+parametrization+".txt";
 	ofstream outFile(outStr);
 			
 	outFile << "#rho_b P freeEn mun mup mue M* V0 b0" << endl;
@@ -83,9 +85,9 @@ int main(){
 			enerdensv.push_back(FreeEn);
 			pressv.push_back(Pressure);
 
-			outFile << rhoB*pow(qhd.Mn/hc, 3) << " "
-					<< Pressure*qhd.Mn*pow(qhd.Mn/hc, 3) << " " 
-					<< (FreeEn/rhoB - 1.)*qhd.Mn  << " " 
+			outFile << rhoB*pow(Mnucleon/hc, 3) << " "
+					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " " 
+					<< (FreeEn/rhoB - 1.)*Mnucleon  << " " 
 					<< qhd.proton.chemPot  << " "
 					<< qhd.neutron.chemPot << " " 
 					<< qhd.proton.mass_eff << " " 
@@ -178,22 +180,22 @@ int main(){
 	for(int irho=0; irho<iR; irho++){
 		rhoB=	rhobv[0]+irho*dRho;
 
-		outBulk	<<  rhoB*pow(qhd.Mn/hc, 3) << " " 
-				<< interpolation_func(rhoB, pressv, rhobv)*qhd.Mn*pow(qhd.Mn/hc, 3) << " "
-				<< interpolation_func(rhoB, enerdensv, rhobv)*qhd.Mn*pow(qhd.Mn/hc, 3) << " "
-				<< (interpolation_func(rhoB, enerv, rhobv)-1.)*qhd.Mn << " "
-			 	<< interpolation_func(rhoB, Kv, rhobv)*qhd.Mn << " "
-				<< interpolation_func(rhoB, k0v, rhobv)*qhd.Mn << " "
+		outBulk	<<  rhoB*pow(Mnucleon/hc, 3) << " " 
+				<< interpolation_func(rhoB, pressv, rhobv)*Mnucleon*pow(Mnucleon/hc, 3) << " "
+				<< interpolation_func(rhoB, enerdensv, rhobv)*Mnucleon*pow(Mnucleon/hc, 3) << " "
+				<< (interpolation_func(rhoB, enerv, rhobv)-1.)*Mnucleon << " "
+			 	<< interpolation_func(rhoB, Kv, rhobv)*Mnucleon << " "
+				<< interpolation_func(rhoB, k0v, rhobv)*Mnucleon << " "
 				<< fabs(interpolation_func(rhoB, cs2v, rhobv))
 				<< endl;
 
-		outUpar << rhoB*pow(qhd.Mn/hc, 3) << " " 
-					<< interpolation_func(rhoB, Unv, rhobv)*qhd.Mn		<< " "
-					<< 	interpolation_func(rhoB, Ud0v, rhobv)*qhd.Mn 	
+		outUpar << rhoB*pow(Mnucleon/hc, 3) << " " 
+					<< interpolation_func(rhoB, Unv, rhobv)*Mnucleon		<< " "
+					<< 	interpolation_func(rhoB, Ud0v, rhobv)*Mnucleon 	
 					<< endl;
-					// << 	interpolation_func(rhoB, Ul0v, rhobv)*qhd.Mn 	<< " "
-					// << 	interpolation_func(rhoB, Us0v, rhobv)*qhd.Mn 	<< " "
-					// << 	interpolation_func(rhoB, Ux0v, rhobv)*qhd.Mn 	<< " " 
+					// << 	interpolation_func(rhoB, Ul0v, rhobv)*Mnucleon 	<< " "
+					// << 	interpolation_func(rhoB, Us0v, rhobv)*Mnucleon 	<< " "
+					// << 	interpolation_func(rhoB, Ux0v, rhobv)*Mnucleon 	<< " " 
 		}
 
 	outBulk.close();
@@ -223,12 +225,11 @@ int main(){
 					  <<setw(25) << "J(MeV)" << setw(25) <<  "L(MeV)" << setw(25) <<"m*/m" << setw(25) << "cs2"
 		  			<< endl;	
 
-	cout <<rho0*pow(qhd.Mn/hc, 3) << setw(25)
-			 << Bind0En*qhd.Mn << setw(25)
-			 << K0*qhd.Mn << setw(25)
-			 << K*qhd.Mn << setw(25)
-			 << Esym*qhd.Mn << setw(25)
-			 << Lsym*qhd.Mn << setw(25)
+	cout <<rho0*pow(Mnucleon/hc, 3) << setw(25)
+			 << Bind0En*Mnucleon << setw(25)
+			 << K0*Mnucleon << setw(25)
+			 << Esym*Mnucleon << setw(25)
+			 << Lsym*Mnucleon << setw(25)
  			 << qhd.proton.mass_eff << setw(25) 
 			 << fabs(cs2) << setw(25) 
 			 << endl;
@@ -238,11 +239,11 @@ int main(){
 							<< "Us0" 							<< setw(25)
 							<< "Ux0" 							<< setw(25) 
 							<< "Ud0" 							<< setw(25)<< endl 
-							<< Un*qhd.Mn		<< setw(25) 
-							<< Ul0*qhd.Mn 	<< setw(25)
-							<< Us0*qhd.Mn 	<< setw(25)
-							<< Ux0*qhd.Mn 	<< setw(25) 
-							<< Ud0*qhd.Mn 	<< setw(25)
+							<< Un*Mnucleon		<< setw(25) 
+							<< Ul0*Mnucleon 	<< setw(25)
+							<< Us0*Mnucleon 	<< setw(25)
+							<< Ux0*Mnucleon 	<< setw(25) 
+							<< Ud0*Mnucleon 	<< setw(25)
 							<< endl;
 
   return 0;

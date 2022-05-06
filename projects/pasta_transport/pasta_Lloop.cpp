@@ -143,7 +143,7 @@ int main(){
 		double coulIa=0., coulIp=0., nua=0., nup=0., nu_avg=0., nu_avg_inverse=0.;
 		double L;
 
-		int ilmax=4;
+		int ilmax=300;
 		double Lmin=Rd;
 		double Lmax= 10000.*Rd;
 		double logLmin= log10(Lmin);
@@ -176,7 +176,6 @@ int main(){
     	reverse(Fav2.begin() , Fav2.end());
 			reverse(Fpv2.begin() , Fpv2.end());
 			rod.setMomentumVec(qv);
-
 			rod.setFormFactor2Vec(Fav2);
 			// coulIa=   		 integrate_coulomb(coulomb_gsl, &rod);
 			coulIa=   		 getCoulombIntegral(rod);
@@ -196,10 +195,9 @@ int main(){
 			double L_slab=L;
 			slab.setLengths(L_slab, L_slab, 2.*rad_slab);
 			Ze= (cluster.proton.density - gas.proton.density)*slab.getVolume();
-			slab.setMomentum(q);
 			for(int iq=0; iq<=iqmax; iq++){
 				q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
-				rod.setMomentum(q);
+				slab.setMomentum(q);
 				double fa_= slab.getStructureFunction2_Axial(q);
 				double fp_= slab.getStructureFunction2_Trans(q);
 				Fav2.push_back(fa_);

@@ -109,14 +109,14 @@ double quarks_class::getOmega(){
 double quarks_class::sigma(double temp_){
   double s_= 1.-  8*temp_*exp(-lambda*tcrit/temp_)/(lambda*tcrit);
 
-  if(temperature>tcrit) s_=0.;
+  if(temp_>tcrit) s_=0.;
   return temp_>Tmin_integration ? s_ : 1.;
 }
 
 double quarks_class::getDmassDdens(){
-  double d0= (-D/pow(rhoB, 4./3.) + C/pow(rhoB, 2./3.))/3.;
-  if(temperature>Tmin_integration) d0*=sigma(temperature);
-  return d0;
+  double d0_= (-D/pow(rhoB, 4./3.) + C/pow(rhoB, 2./3.))/3.;
+  if(temperature>Tmin_integration) d0_*=sigma(temperature);
+  return d0_;
 }
 
 double quarks_class::getDmassDtemp(){
@@ -697,7 +697,7 @@ void quarks_class::setEoSFlavor_muBFixed(double mub_, double temp_,
 	  						(new QuarkFlavor_muBFixed(*this, electron_, muon_));
 
 	  p.AddResidualBlock(cost, NULL, x);
-    // p.SetParameterLowerBound(x, 0, 0.);
+    p.SetParameterLowerBound(x, 0, 0.);
     // p.SetParameterUpperBound(x, 0, 1.5*pow(hc/Mnucleon, 3));
 	  Solver::Options options;
 	  options.parameter_tolerance = 1e-8;

@@ -314,7 +314,7 @@ void pasta_class::solveCLD(double rhoB_, double Yp_, double temp_,double dim_, i
 	//
 	std::cout << summaryCLD.BriefReport() << "\n";
 // 
-	std::cout << "rhoB= " << rhoB*pow(cluster.Mn/hc, 3.) << std::endl;
+	std::cout << "rhoB= " << rhoB*pow(Mnucleon/hc, 3.) << std::endl;
 	 std::cout << "Solution (" << dim << " , " << iType << ") : "  << nup1 <<  " " << nun1 << " " << mef1 <<  " "
 	 					<< nup2 <<  " " << nun2 << " " << mef2 << std::endl;
 	 std::cout << "----> " << x[0] <<  " " << x[1] << " " << x[2] <<  " "
@@ -443,7 +443,7 @@ double getSurfaceTensionDerivative(nlwm_class &cluster_, double Yp_, double T){
 																-3.*Px*SigmaXT*sigma1*sqrt(x)/2.);
 																// 
 	if(T!=0.){
-		T*=cluster_.Mn;
+		T*=Mnucleon;
 		double aT= aa0 + aa1*T +aa2*pow(T, 2.) + aa3*pow(T, 3.)
                            + aa4*pow(T, 4.) + aa5*pow(T, 5.);
 // 
@@ -503,7 +503,7 @@ void setSurfaceParameters(nlwm_class &cluster_, double &sigma0, double &sigma1,
 // parameters provided by:
   if(cluster_.parametrization=="nl3")
 	{
-    sigma0=1.12307/( pow(cluster_.Mn, 3.)/pow(hc, 2.) );
+    sigma0=1.12307/( pow(Mnucleon, 3.)/pow(hc, 2.) );
     sigma1= 20.7779;
     sa1= -5.84915;
     sa2= 138.839;
@@ -536,7 +536,7 @@ void setSurfaceParameters(nlwm_class &cluster_, double &sigma0, double &sigma1,
 	// ==== NL3wr ====
 	if(cluster_.parametrization=="nl3wr")
 	{
-	  sigma0=1.12013/( pow(cluster_.Mn, 3.)/pow(hc, 2.) );
+	  sigma0=1.12013/( pow(Mnucleon, 3.)/pow(hc, 2.) );
     sigma1= 14.0774;
     sa1=-2.15376;
     sa2= 57.8455;
@@ -569,7 +569,7 @@ void setSurfaceParameters(nlwm_class &cluster_, double &sigma0, double &sigma1,
 // ===FSUGold ====
 	if(cluster_.parametrization=="fsu")
   {
-    sigma0= 1.1223/( pow(cluster_.Mn, 3.)/pow(hc, 2.) );
+    sigma0= 1.1223/( pow(Mnucleon, 3.)/pow(hc, 2.) );
     sigma1=-1.45717;
     sa1=-3.17729;
     sa2=-9.5121;
@@ -603,7 +603,7 @@ void setSurfaceParameters(nlwm_class &cluster_, double &sigma0, double &sigma1,
 // ===IU-FSU ====
   if(cluster_.parametrization=="iufsu")
   {
-    sigma0 = 1.16473/( pow(cluster_.Mn, 3.)/pow(hc, 2.) );
+    sigma0 = 1.16473/( pow(Mnucleon, 3.)/pow(hc, 2.) );
     sigma1 =-0.659167;
     sa1    =-2.25482;
     sa2    =-5.64237;
@@ -929,6 +929,7 @@ double integrate_coulomb(double (func)(double, void *), void *parametersPointer)
   double err_rel = 1e-8; //1e-10;
   size_t max_steps = 1e8;
   pasta_transport_class &par= *reinterpret_cast<pasta_transport_class*>(parametersPointer);
+  double min=par.q0;
   double max=2.*par.electron.kf;
   
   //gsl_error_handler_t * old_handler=gsl_set_error_handler_off();
@@ -945,7 +946,7 @@ double integrate_coulomb(double (func)(double, void *), void *parametersPointer)
   int mu=0;
   int nu=0;
   gsl_integration_qaws_table * table=gsl_integration_qaws_table_alloc(alpha,beta,mu,nu);
-	gsl_integration_qaws(&My_function, 0., max, table, err_abs, err_rel, max_steps, w, &result, &er_res);
+	gsl_integration_qaws(&My_function, min, max, table, err_abs, err_rel, max_steps, w, &result, &er_res);
   gsl_integration_qaws_table_free(table);
   
   //gsl_set_error_handler(old_handler);

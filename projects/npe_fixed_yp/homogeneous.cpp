@@ -32,11 +32,11 @@ int main(int argc, char** argv)
 	nlwm_class qhd(parametrization);
  	//qhd.printParameters();
   particle electron;
-	electron.mass_eff= Me/qhd.Mn;
+	electron.mass_eff= Me/Mnucleon;
 	electron.mass= electron.mass_eff;
 	electron.Q=-1.;
 
-  double rhoBMax=1./pow(qhd.Mn/hc, 3);
+  double rhoBMax=1./pow(Mnucleon/hc, 3);
   int iR=200;
   double dRho= rhoBMax/iR;
 
@@ -64,9 +64,9 @@ int main(int argc, char** argv)
 			Entropy= qhd.getEntropy()	 	+electron.entropy;
 			FreeEn= Energy -temperature*Entropy;
 			
-			outFile << rhoB*pow(qhd.Mn/hc, 3) << " "
-					<< Pressure*qhd.Mn*pow(qhd.Mn/hc, 3) << " " 
-					<< (FreeEn/rhoB - 1.)*qhd.Mn  << " " 
+			outFile << rhoB*pow(Mnucleon/hc, 3) << " "
+					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " " 
+					<< (FreeEn/rhoB - 1.)*Mnucleon  << " " 
 					<< qhd.proton.chemPot  << " "
 					<< qhd.neutron.chemPot << " " 
 					<< qhd.proton.mass_eff << " " 

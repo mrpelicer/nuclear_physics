@@ -86,7 +86,7 @@ int main(){
 	double rhoB;
 	double rhoBMin=0.002/pow(Mnucleon/hc, 3);
   double rhoBMax=1./pow(Mnucleon/hc, 3);///7.5*hadrons.rho0;
-	//0.62/pow(hadrons.Mn/hc, 3); fsu2h c amm ou b
+	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
   int iR=300;
   double dRho=  (rhoBMax-rhoBMin)/iR;
 	double Yu, Yd, Ys;

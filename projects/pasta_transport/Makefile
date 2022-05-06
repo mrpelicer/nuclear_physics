@@ -18,15 +18,27 @@ OBJS = 	$(BUILDDIR)/pasta.o \
 				$(BUILDDIR)/rmf_non_linear_walecka.o \
 				$(BUILDDIR)/interpolator.o
 
-APP = pastadensloop
-APP2= pastasizeloop
+APP1= densloop
+APP2= sizeloop
+APP3= xloop
 
-$(APP) : $(BUILDDIR) \
+all: APP1 APP2 APP3
+
+$(APP1) : $(BUILDDIR) \
 	$(OBJS) \
-	pasta_transport.cpp \
-	pasta_Lloop.cpp 
-	$(CC) -o $(APP)  pasta_transport.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(CUBA_LIB) $(WALL) 
-	$(CC) -o $(APP2) pasta_Lloop.cpp 		 $(OBJS) $(GSL_LIB) $(CERES_LIB) $(CUBA_LIB) $(WALL) 
+	pasta_transport.cpp
+	$(CC) -o $(APP1)  pasta_transport.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(CUBA_LIB) $(WALL) 
+	
+	
+$(APP2) : $(BUILDDIR) \
+	$(OBJS) \
+	pasta_Lloop.cpp
+	$(CC) -o $(APP2) pasta_Lloop.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(CUBA_LIB) $(WALL) 
+
+$(APP3) : $(BUILDDIR) \
+	$(OBJS) \
+	pasta_xloop.cpp
+	$(CC) -o $(APP3) pasta_xloop.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(CUBA_LIB) $(WALL) 
 
 $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)
@@ -56,4 +68,4 @@ $(BUILDDIR)/interpolator.o : $(LIBDIR)/interpolator.h \
 	$(CC) -c $(LIBDIR)/interpolator.cpp -o $(BUILDDIR)/interpolator.o $(GSL_LIB)  $(WALL) 
 
 clean:
-	$(RM) $(OBJS) $(APP)
+	$(RM) $(OBJS) $(APP1)

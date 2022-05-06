@@ -76,7 +76,7 @@ int main(){
 			rhoB=(rhoBMax- (double)irho*dRho);
 
 			quarks.setEOS_symmetric(rhoB, temperature);
-			twoFlv.setEOS_2flavour(rhoB, temperature);
+			twoFlv.setEOS_2Flavor(rhoB, temperature);
 			
 			Pressure= quarks.getPressure();
 			Energy 	= quarks.getEnergy();
