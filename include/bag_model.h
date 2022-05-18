@@ -16,6 +16,8 @@ public:
 	double xvu=0., xvd=0., xvs=0.;
 
 	int iFlavor=3;
+	double Yu=0., Yd=0., Ys=0.;
+	double Ye=0., Ym=0.;
 //Thermodynamic variables:
   double rhoB, rhoS, rho3, rhoQ, Yp, temperature;
 	double rhoB_integrated, rhoS_integrated, rho3_integrated, rhoq_integrated; 
@@ -30,7 +32,7 @@ public:
 // Construct (initialize) the object:
 	bag_model_class();
   ~bag_model_class(void){};
-	void setParameters(double bag_, double Gv_, double Xv_, double tcrit_);
+	void setParameters(double bag_, double Gv_, double xsi_, double Xv_, double tcrit_);
 	void setParametrization(std::string parametrization_);
 	void printParameters(void);
 
@@ -45,14 +47,23 @@ public:
 	void setEOS_symmetric(double rhob_, double temp_);
 	//Set EOS beta-equilibrium: input density and temperature
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_, particle &muon_);
-	void setEOS_betaEq_2F(double rhob_, double temp_, particle &electron_, particle &muon_);
 	
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_);
 	void setEOS_betaEq_PressureFixed(double press_, double temp_,	
 																		particle &electron_, particle &muon_);
-//Set EOS for the pasta solver: input effective chemical potentials and mass.
-	void setEOS_coexistence(double nup_, double nun_, double mef_);	
 
+void setEoSFlavor_muBFixed(double mub_, double temp_, 
+                                            particle electron_, particle muon_,
+                                            double Yu_,  double Yd_,  double Ys_);
+
+void setEoSFlavor_muBFixed2(double mub_, double temp_, 
+                                            particle & electron_, particle & muon_,
+                                            double Yu_,  double Yd_,  double Ys_,
+																						double Ye_, double Ym_);
+
+//Set EOS for the pasta solver: input effective chemical potentials and mass.
+	void setEoSFlavorFixed(double rhob_, double temp_, double v0_, 
+													double Yu_, double Yd_, double Ys_);
 //Set the solver for meson equations of motion:
 	void setVectorMeanFields(); 
 
@@ -128,6 +139,36 @@ private:
 struct QuarkBetaEqFunctor{
 public:
 	QuarkBetaEqFunctor(bag_model_class & quarks_, particle & electron_, particle &muon_):
+									quarks(quarks_), electron(electron_), muon(muon_)
+  {}
+
+template <typename T>
+  bool operator()(const T* arg, T* residuals) const;
+
+private:
+    bag_model_class 	&quarks;
+		particle 					&electron;
+		particle 					&muon;
+};
+
+struct QuarkFlavor_muBFixed{
+public:
+	QuarkFlavor_muBFixed(bag_model_class & quarks_, particle & electron_, particle &muon_):
+									quarks(quarks_), electron(electron_), muon(muon_)
+  {}
+
+template <typename T>
+  bool operator()(const T* arg, T* residuals) const;
+
+private:
+    bag_model_class 	&quarks;
+		particle 					&electron;
+		particle 					&muon;
+};
+
+struct QuarkFlavor_muBFixed2{
+public:
+	QuarkFlavor_muBFixed2(bag_model_class & quarks_, particle & electron_, particle &muon_):
 									quarks(quarks_), electron(electron_), muon(muon_)
   {}
 

@@ -30,7 +30,9 @@ int main(){
 
 	temperature*=1./Mnucleon;
 	quarks_class quarks;
+	quarks.setFlavorNumber(3);
 	quarks_class twoFlv;
+	twoFlv.setFlavorNumber(2);
 
 	particle electron;
 	electron.mass= Me/Mnucleon;
@@ -88,7 +90,7 @@ int main(){
 
 			particle electron_2f= electron;
 			particle muon_2f= 		muon;
-			twoFlv.setEOS_betaEq_2F(rhoB, temperature, electron_2f, muon_2f);
+			twoFlv.setEOS_betaEq(rhoB, temperature, electron_2f, muon_2f);
 
 			Pressure= quarks.getPressure() 			+ electron.pressure + muon.pressure;
 			Energy 	= quarks.getEnergy()		 		+ electron.energy + muon.energy;

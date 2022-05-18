@@ -7,6 +7,7 @@ class quarks_class{
 	public:
 	double rhoB, temperature=0., PressureTot;
 	double Yu, Yd, Ys;
+	double Ye, Ym;
 	int iFlavor;
 	double Bfield=0.;
 
@@ -25,9 +26,7 @@ class quarks_class{
 	void setParameters(double C_, double D_, double tcrit_);
 	
 	void setEOS_betaEq(double rhob_, double temp_, particle &electron_, particle &muon_);
-	void setEOS_betaEq_2F(double rhob_, double temp_, particle &electron_, particle &muon_);
 	void setEOS_symmetric(double rhob_, double temp_);
-	void setEOS_2Flavor(double rhob_, double temp_);
 	void 	setEoSFlavorFixed(double rhob_, double temperature_, 
 																					double Yu_,  double Yd_,  double Ys_);
 	void setEoSFlavor_PressFixed(double press_, double temp_, 
@@ -36,8 +35,14 @@ class quarks_class{
 	void setEoSFlavor_muBFixed(double press_, double temp_, 
 	                                            particle electron_, particle muon_,
                                             double Yu_,  double Yd_,  double Ys_);
+	void setEoSFlavor_muBFixed2(double mub_, double temp_, 
+                                      particle &electron_, particle &muon_,
+                                      double Yu_,  double Yd_,  double Ys_, 
+																			double Ye_, double Ym_);
+
 	void setEffectiveMasses(double rhob_, double temp_);
 
+	void setFlavorNumber(int if_);
 
 	void setDensities(double mu_u, double mu_d, double mu_s);
 	double sigma(double t_);
@@ -57,25 +62,10 @@ class quarks_class{
 
 };
 
-struct ThreeFlavorBetaEqFunctor{
+struct QuarkBetaEqFunctor{
 public:
-	ThreeFlavorBetaEqFunctor(quarks_class & quarks_, particle & electron_, particle &muon_):
+	QuarkBetaEqFunctor(quarks_class & quarks_, particle & electron_, particle &muon_):
 									quarks(quarks_), electron(electron_), muon(muon_)
-  {}
-
-template <typename T>
-  bool operator()(const T* arg, T* residuals) const;
-
-private:
-    quarks_class 	&quarks;
-		particle 			&electron;
-		particle 			&muon;
-};
-
-struct TwoFlavorBetaEqFunctor{
-public:
-	TwoFlavorBetaEqFunctor(quarks_class & quarks_, particle & electron_, particle &muon_):
-														quarks(quarks_), electron(electron_), muon(muon_)
   {}
 
 template <typename T>
@@ -101,18 +91,6 @@ private:
 };
 
 
-struct TwoFlavorSymFunctor{
-public:
-	TwoFlavorSymFunctor(quarks_class & quarks_): quarks(quarks_)
-	{}
-
-template <typename T>
-	bool operator()(const T* arg, T* residuals) const;
-
-private:
-	quarks_class &quarks;
-};
-
 struct QuarkFlavor_PressFixed{
 public:
 	QuarkFlavor_PressFixed(quarks_class & quarks_, particle & electron_, particle &muon_):
@@ -130,7 +108,23 @@ private:
 
 struct QuarkFlavor_muBFixed{
 public:
-	QuarkFlavor_muBFixed(quarks_class & quarks_, particle & electron_, particle &muon_):
+	QuarkFlavor_muBFixed(quarks_class & quarks_, particle & electron_, particle & muon_):
+									quarks(quarks_), electron(electron_), muon(muon_)
+  {}
+
+template <typename T>
+  bool operator()(const T* arg, T* residuals) const;
+
+private:
+    quarks_class 	&quarks;
+		particle 			&electron;
+		particle 			&muon;
+};
+
+
+struct QuarkFlavor_muBFixed2{
+public:
+	QuarkFlavor_muBFixed2(quarks_class & quarks_, particle & electron_, particle &muon_):
 									quarks(quarks_), electron(electron_), muon(muon_)
   {}
 

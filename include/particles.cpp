@@ -14,6 +14,7 @@ void particle::calculateProperties(){
           entropy            = integrate(entropyFunc,   this);
         }else{
           if(density>0.){
+            // cout << mass_eff*Mnucleon << " " << Q <<endl;
             energy             = energyT0();
             pressure           = pressureT0();//chemPot*density - energy; 
           }

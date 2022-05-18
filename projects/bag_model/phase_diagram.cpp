@@ -1,7 +1,6 @@
 #include "../../include/constant.h"
 #include "../../include/particles.h"
-#include "../../include/rmf_non_linear_walecka.h"
-#include "../../include/quark_model.h"
+#include "../../include/bag_model.h"
 #include "../../include/interpolator.h"
 
 #include <iostream>
@@ -14,15 +13,15 @@
 
 using namespace std;
 
-vector<double> findTransition(vector<double> mubHv_, vector<double> mubQv_, 
-							vector<double> pressHv_, vector<double> pressQv_,
-							vector<double> rhobHv_, vector<double> rhobQv_);
+vector<double> findTransition(vector<double> mubQv_, 
+															vector<double> pressQv_,
+															vector<double> rhobQv_);
 
 struct TransitionFunctor{
 public:
-	TransitionFunctor(vector<double> mubHv_, vector<double> mubQv_, 
-							vector<double> pressHv_, vector<double> pressQv_, 
-							vector<double> rhobHv_, vector<double> rhobQv_);
+	TransitionFunctor(vector<double> mubQv_, 
+										vector<double> pressQv_, 
+										vector<double> rhobQv_);
 
 template <typename T>
   bool operator()(const T* arg, T* residuals) const;
@@ -32,26 +31,40 @@ private:
 };
 
 int main(){
-//Choose pararametrization
-	std::string parametrization= 	"fsu2h";
-	std::string hyperon_params =	"fsu2h"; 
 
-	nlwm_class hadrons(parametrization);
+	bool doHyperons	=	false;
 
-	bool doHyperons	=	true;
+	bag_model_class quarks;
 
-	if(doHyperons) hadrons.includeHyperons(doHyperons, hyperon_params);
+	double Bag=pow(205./Mnucleon, 4);	//MeV
+	double Gv=0.8*pow(Mnucleon/hc, 2); // fm^2
+	double xsi=6.*20.;
+	double Xv=1; 											//adim
+	double tcrit=0/Mnucleon;					//MeV
 
-	quarks_class quarks;
+	quarks.setParameters(Bag, Gv, xsi, Xv, tcrit);
+	int iflavor= (doHyperons== true) ? 3 : 2;
+	cout << iflavor << endl;
+	quarks.setFlavorNumber(iflavor);
 
-	double tcrit=170./Mnucleon;
-	double C, sqrtD;
-	cout << "Choose C and sqrt(D)" << endl;
-	cin >> C >> sqrtD; 
-	// double C= 0.2;
-	double D= pow(sqrtD, 2.)/pow(Mnucleon, 2);
-	quarks.setParameters(C, D, tcrit);
+//Set system variables
+	double tempMin=0./Mnucleon;
+  double tempMax=200./Mnucleon;
+  int itMax=100;
+  double dt=  (tempMax-tempMin)/itMax;
 
+	double rhoB;
+	double rhoBMin=0.002/pow(Mnucleon/hc, 3);
+  double rhoBMax=1.5/pow(Mnucleon/hc, 3);///7.5*hadrons.rho0;
+	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
+  int iR=300;
+  double dRho=  (rhoBMax-rhoBMin)/iR;
+	
+	std::string filename="data/phase_diag_B"+to_string(pow(Bag, 1/4.)*Mnucleon)+
+																				"_Gv"+to_string(Gv*pow(hc/Mnucleon, 2))+
+																				"_xsi"+to_string(xsi)+".txt";
+
+	std::ofstream outDiag(filename);
 
 	particle electron;
 	electron.mass= Me/Mnucleon;
@@ -66,54 +79,20 @@ int main(){
 	muon.gamma=2.;
 
 
-//Set system variables
-	// double temperature;
-	double tempMin=0./Mnucleon;
-  double tempMax=200./Mnucleon;
-  int itMax=100;
-  double dt=  (tempMax-tempMin)/itMax;
-	// vector<double> tempv={0., 10., 20., 30., 40., 50., 100., 160};
-	// double Press;
-	// double PressMax=200.*pow(hc/Mnucleon, 3)/Mnucleon;
-	// double PressMin=0.0*pow(hc/Mnucleon, 3)/Mnucleon;
-	// int iP=200;
-	// double dPress= (PressMax - PressMin)/iP;
-	//Define thermodynamic variables
-
-		//=== Loop over barionic density
-	// for(int imu=0; imu<imuMax; imu++){
-		// muB= muBMax- imu*dMu;
-	double rhoB;
-	double rhoBMin=0.002/pow(Mnucleon/hc, 3);
-  double rhoBMax=1./pow(Mnucleon/hc, 3);///7.5*hadrons.rho0;
-	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
-  int iR=300;
-  double dRho=  (rhoBMax-rhoBMin)/iR;
-	double Yu, Yd, Ys;
-
-	std::string filename1;
-	filename1="data/diagram_H_" +parametrization+
-												"_Q_"+to_string(C)+"_"+to_string(sqrt(D)*Mnucleon)+".txt";
-
-		std::ofstream outDiag(filename1);
-
-	for(int it=0; it<=itMax; it++){
+	for(int it=0; it<itMax; it++){
  		double temperature=tempMin+ it*dt;
-  //  for (double temperature : tempv){
-		//  temperature*=1./Mnucleon;
-
-		std::string filenameH, filenameQ;
-		vector<double>mubHv, mubQv, pressHv, pressQv, rhobHv, rhobQv;
-
-		filenameH="data/press_H_" +parametrization+
-														"_T"+to_string(temperature*Mnucleon)+".txt";
-		filenameQ="data/press_Q_"+to_string(C)+"_"+to_string(sqrt(D)*Mnucleon)+
-			 											"_T"+to_string(temperature*Mnucleon)+".txt";
-		std::ofstream outHadron(filenameH);
-		std::ofstream outQuark (filenameQ);
-
 		electron.temperature=temperature;
 		muon.temperature=temperature;
+		
+		std::string filenameH, filenameQ;
+		vector<double> mubQv, pressQv, rhobQv;
+		
+		filenameQ="data/eos_sym_B"+to_string(pow(Bag, 1/4.)*Mnucleon)+
+			 											"_T"+to_string(temperature*Mnucleon)+".txt";
+		std::ofstream outQuark (filenameQ);
+
+		// electron.temperature=temperature;
+		// muon.temperature=temperature;
 		cout << temperature*Mnucleon << endl;
 		// int ip=0;
 		// do{
@@ -121,136 +100,71 @@ int main(){
 		// 	Press=(PressMax- (double)ip*dPress);
 		for(int irho=0; irho<=iR; irho++){
 			rhoB=rhoBMax- (double)irho*dRho;
-			
-			//Solve self-consistently:
-			hadrons.setEOS_betaEq(rhoB, temperature, electron, muon);
-			
-			electron.pressure	=electron.chemPot*electron.density 	- electron.energy + temperature*electron.entropy;
-			muon.pressure			=muon.chemPot*muon.density 					- muon.energy			+ temperature*muon.entropy;
-			//Set variables:
-			double Energy		= hadrons.getEnergy() 		+ electron.energy	 + muon.energy;
-			double Entropy 	= hadrons.getEntropy() 		+ electron.entropy + muon.entropy;
-			double PressureH	=hadrons.getPressure() + electron.pressure + muon.pressure;
 
-			// hadrons.setEOS_betaEq_PressureFixed(Press, temperature, electron, muon);
+			// quarks.setEOS_symmetric(rhoB, temperature);
+			quarks.setEOS_betaEq(rhoB, temperature, electron, muon);
 
-			Yu= (2.*hadrons.proton.density + hadrons.neutron.density
-								+hadrons.lambda0.density  + 2.*hadrons.sigmap.density+ hadrons.sigma0.density
-								+hadrons.xi0.density)/(3.*hadrons.getBaryonDens()); 
-
-			Yd= (hadrons.proton.density + 2.*hadrons.neutron.density
-					+hadrons.lambda0.density  +  hadrons.sigma0.density + 2.*hadrons.sigmam.density
-					+hadrons.xim.density)/(3.*hadrons.getBaryonDens()); 							
-
-			Ys= (hadrons.lambda0.density  
-					+  hadrons.sigmap.density + hadrons.sigma0.density
-					+		hadrons.sigmam.density +2.*hadrons.xi0.density
-					+		2.*hadrons.xim.density)/(3.*hadrons.getBaryonDens()); 							
-
-			quarks.setEoSFlavor_PressFixed(PressureH, temperature, electron, muon,
-																			Yu, Yd, Ys);
-			// quarks.setEoSFlavorFixed(hadrons.getBaryonDens(), temperature, Yu, Yd, Ys);
-			//  PressureH= hadrons.getPressure()+electron.pressure+muon.pressure;
-
-			double PressureQ= quarks.getPressure()+electron.pressure+muon.pressure;
-			
-			quarks.muB= (quarks.getEnergy() +electron.energy + muon.energy
-      -temperature*(quarks.getEntropy()+electron.entropy + muon.entropy)
-      + PressureQ)/rhoB;
-
-				outHadron << hadrons.muB*Mnucleon << " " 
-									<< PressureH*Mnucleon*pow(Mnucleon/hc, 3) << " "
-									<< hadrons.getBaryonDens()*pow(Mnucleon/hc, 3)								
-									<< std::endl;
-			
+			double PressureQ= quarks.getPressure() + electron.pressure + muon.pressure;
+		
 				outQuark << quarks.muB*Mnucleon << " " 
 								 << PressureQ*Mnucleon*pow(Mnucleon/hc, 3) << " "
 								 << quarks.rhoB*pow(Mnucleon/hc, 3)
 								 <<endl;
 
-			if(PressureH>=0. && 
-						(irho==0 || (hadrons.rhoB < rhobHv.back() && quarks.rhoB < rhobQv.back()))){
-				mubHv.push_back(hadrons.muB);
 				mubQv.push_back(quarks.muB);
-				pressHv.push_back(PressureH);
 				pressQv.push_back(PressureQ);
-				rhobHv.push_back(hadrons.rhoB);
 				rhobQv.push_back(quarks.rhoB);
-			}
-			// ip++;
-		// }while((hadrons.getBaryonDens()*pow(Mnucleon/hc, 3))>0.05);
 		}
-		// }
-		hadrons.firstRun=true;
 		quarks.firstRun=true;
-		reverse(mubHv.begin(), mubHv.end());
 		reverse(mubQv.begin(), mubQv.end());
-		reverse(pressHv.begin(), pressHv.end());
 		reverse(pressQv.begin(), pressQv.end());
-		reverse(rhobHv.begin(), rhobHv.end());
 		reverse(rhobQv.begin(), rhobQv.end());
 
-		vector<double> trans_point= findTransition(mubHv, mubQv, pressHv, pressQv, rhobHv, rhobQv);
-		double rhoht= trans_point[0];
-		double rhoqt= trans_point[1];
-				
+		vector<double> trans_point= findTransition(mubQv, pressQv, rhobQv);
+		double rhoqt= trans_point[0];
+
 			
-			
+		double mub_= interpolation_func(rhoqt, mubQv, rhobQv);
+		double pressure_=interpolation_func(rhoqt, pressQv, rhobQv);
+
 
 		cout << "transition: T= " << temperature*Mnucleon << " "  
-			  << rhoht*pow(Mnucleon/hc, 3.)  << " " << rhoqt*pow(Mnucleon/hc, 3.)  << " " 
-				<< interpolation_func(rhoht, pressHv, rhobHv)*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
-				<< interpolation_func(rhoqt, pressQv, rhobQv)*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
-				<< interpolation_func(rhoht, mubHv, rhobHv)*Mnucleon  << " " 
-				<< interpolation_func(rhoqt, mubQv, rhobQv)*Mnucleon  << " "
+			  << rhoqt*pow(Mnucleon/hc, 3.)  << " " 
+				<< pressure_*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
+				<< mub_*Mnucleon  << " "
 				 << endl;
-
-		if(interpolation_func(rhoht, pressHv, rhobHv)-interpolation_func(rhoqt, pressQv, rhobQv)>1e-6 
-		|| interpolation_func(rhoht, mubHv, rhobHv)-interpolation_func(rhoqt, mubQv, rhobQv) >1e-6){
-			cout << "TRANSITION WRONGLY CALCULATED!!!" << endl;
-		}else{
-		double mub_= interpolation_func(rhoht, mubHv, rhobHv);
-		double pressure_=interpolation_func(rhoht, pressHv, rhobHv);
 
 		outDiag << mub_*Mnucleon  << " " 
 						<< temperature*Mnucleon << " " 
 						<<	pressure_*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
-						<< rhoht*pow(Mnucleon/hc, 3.)  << " " << rhoqt*pow(Mnucleon/hc, 3.) << " "
-						<< Yu << " " << Yd << " " << Ys
+						<< rhoqt*pow(Mnucleon/hc, 3.) << " "
 						<< endl;
 		}
-			outHadron.close();
-			outQuark.close();
-
-	}
+		outDiag.close();
 		
-	outDiag.close();
   return 0;
 }
 
-vector<double> findTransition(vector<double> mubHv_, vector<double> mubQv_, 
-							vector<double> pressHv_, vector<double> pressQv_, 
-							vector<double> rhobHv_, vector<double> rhobQv_){
+vector<double> findTransition(vector<double> mubQv_, 
+															vector<double> pressQv_, 
+															vector<double> rhobQv_){
 
-	double rhobh_=.8*pow(hc/Mnucleon, 3);
-	double rhobq_=1.*pow(hc/Mnucleon, 3);
-	double x[]={rhobh_, rhobq_};
+	double rhobq_=.6*pow(hc/Mnucleon, 3);
+	double x[]={rhobq_};
 	 
 	Problem p;
 	CostFunction* cost= 
-							new NumericDiffCostFunction<TransitionFunctor,ceres::CENTRAL, 2, 2>
-							(new TransitionFunctor(mubHv_, mubQv_, pressHv_, pressQv_, rhobHv_ ,rhobQv_));
+							new NumericDiffCostFunction<TransitionFunctor,ceres::CENTRAL, 1, 1>
+							(new TransitionFunctor(mubQv_, pressQv_, rhobQv_));
 	p.AddResidualBlock(cost, NULL, x);
 	//  cout<< rhobHv_.front()*pow(Mnucleon/hc, 3) << " " << rhobHv_.back()*pow(Mnucleon/hc, 3) << " " 
 	//  			<< rhobQv_.front()*pow(Mnucleon/hc, 3) << " " << rhobQv_.back()*pow(Mnucleon/hc, 3) << endl;
-  p.SetParameterLowerBound(x, 0, rhobHv_.front());
-  p.SetParameterUpperBound(x, 0, rhobHv_.back());
-	p.SetParameterLowerBound(x, 1, rhobQv_.front());
-	p.SetParameterUpperBound(x, 1, rhobQv_.back());
+	p.SetParameterLowerBound(x, 0, rhobQv_.front());
+	p.SetParameterUpperBound(x, 0, rhobQv_.back());
 	Solver::Options options;
-	options.parameter_tolerance = 1e-10;
+	options.parameter_tolerance = 1e-12;
 	options.function_tolerance = 1e-12;
-	options.gradient_tolerance=1e-13;
+	options.gradient_tolerance=1e-14;
 	// options.line_search_direction_type= ceres::STEEPEST_DESCENT;
 	options.use_nonmonotonic_steps= true;
 	options.dense_linear_algebra_library_type=ceres::LAPACK;
@@ -263,42 +177,34 @@ vector<double> findTransition(vector<double> mubHv_, vector<double> mubQv_,
   options.minimizer_progress_to_stdout = true;
 		 
 	Solver::Summary summary;
-	options.max_num_iterations=1e3;	
+	options.max_num_iterations=1e4;	
 	//Run
 	Solve(options, &p, &summary);
 	//Print if convergence was achieved.
 	 std::cout << summary.FullReport() <<  "\n" << summary.IsSolutionUsable() << "\n"; 
-	 std::cout  << rhobh_ << " " << rhobq_  << " ---> " << x[0] << " " << x[1] 
+	 std::cout  << rhobq_  << " ---> " << x[0]
 	            << std::endl;
 	
-	vector<double> sol(2);
+	vector<double> sol(1);
 	sol[0] = summary.IsSolutionUsable() == true ? x[0] : NAN;
-	sol[1] = summary.IsSolutionUsable() == true ? x[1] : NAN;
 	return sol;
 }
 
-TransitionFunctor::TransitionFunctor(vector<double> mubHv_, vector<double> mubQv_, 
-							vector<double> pressHv_, vector<double> pressQv_, 
-							vector<double> rhobHv_, vector<double> rhobQv_){
-	mubHv = mubHv_;
+TransitionFunctor::TransitionFunctor(vector<double> mubQv_, 
+																		 vector<double> pressQv_, 
+																		 vector<double> rhobQv_){
 	mubQv = mubQv_;
-	pressHv = pressHv_;
 	pressQv = pressQv_;
-	rhobHv= rhobHv_;
 	rhobQv= rhobQv_;
 }
+
 template <typename T>
 bool TransitionFunctor::operator()(const T* x, T* residuals) const{
 
-	double mubh_, mubq_, pressh_, pressq_;
-	
-	 mubh_= interpolation_func(x[0], pressHv, rhobHv);
-	 mubq_= interpolation_func(x[1], pressQv, rhobQv);
-	 pressh_= interpolation_func(x[0], mubHv, rhobHv);
-	 pressq_= interpolation_func(x[1], mubQv, rhobQv);
+	double pressq_;
+	pressq_= interpolation_func(x[0], pressQv, rhobQv);
 
-  residuals[0] = mubh_ - mubq_;
-  residuals[1] = pressh_ - pressq_;
+  residuals[0] = pressq_;
 
 	return true;
 	

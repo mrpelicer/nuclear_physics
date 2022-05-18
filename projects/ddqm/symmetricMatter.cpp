@@ -34,8 +34,9 @@ int main(){
 
 	temperature*=1./Mnucleon;
 	quarks_class quarks;
+	quarks.setFlavorNumber(3);
 	quarks_class twoFlv;
-
+	twoFlv.setFlavorNumber(2);
 
 	
 	//Define thermodynamic variables
@@ -76,7 +77,7 @@ int main(){
 			rhoB=(rhoBMax- (double)irho*dRho);
 
 			quarks.setEOS_symmetric(rhoB, temperature);
-			twoFlv.setEOS_2Flavor(rhoB, temperature);
+			twoFlv.setEOS_symmetric(rhoB, temperature);
 			
 			Pressure= quarks.getPressure();
 			Energy 	= quarks.getEnergy();

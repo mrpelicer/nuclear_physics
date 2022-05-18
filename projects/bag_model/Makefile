@@ -24,9 +24,10 @@ OBJS_PT= $(BUILDDIR)/interpolator.o \
 
 APP = sym
 APP2= beta
-APP3= ptflavor
+APP3= phase_trans
+APP4= phase_diag
 
-all: 	$(APP) $(APP2) $(APP3)
+all: 	$(APP) $(APP2) $(APP3) $(APP4)
 
 $(APP) : $(BUILDDIR) \
 	$(OBJS) \
@@ -40,9 +41,13 @@ $(APP2) : $(BUILDDIR) \
 
 $(APP3) : $(BUILDDIR) \
 	$(OBJS_PT) \
-	phase_diagram.cpp
-	$(CC) -o $(APP3) phase_diagram.cpp $(OBJS_PT) $(GSL_LIB) $(CERES_LIB) $(WALL) 
+	phase_transition.cpp
+	$(CC) -o $(APP3) phase_transition.cpp $(OBJS_PT) $(GSL_LIB) $(CERES_LIB) $(WALL) 
 
+$(APP4) : $(BUILDDIR) \
+	$(OBJS) \
+	phase_diagram.cpp
+	$(CC) -o $(APP4) phase_diagram.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(WALL) 
 
 $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)

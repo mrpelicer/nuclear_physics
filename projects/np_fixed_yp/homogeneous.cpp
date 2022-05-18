@@ -35,12 +35,19 @@ int main(){
 	// VectorXd ener(iR), esym(iR), enerDens(iR), press(iR);
 	vector<double> enerv, enerdensv, esymv, pressv, rhobv;
 
+
 	bool doHyperons	=	false;
 	bool doDeltas		=	false;
-	// string hyperon_params ="gm";  //gm (Glendenning), su3 (código do Kauan) 
- 	// qhd.includeHyperons(doHyperons, hyperon_params);
-	// string delta_params 	 ="su6";  //su6(1.), mplA_1(beta=1.1), mplA_2, prd89_1, prd89_1
-	// qhd.includeDeltas(		doDeltas, 	delta_params);
+
+	string hyperon_params;  //gm (Glendenning), su3 (código do Kauan) 
+	cout << "Choose hyperon parametrization" << endl;
+	cin >> hyperon_params;
+
+ 	qhd.includeHyperons(doHyperons, hyperon_params);
+	string delta_params;  //su6(1.), mplA_1(beta=1.1), mplA_2, prd89_1, prd89_1
+	cout << "Choose delta parametrization" << endl;
+	cin >> delta_params;
+	qhd.includeDeltas(		doDeltas, 	delta_params);
 
 	vector<double> Unv, Upv, Ul0v, Usmv, Us0v, Uspv, Uxmv, Ux0v, Udmv, Ud0v, Udpv, Udppv;
 

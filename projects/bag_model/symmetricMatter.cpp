@@ -33,20 +33,12 @@ int main(){
 
 // 	//Define thermodynamic variables
 	double Energy, Pressure, FreeEn;
-	string outStrS= "data/stability_ms"+to_string(quarks.qs.mass*Mnucleon)+
-																	"_T"+std::to_string(temperature*Mnucleon)+".txt";
-	ofstream  outStability(outStrS);
-	//Set output file
-
-//to do a single point, i*M=1 and set *Max
-
-	string outBeta= "data/eos_T"+to_string(temperature*Mnucleon)+".txt";
-	ofstream outFile(outBeta);
 
 
 	double Bag=pow(148./Mnucleon, 4);	//MeV
 	double Xv=0; 											//adim
 	double Gv=0.*pow(Mnucleon/hc, 2); 	// fm^2
+	double xsi=0.;
 	double tcrit=0/Mnucleon;					//MeV
 	
 	//double Bmin=pow(145./Mnucleon, 4);
@@ -54,16 +46,27 @@ int main(){
 	//int iBM= 200;
 	//double dB= (Bmax-Bmin)/iBM;
 
+	string outStrS= "data/stability_bag"+to_string(Bag*pow(Mnucleon, 4))+
+																	"_T"+std::to_string(temperature*Mnucleon)+".txt";
+	ofstream  outStability(outStrS);
+	//Set output file
+
+//to do a single point, i*M=1 and set *Max
+
+	string outSym= "data/eos_sym_T"+to_string(temperature*Mnucleon)+".txt";
+	ofstream outFile(outSym);
+
 	//for(int ib=0; ib< iBM; ib++){
 	
 		//Bag= Bmax-iB*dB;
 
-		quarks.setParameters(Bag, Gv, Xv, tcrit);
+		quarks.setParameters(Bag, Gv, xsi, Xv, tcrit);
 		quarks.setFlavorNumber(3);
-		twoFlv.setParameters(Bag, Gv, Xv, tcrit);
+		twoFlv.setParameters(Bag, Gv, xsi, Xv, tcrit);
 		twoFlv.setFlavorNumber(2);
 		//Set output file		
 		Eigen::VectorXd rhobv(iR), Pressv(iR), pressAbsv(iR), Ener3Fv(iR), Ener2Fv(iR), MupEfv(iR);
+			
 			//=== Loop over barionic density		
 		for(int irho=0; irho<iR; irho++){
 			rhoB=(rhoBMax- (double)irho*dRho);

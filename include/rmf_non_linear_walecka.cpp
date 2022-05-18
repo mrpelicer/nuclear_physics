@@ -213,19 +213,19 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 	doHyperons=do_;
 	std::cout << "do Hyperons! " << doHyperons << std::endl;
 
-	// lambda0.mass=1116./Mnucleon;
-	// sigmam.mass =1193./Mnucleon;
-	// sigma0.mass =1193./Mnucleon;
-	// sigmap.mass =1193./Mnucleon;
-	// xim.mass		=1318./Mnucleon;
-	// xi0.mass		=1318./Mnucleon;
+	lambda0.mass=1116./Mnucleon;
+	sigmam.mass =1193./Mnucleon;
+	sigma0.mass =1193./Mnucleon;
+	sigmap.mass =1193./Mnucleon;
+	xim.mass		=1318./Mnucleon;
+	xi0.mass		=1318./Mnucleon;
 
-	lambda0.mass=1115.7/Mnucleon;
-	sigmam.mass =1197.5/Mnucleon;
-	sigma0.mass =1192.6/Mnucleon;
-	sigmap.mass =1189.4/Mnucleon;
-	xim.mass		=1321.7/Mnucleon;
-	xi0.mass		=1314.9/Mnucleon;
+	// lambda0.mass=1115.7/Mnucleon;
+	// sigmam.mass =1197.5/Mnucleon;
+	// sigma0.mass =1192.6/Mnucleon;
+	// sigmap.mass =1189.4/Mnucleon;
+	// xim.mass		=1321.7/Mnucleon;
+	// xi0.mass		=1314.9/Mnucleon;
 
 	lambda0.spin	= 1./2.;			 	lambda0.I3	= 0.;			lambda0.Q		= 0;  lambda0.stg =-1;
 	sigmap.spin		=	1./2.;			 	sigmap.I3		=	1.;			sigmap.Q		= 1.;	sigmap.stg	=-1;
@@ -316,6 +316,13 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 		xsl=0.7098; xss=0.552; xsx=0.522;
 		xvl=0.79; xvs=0.79; xvx=0.59;
 		xbl=0.; xbs=1.; xbx=1.;
+	}else if(parhyp=="iufsu_str"){// must fix!!! wrong potentials
+		xsl=0.590;		xss=0.429; 		xsx=0.306;
+		xvl=0.667;		xvs=0.667; 		xvx=0.333;
+		xbl=0.; 			xbs=1.; 			xbx=1.;
+		xtl=-0.471*sqrt(169.8349)/gv; 	xts=-0.471*sqrt(169.8349)/gv;		xtx=-0.943*sqrt(169.8349)/gv;
+
+
 	}else{
 		std::cout << "Unspecified hyperon parametrization." << std::endl;
 		exit(1);

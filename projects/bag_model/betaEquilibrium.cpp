@@ -54,15 +54,14 @@ int main(){
 
 //to do a single point, i*M=1 and set *Max
 
-	string outBeta= "data/eos_T"+to_string(temperature*Mnucleon)+".txt";
-	ofstream outFile(outBeta);
-
-
-	double Bag=pow(148./Mnucleon, 4);	//MeV
+	double Bag=pow(195./Mnucleon, 4);	//MeV
 	double Xv=0; 											//adim
 	double Gv=0.*pow(Mnucleon/hc, 2); 	// fm^2
+	double xsi= 0.;
 	double tcrit=0/Mnucleon;					//MeV
-	
+
+	string outBeta= "data/eos_T"+to_string(temperature*Mnucleon)+"_B"+to_string(pow(Bag, 1/4.)*Mnucleon)+".txt";
+	ofstream outFile(outBeta);	
 	//double Bmin=pow(145./Mnucleon, 4);
 	//double Bmax=pow(154./Mnucleon, 4);
 	//int iBM= 200;
@@ -72,9 +71,9 @@ int main(){
 	
 		//Bag= Bmax-iB*dB;
 
-		quarks.setParameters(Bag, Gv, Xv, tcrit);
+		quarks.setParameters(Bag, Gv, xsi, Xv, tcrit);
 		quarks.setFlavorNumber(3);
-		twoFlv.setParameters(Bag, Gv, Xv, tcrit);
+		twoFlv.setParameters(Bag, Gv, xsi, Xv, tcrit);
 		twoFlv.setFlavorNumber(2);
 		//Set output file		
 		Eigen::VectorXd rhobv(iR), Pressv(iR), pressAbsv(iR), Ener3Fv(iR), Ener2Fv(iR), MupEfv(iR);
@@ -105,18 +104,18 @@ int main(){
 			}
 			MupEfv(irho)= quarks.qu.mass_eff;
 
-				outFile << rhoB*pow(Mnucleon/hc, 3.) << " "
-									<< Pressure*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
-									<< Energy*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
-									<< quarks.muB*Mnucleon << " " 
-									<< quarks.qu.density *pow(Mnucleon/hc, 3.) << " "
-									<< quarks.qd.density *pow(Mnucleon/hc, 3.) << " "
-									<< quarks.qs.density *pow(Mnucleon/hc, 3.) << " "
-									<< electron.density	 *pow(Mnucleon/hc, 3.) << " " 
-									<< muon.density			 *pow(Mnucleon/hc, 3.)  << " " 
-									<< Ener3Fv(irho)*Mnucleon << " " 
-									<< Ener2Fv(irho)*Mnucleon << " " 
-									<< endl;
+			outFile << rhoB*pow(Mnucleon/hc, 3.) << " "
+								<< Pressure*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
+								<< Energy*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
+								<< quarks.muB*Mnucleon << " " 
+								<< quarks.qu.density *pow(Mnucleon/hc, 3.) << " "
+								<< quarks.qd.density *pow(Mnucleon/hc, 3.) << " "
+								<< quarks.qs.density *pow(Mnucleon/hc, 3.) << " "
+								<< electron.density	 *pow(Mnucleon/hc, 3.) << " " 
+								<< muon.density			 *pow(Mnucleon/hc, 3.)  << " " 
+								<< Ener3Fv(irho)*Mnucleon << " " 
+								<< Ener2Fv(irho)*Mnucleon << " " 
+								<< endl;
 		}
 			
 	Eigen::MatrixXd::Index minIE3F, minIE2F, minIMup, minIP;

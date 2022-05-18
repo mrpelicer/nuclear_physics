@@ -33,16 +33,18 @@ private:
 
 int main(){
 //Choose pararametrization
-	std::string parametrization= 	"gm1";
-	std::string hyperon_params =	"gm"; 
+	std::string parametrization= 	"l3wr";
+	std::string hyperon_params =	"l3wr3"; 
 
 	nlwm_class hadrons(parametrization);
+	quarks_class quarks;
 
-	bool doHyperons	=	true;
+	bool doHyperons	=	false;
 
 	if(doHyperons) hadrons.includeHyperons(doHyperons, hyperon_params);
+	int iflavor= (doHyperons== true) ? 3 : 2;
+	quarks.setFlavorNumber(iflavor);
 
-	quarks_class quarks;
 
 	double tcrit=170./Mnucleon;
 	double C, sqrtD;
@@ -69,27 +71,17 @@ int main(){
 //Set system variables
 	// double temperature;
 	double tempMin=0./Mnucleon;
-  double tempMax=170./Mnucleon;
-  int itMax=1;
+  double tempMax=100./Mnucleon;
+  int itMax=10;
   double dt=  (tempMax-tempMin)/itMax;
-	// vector<double> tempv={0., 10., 20., 30., 40., 50., 100., 160};
-	// double Press;
-	// double PressMax=200.*pow(hc/Mnucleon, 3)/Mnucleon;
-	// double PressMin=0.0*pow(hc/Mnucleon, 3)/Mnucleon;
-	// int iP=200;
-	// double dPress= (PressMax - PressMin)/iP;
-	//Define thermodynamic variables
 
-		//=== Loop over barionic density
-	// for(int imu=0; imu<imuMax; imu++){
-		// muB= muBMax- imu*dMu;
 	double rhoB;
-	double rhoBMin=1e-3/pow(Mnucleon/hc, 3);
+	double rhoBMin=0.002/pow(Mnucleon/hc, 3);
   double rhoBMax=1.2/pow(Mnucleon/hc, 3);///7.5*hadrons.rho0;
 	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
   int iR=120;
   double dRho=  (rhoBMax-rhoBMin)/iR;
-	double Yu, Yd, Ys;
+	double Yu, Yd, Ys, Ye, Ym;
 
 	std::string filename1;
 	filename1="data/diagram_H_" +parametrization+
@@ -99,8 +91,6 @@ int main(){
 
 	for(int it=0; it<itMax; it++){
  		double temperature=tempMin+ it*dt;
-  //  for (double temperature : tempv){
-		//  temperature*=1./Mnucleon;
 
 		std::string filenameH, filenameQ;
 		vector<double>mubHv, mubQv, pressHv, pressQv, rhobHv, rhobQv;
@@ -128,11 +118,9 @@ int main(){
 			electron.pressure	=electron.chemPot*electron.density 	- electron.energy + temperature*electron.entropy;
 			muon.pressure			=muon.chemPot*muon.density 					- muon.energy			+ temperature*muon.entropy;
 			//Set variables:
-			double Energy		= hadrons.getEnergy() 		+ electron.energy	 + muon.energy;
-			double Entropy 	= hadrons.getEntropy() 		+ electron.entropy + muon.entropy;
+			double EnergyH		= hadrons.getEnergy() 		+ electron.energy	 + muon.energy;
+			double EntropyH 	= hadrons.getEntropy() 		+ electron.entropy + muon.entropy;
 			double PressureH	=hadrons.getPressure() + electron.pressure + muon.pressure;
-			// hadrons.muB = (Energy - temperature*Entropy + PressureH)/rhoB;
-			// hadrons.setEOS_betaEq_PressureFixed(Press, temperature, electron, muon);
 
 			Yu= (2.*hadrons.proton.density + hadrons.neutron.density
 								+hadrons.lambda0.density  + 2.*hadrons.sigmap.density+ hadrons.sigma0.density
@@ -146,6 +134,14 @@ int main(){
 					+  hadrons.sigmap.density + hadrons.sigma0.density
 					+		hadrons.sigmam.density +2.*hadrons.xi0.density
 					+		2.*hadrons.xim.density)/(3.*hadrons.getBaryonDens()); 							
+			Ye=electron.density/rhoB;
+			Ym=muon.density/rhoB;
+
+			// quarks.setEoSFlavor_muBFixed(hadrons.muB, temperature, electron, muon,
+														// Yu, Yd, Ys);			
+			quarks.setEoSFlavor_muBFixed2(hadrons.muB, temperature, electron, muon,
+																		Yu, Yd, Ys, Ye, Ym);			
+
 
 			// quarks.setEoSFlavor_PressFixed(PressureH, temperature, electron, muon,
 																			// Yu, Yd, Ys);			
@@ -153,7 +149,7 @@ int main(){
 			// quarks.setEoSFlavor_muBFixed(hadrons.muB, temperature, electron, muon,
 			// 																Yu, Yd, Ys);			
 
-			quarks.setEoSFlavorFixed(hadrons.getBaryonDens(), temperature, Yu, Yd, Ys);
+			// quarks.setEoSFlavorFixed(hadrons.getBaryonDens(), temperature, Yu, Yd, Ys);
 			
 			double PressureQ= quarks.getPressure()+electron.pressure+muon.pressure;
 			
@@ -236,8 +232,8 @@ vector<double> findTransition(vector<double> mubHv_, vector<double> mubQv_,
 							vector<double> pressHv_, vector<double> pressQv_, 
 							vector<double> rhobHv_, vector<double> rhobQv_){
 
-	double rhobh_=.5*pow(hc/Mnucleon, 3);
-	double rhobq_=0.8*pow(hc/Mnucleon, 3);
+	double rhobh_=1.*pow(hc/Mnucleon, 3);
+	double rhobq_=1.2*pow(hc/Mnucleon, 3);
 	double x[]={rhobh_, rhobq_};
 	 
 	Problem p;
