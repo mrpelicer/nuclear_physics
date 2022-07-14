@@ -17,7 +17,7 @@ using namespace std;
 int main(){
 
 	double rhoB, temperature;
-  double rhoBMax=1.5*pow(hc/Mnucleon, 3);
+  double rhoBMax=2.*pow(hc/Mnucleon, 3);
 	double rhoBMin=0.*pow(hc/Mnucleon, 3);
   int iR=150;
   double dRho= (rhoBMax - rhoBMin)/iR;
@@ -60,16 +60,22 @@ int main(){
 	double xsi= 0.;
 	double tcrit=0/Mnucleon;					//MeV
 
+	cout << "Choose: \n Bag^1/4 (Mev),  Gv (fm2),  Xv, xsi, tcrit" << endl;
+	cin >> Bag >> Gv >> Xv >> xsi >> tcrit; 
+
+	// cout << "Choose Tcrit (MeV) -- >0 if you want B(T) and 0 for cte B" << endl;
+	// cin >> tcrit;
+	Bag=pow(Bag/Mnucleon, 4);
+	Gv*=pow(Mnucleon/hc, 2);
+	tcrit*=1./Mnucleon;
+
 	string outBeta= "data/eos_T"+to_string(temperature*Mnucleon)+"_B"+to_string(pow(Bag, 1/4.)*Mnucleon)+".txt";
 	ofstream outFile(outBeta);	
-	//double Bmin=pow(145./Mnucleon, 4);
-	//double Bmax=pow(154./Mnucleon, 4);
-	//int iBM= 200;
-	//double dB= (Bmax-Bmin)/iBM;
-
-	//for(int ib=0; ib< iBM; ib++){
-	
-		//Bag= Bmax-iB*dB;
+	string filenameQ="data/press_Q_B"+to_string(pow(Bag, 1/4.)*Mnucleon)+
+			 									"_Gv" +to_string(Gv*pow(hc/Mnucleon, 2))+
+												"_xsi"+to_string(xsi)+
+												"_T"	+to_string(temperature*Mnucleon)+".txt";
+	ofstream outQuark (filenameQ);
 
 		quarks.setParameters(Bag, Gv, xsi, Xv, tcrit);
 		quarks.setFlavorNumber(3);
@@ -116,6 +122,11 @@ int main(){
 								<< Ener3Fv(irho)*Mnucleon << " " 
 								<< Ener2Fv(irho)*Mnucleon << " " 
 								<< endl;
+						
+		outQuark << quarks.muB*Mnucleon << " " 
+						 << Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " "
+						 << quarks.rhoB*pow(Mnucleon/hc, 3)
+						 <<endl;
 		}
 			
 	Eigen::MatrixXd::Index minIE3F, minIE2F, minIMup, minIP;

@@ -39,12 +39,11 @@ int main(){
 	nlwm_class hadrons(parametrization);
 	quarks_class quarks;
 
-	bool doHyperons	=	false;
+	bool doHyperons	=	true;
 
 	if(doHyperons) hadrons.includeHyperons(doHyperons, hyperon_params);
 	int iflavor= (doHyperons== true) ? 3 : 2;
 	quarks.setFlavorNumber(iflavor);
-
 
 	double tcrit=170./Mnucleon;
 	double C, sqrtD;
@@ -66,18 +65,16 @@ int main(){
 	muon.mass_eff=Mm/Mnucleon;
 	muon.Q=-1.;
 	muon.gamma=2.;
-
-
 //Set system variables
 	// double temperature;
 	double tempMin=0./Mnucleon;
-  double tempMax=100./Mnucleon;
-  int itMax=10;
+  double tempMax=150./Mnucleon;
+  int itMax=50;
   double dt=  (tempMax-tempMin)/itMax;
 
 	double rhoB;
-	double rhoBMin=0.002/pow(Mnucleon/hc, 3);
-  double rhoBMax=1.2/pow(Mnucleon/hc, 3);///7.5*hadrons.rho0;
+	double rhoBMin=0.2/pow(Mnucleon/hc, 3);
+  double rhoBMax=1.1/pow(Mnucleon/hc, 3);///7.5*hadrons.rho0;
 	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
   int iR=120;
   double dRho=  (rhoBMax-rhoBMin)/iR;
@@ -146,8 +143,6 @@ int main(){
 			// quarks.setEoSFlavor_PressFixed(PressureH, temperature, electron, muon,
 																			// Yu, Yd, Ys);			
 			
-			// quarks.setEoSFlavor_muBFixed(hadrons.muB, temperature, electron, muon,
-			// 																Yu, Yd, Ys);			
 
 			// quarks.setEoSFlavorFixed(hadrons.getBaryonDens(), temperature, Yu, Yd, Ys);
 			
@@ -155,7 +150,7 @@ int main(){
 			
 			quarks.muB= (quarks.getEnergy() +electron.energy + muon.energy
       -temperature*(quarks.getEntropy()+electron.entropy + muon.entropy)
-      + PressureQ)/quarks.rhoB;
+      + PressureQ)/quarks.getBaryonDens();
 
 				outHadron << hadrons.muB*Mnucleon << " " 
 									<< PressureH*Mnucleon*pow(Mnucleon/hc, 3) << " "

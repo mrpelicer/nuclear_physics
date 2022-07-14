@@ -48,10 +48,10 @@ int main(){
 	electron.temperature=temperature;
 
 	//Pasta values:
-	MatrixXd FreeEnM(3,2), RdM(3,2); 
+	MatrixXd FreeEnM(3,2), RdM(3,2), RwM(3,2); 
 					// BulkEnM(3,2), GibbsEnM(3,2),  
 	
-	double FreeEn, f, Rd;
+	double FreeEn, f, Rd, Rw;
 	int iDimension, iPlot=0;
 	//iPlot= 1, 2, 3, 4, 5 (spheres, rods, slabs, tubes, bubbles)	
 		
@@ -67,10 +67,12 @@ int main(){
 		for(int iDim=0; iDim<=2; iDim++){
 		dim = (double) (iDim+1);
 		for(int iType=0; iType<=1; iType++){
-		if(iType==0){alpha=f;} /*droplets*/
-		else if(iType==1){alpha=(1.-f);} /*bubbles*/
+			if(iType==0){alpha=f;} /*droplets*/
+			else if(iType==1){alpha=(1.-f);} /*bubbles*/
 		
 			RdM(iDim, iType)= getRadiusD(dim, alpha, Yp, cluster, gas);
+			RwM(iDim, iType)= RdM(iDim, iType)/pow(alpha, 1./dim);
+
 			double surf= sigma*dim/RdM(iDim, iType);
 			double coul= surf/2.;
 
@@ -86,6 +88,7 @@ int main(){
 		FreeEn= FreeEnM.minCoeff(&minRow, &minCol);
 		(void) FreeEn;
 		Rd=RdM(minRow, minCol) ;
+		Rw=RwM(minRow, minCol) ;
 		iDimension=minRow+1;
 		if(minCol==0){
 			if(iDimension==1){iPlot=3;}
@@ -125,27 +128,19 @@ int main(){
 
 		for(int iq=0; iq<=iqmax; iq++){
 			q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
-			droplet.setMomentum(q);
-			double f3_= droplet.getStructureFunction(q);
 			qv.push_back(q);
-			F3v2.push_back(f3_*f3_);
 		}
 		
     reverse(qv.begin(), qv.end());
-    reverse(F3v2.begin() , F3v2.end());
 
-		droplet.setMomentumVec(qv);
-		droplet.setFormFactor2Vec(F3v2);
-    // double coulInt3d=  integrate_coulomb(coulomb_gsl, &droplet); // getCoulombIntegral(droplet);
-		double coulInt3d=getCoulombIntegral(droplet);
- 		double nu3d			=  getFrequency(Ze, cluster.rhoB, coulInt3d, electron);
-		
+	
+		double coulInt3d, nu3d;
 		double coulIa=0., coulIp=0., nua=0., nup=0., nu_avg=0., nu_avg_inverse=0.;
 		double L;
 
-		int ilmax=300;
-		double Lmin=Rd;
-		double Lmax= 10000.*Rd;
+		int ilmax=400;
+		double Lmin=Rw;
+		double Lmax= 200.*Rw;
 		double logLmin= log10(Lmin);
 		double logLmax= log10(Lmax);
 		ofstream outTransport("data/transport_Ld_T"+to_string(temperature*Mnucleon)+"_"
@@ -195,6 +190,7 @@ int main(){
 			double L_slab=L;
 			slab.setLengths(L_slab, L_slab, 2.*rad_slab);
 			Ze= (cluster.proton.density - gas.proton.density)*slab.getVolume();
+			
 			for(int iq=0; iq<=iqmax; iq++){
 				q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
 				slab.setMomentum(q);
@@ -226,6 +222,23 @@ int main(){
 			nu_avg_inverse= (1./nua + 2./nup)/3.;
 
 		}else{
+
+			vector<double> F3v2;
+			Ze= (cluster.proton.density - gas.proton.density)*droplet.getVolume();
+			
+			for(int iq=0; iq<=iqmax; iq++){
+				q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
+				droplet.setMomentum(q);
+				double f3_= droplet.getStructureFunction(q);
+				F3v2.push_back(f3_*f3_);
+			}
+
+	    reverse(F3v2.begin() , F3v2.end());
+			droplet.setMomentumVec(qv);
+			droplet.setFormFactor2Vec(F3v2);
+			coulInt3d=getCoulombIntegral(droplet);
+ 			nu3d			=  getFrequency(Ze, cluster.rhoB, coulInt3d, electron);
+
 			L=RdM(minCol, minCol);
 			coulIa=   		 coulInt3d;
 			coulIp=   		 coulInt3d;
@@ -237,8 +250,8 @@ int main(){
 		}
 		
 
-    outTransport << L/RdM(minRow, minCol) << " " 
- 						<< nu3d*Mnucleon/MeVto_Sec << " " //s-1
+    outTransport << L/RwM(minRow, minCol) << " " 
+ 						<< Rw*(hc/Mnucleon)  << " " //s-1
  						<< nua*Mnucleon/MeVto_Sec << " " //s-1
  						<< nup*Mnucleon/MeVto_Sec << " " //s-1
  						<< nup/nua << " "

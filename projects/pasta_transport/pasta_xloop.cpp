@@ -35,7 +35,7 @@ int main(){
 				<< "T = " << temperature << " MeV" <<  endl;
 
 	double Lratio;
-	cout << "Specify L_d/R_d: " << endl;
+	cout << "Specify L_d/R_W: " << endl;
 	cin >> Lratio ;	
 
 	//Declare nuclear matter: pasta and gas:
@@ -62,8 +62,8 @@ int main(){
 
 	double Ae=0., Ze=0.;
 	
-	ofstream outGlobal("data/cpa_"+parametrization+
-																			"_betaEq_T"+to_string(temperature)+".txt");
+	// ofstream outGlobal("data/cpa_"+parametrization+
+	// 																		"_betaEq_T"+to_string(temperature)+".txt");
 
 	rhoB*=pow(hc/Mnucleon, 3);
 	temperature*=1./Mnucleon;
@@ -131,53 +131,40 @@ int main(){
 	double rad_slab= RdM(0, minCol);
 	double Vcl= droplet.getVolume();	
 	
-	double L_rod	=Lratio*rad_rods;
-	double L_slab	=Lratio*rad_slab;	
+	double L_rod	=Lratio*RwM(1, minCol); ;
+	double L_slab	=Lratio*RwM(0, minCol);;	
 	// double L_rod	=	Vcl/(M_PI*pow(rad_rods, 2.));
 	// double L_slab	= sqrt(Vcl/(2.*rad_slab));
 	
-	outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " " 
-		<< Pressure*Mnucleon*pow(Mnucleon/hc, 3.) << " " 
-	  << (FreeEn - 1.)*Mnucleon << " " 
-		<< Ze << " " << " " << Ae  << " " 
-	  << Gamma << " " << Yp << " "<< f << " " 
-		<< Rd*(hc/Mnucleon) << " " << Rw*(hc/Mnucleon) << " " 
-		<< L_rod*(hc/Mnucleon) << " " << L_slab*(hc/Mnucleon) << " "
-		<< iPlot << " " << sigma
-	  << endl;
-		rod.setLengths(rad_rods,L_rod);
+	// outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " " 
+	// 	<< Pressure*Mnucleon*pow(Mnucleon/hc, 3.) << " " 
+	//   << (FreeEn - 1.)*Mnucleon << " " 
+	// 	<< Ze << " " << " " << Ae  << " " 
+	//   << Gamma << " " << Yp << " "<< f << " " 
+	// 	<< Rd*(hc/Mnucleon) << " " << Rw*(hc/Mnucleon) << " " 
+	// 	<< L_rod*(hc/Mnucleon) << " " << L_slab*(hc/Mnucleon) << " "
+	// 	<< iPlot << " " << sigma
+	//   << endl;
+
+	rod.setLengths(rad_rods,L_rod);
 	slab.setLengths(L_slab, L_slab, 2.*rad_slab);
 	
 	double qmin=0.;
 	double qmax=2.;
 	int iqmax= 300;
 	double q;
-	// ofstream outform("data/form_factor"+to_string(irho)+".txt");
-	cout << "3d form factor calculation" << endl;
+	ofstream outform("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+".txt");
 	
 	vector<double> qv, F3v2, Fav2, Fpv2;
-	Ze= (cluster.proton.density - gas.proton.density)*droplet.getVolume();
+	double coulIa=0., coulIp=0., nua=0., nup=0., nu_avg=0., nu_avg_inverse=0.;
+	double nu3d, sigma0_3d;
+
 	for(int iq=0; iq<=iqmax; iq++){
 		q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
-		droplet.setMomentum(q);
-		double f3_= droplet.getStructureFunction(q);
 		qv.push_back(q);
-		F3v2.push_back(f3_*f3_);
 	}
-	
+		
   reverse(qv.begin(), qv.end());
-  reverse(F3v2.begin() , F3v2.end());
-	
-	droplet.setMomentumVec(qv);
-	droplet.setFormFactor2Vec(F3v2);
-   // double coulInt3d=  integrate_coulomb(coulomb_gsl, &droplet);
-	
-	cout << "3d coulomb log calculation" << endl;
-	
-	double coulInt3d=getCoulombIntegral(droplet);
- 	double nu3d			=  getFrequency(Ze, cluster.rhoB, coulInt3d, electron);
-	double sigma0_3d=  pow(eGS, 2.)*electron.density/(nu3d*hypot(electron.kf, electron.mass));
-	double coulIa=0., coulIp=0., nua=0., nup=0., nu_avg=0., nu_avg_inverse=0.;
 	
 	if(iDimension==2){	
 		cout << " form factor calculation" << endl;
@@ -189,7 +176,7 @@ int main(){
 			double fp_= rod.getStructureFunction2_Trans(q);
 			Fav2.push_back(fa_);
 			Fpv2.push_back(fp_);
-			// outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ << endl;
+			outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ << endl;
 		}
    	reverse(Fav2.begin() , Fav2.end());
 		reverse(Fpv2.begin() , Fpv2.end());
@@ -215,7 +202,7 @@ int main(){
 			double fp_= slab.getStructureFunction2_Trans(q);
 			Fav2.push_back(fa_);
 			Fpv2.push_back(fp_);
-			// outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ << endl;
+			outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ << endl;
 		}
    	reverse(Fav2.begin() , Fav2.end());
 		reverse(Fpv2.begin() , Fpv2.end());
@@ -232,14 +219,40 @@ int main(){
 		nu_avg				= (nua + 2.*nup)/3.;
 		nu_avg_inverse= (1./nua + 2./nup)/3.;
 	}else{
+	cout << "3d form factor calculation" << endl;
+
+		Ze= (cluster.proton.density - gas.proton.density)*droplet.getVolume();
+		for(int iq=0; iq<=iqmax; iq++){
+			q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
+			droplet.setMomentum(q);
+			double f3_= droplet.getStructureFunction(q);
+			F3v2.push_back(f3_*f3_);
+			outform << q/electron.kf << " " << f3_*f3_ << " " << f3_*f3_ << " " << f3_*f3_ << endl;
+
+		}
+	
+  	reverse(F3v2.begin() , F3v2.end());
+	
+		droplet.setMomentumVec(qv);
+		droplet.setFormFactor2Vec(F3v2);
+  	 // double coulInt3d=  integrate_coulomb(coulomb_gsl, &droplet);
+	
+		cout << "3d coulomb log calculation" << endl;
+
+		double coulInt3d=getCoulombIntegral(droplet);
+ 		nu3d			=  getFrequency(Ze, cluster.rhoB, coulInt3d, electron);
+		sigma0_3d=  pow(eGS, 2.)*electron.density/(nu3d*hypot(electron.kf, electron.mass));
+
 		coulIa=   		 coulInt3d;
 		coulIp=   		 coulInt3d;
 		nua	= nu3d;
 		nup	= nu3d;
 		nu_avg= nu3d;
 		nu_avg_inverse= nu3d;
+
 	}
 	
+	outform.close();
 	double sigma0_a= pow(eGS, 2.)*electron.density/(nua*hypot(electron.kf, electron.mass));
 	double sigma0_p= pow(eGS, 2.)*electron.density/(nup*hypot(electron.kf, electron.mass));	
 	double sigma0_avg = pow(eGS, 2.)*electron.density*nu_avg_inverse/hypot(electron.kf, electron.mass);		
@@ -293,9 +306,6 @@ int main(){
 
 //	Average over domains:		
 //	 filled with ( parallel, perpendicular, Hall)
-			double x3d= omega/nu3d;
-			Vector3d sigma_avg_3d(1., 1./(1+x3d*x3d), x3d/(1.+x3d*x3d) );
-			sigma_avg_3d*=sigma0_3d;
 
 			Vector3d sigma_avg_pasta(sigmaAverage_Parallel(nua, nup, omega, electron),
 															sigmaAverage_Perpendicular(nua, nup, omega, electron),
@@ -304,6 +314,10 @@ int main(){
 			double xa, xp;
 			xa=omega/nua;
 			xp=omega/nup;	
+
+			double x3d= omega/nu3d;
+			Vector3d sigma_avg_3d(1., 1./(1+x3d*x3d), x3d/(1.+x3d*x3d) );
+			sigma_avg_3d*=sigma0_3d;
 
 			if(iDimension==2 && xp<1e-7){
 				sigma_avg_pasta(0)= sigma0_avg;
@@ -367,7 +381,7 @@ int main(){
 			cout << "no pasta: " << rhoB*pow(Mnucleon/hc, 3.) << " " << f << endl;
 		}
 
-	outGlobal.close();
+	// outGlobal.close();
 	// outFree.close();
 	// outSol.close();
   return 0;

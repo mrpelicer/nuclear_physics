@@ -188,6 +188,22 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.1555*pow(hc/Mnucleon, 3);
 	}
 
+	if(parametrization_=="el3wr"){
+  	Mn=939.;        
+  	Ms=512./Mnucleon;
+  	Mv=783./Mnucleon;
+  	Mb=770./Mnucleon;
+		Mt=1020.00/Mnucleon;
+  	gs=sqrt(12.108)*Ms*Mnucleon/hc;
+  	gv=sqrt(7.1320)*Mv*Mnucleon/hc;
+  	gb=sqrt(5.85)*Mb*Mnucleon/hc;
+  	gs3=2.*0.004138*pow(gs, 3);
+  	gs4=-6.*0.0039*pow(gs, 4.);
+  	xsi=0.;
+  	Lv=0.0283;
+		rho0=0.156*pow(hc/Mnucleon, 3);
+	}
+
 	if(parametrization=="iobp-I"){
 		Mn=939.;        
 		Ms=0.533;
@@ -203,6 +219,36 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.149*pow(hc/Mnucleon, 3);
 		
 	}
+
+	if(parametrization=="nl3*"){ //https://arxiv.org/pdf/0909.1432.pdf : wrong gs3 in paper
+		Mn=939.000;
+		Ms=502.574/Mnucleon;
+		Mv=782.600/Mnucleon;
+		Mb=763.000/Mnucleon;
+		gs=10.0944;
+		gv=12.8065 ;
+		gb=2.*4.441;
+		gs3=2.*10.8093*hc/Mnucleon; //1/MeV
+		gs4=-6.*30.1486;
+		Lv=0.0;
+		rho0=0.150*pow(hc/Mnucleon, 3); 
+	}
+
+	if(parametrization=="nl3wr*"){ //https://arxiv.org/pdf/2111.02247.pdf : wrong gs3 in paper
+		Mn=939.000;
+		Ms=502.574/Mnucleon;
+		Mv=782.600/Mnucleon;
+		Mb=763.000/Mnucleon;
+		Mt=1020.00/Mnucleon;
+		gs=10.0944;
+		gv=12.8065 ;
+		gb=14.441;
+		gs3=2.*10.8093*hc/Mnucleon; //1/MeV
+		gs4=-6.*30.1486;
+		Lv=0.045;
+		rho0=0.150*pow(hc/Mnucleon, 3); 
+	}
+
   else{parametrization_= "";}
 	std::cout << parametrization << " parametrization." << std::endl;
 }
@@ -320,10 +366,20 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 		xsl=0.590;		xss=0.429; 		xsx=0.306;
 		xvl=0.667;		xvs=0.667; 		xvx=0.333;
 		xbl=0.; 			xbs=1.; 			xbx=1.;
-		xtl=-0.471*sqrt(169.8349)/gv; 	xts=-0.471*sqrt(169.8349)/gv;		xtx=-0.943*sqrt(169.8349)/gv;
+		xtl=-0.471*sqrt(169.8349); 	xts=-0.471*sqrt(169.8349);		xtx=-0.943*sqrt(169.8349);
 
 
-	}else{
+	}else if(parhyp=="nl3wr*"){ /* see tab II of https://arxiv.org/pdf/2111.02247.pdf
+															too determine av and as */
+		double av=0.5;
+		xsl= 0.651; 		 xss= 0.730; 			xsx=0.473; // 0.428 in the paper! wrong potential here
+		xvl=(4.+2.*av)/(5+4.*av);					 xvs=(8.-2.*av)/(5+4.*av); 						xvx=(5.-2.*av)/(5+4.*av);
+		xbl=0.;											 			 xbs=2.*av; 													xbx=-(1.-2.*av);
+		xtl=sqrt(2.)*(2.*av-5.)/(5+4.*av); xts=-sqrt(2.)*(2.*av+1.)/(5+4.*av); 	xtx=-sqrt(2.)*(2.*av+4.)/(5+4.*av);
+	}
+
+	
+	else{
 		std::cout << "Unspecified hyperon parametrization." << std::endl;
 		exit(1);
 	}
@@ -771,6 +827,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 	if(firstRun){
 		if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
 		else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+		if(xtl!=0. || xts!=0. || xtx!=0.) theta0_ = -0.0118828;
 		if(parametrization=="fsu2h")theta0_ = -0.0252404;
 		if(parametrization=="l3wr") theta0_ = -0.0118828;
 	}else{
@@ -779,20 +836,20 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		phi0_=phi0 ;
 		v0_	=V0;       
 		b0_	= b0;
-		if(parametrization=="fsu2h" || parametrization=="l3wr") theta0_=theta0;
+		if(xtl!=0. || xts!=0. || xtx!=0.) theta0_=theta0;
 	}
 	
-	// only needed if running for very low densities (for lorene, p.ex.)
-	if( (rhoB>((5e-4)/pow(Mnucleon/hc, 3.)))  && (rhoB<((1e-3)/pow(Mnucleon/hc, 3.))) ){
-		// std::cout <<"TESTAO " << std::endl;
-		mub_	= 1.00153;
-		mue_=  0.00300678;
-		phi0_=0.000287242 ;
-		v0_	=0.000148557;       
-		b0_	= -8.14458e-05;
-	}
+	// // only needed if running for very low densities (for lorene, p.ex.)
+	// if( (rhoB>((5e-4)/pow(Mnucleon/hc, 3.)))  && (rhoB<((1e-3)/pow(Mnucleon/hc, 3.))) ){
+	// 	// std::cout <<"TESTAO " << std::endl;
+	// 	mub_	= 1.00153;
+	// 	mue_=  0.00300678;
+	// 	phi0_=0.000287242 ;
+	// 	v0_	=0.000148557;       
+	// 	b0_	= -8.14458e-05;
+	// }
 
-	if(parametrization=="fsu2h" || parametrization=="l3wr"){ 
+	if(xtl!=0. || xts!=0. || xtx!=0.){ 
 		//must solve 4 meson equations
 		double x[]={mub_, mue_, phi0_, v0_, b0_, theta0_};
 
@@ -812,9 +869,16 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		// Set solver
 		Solver::Options optionsBetaEq;
 	//if(parametrization!="iufsu"){
-		optionsBetaEq.parameter_tolerance = 1e-8;
-		optionsBetaEq.function_tolerance = 1e-10;
-		optionsBetaEq.gradient_tolerance=1e-12;
+		// if(Bfield==0){
+			optionsBetaEq.parameter_tolerance = 1e-10;
+			optionsBetaEq.function_tolerance = 1e-10;
+			optionsBetaEq.gradient_tolerance=1e-12;
+		// }else{
+			// optionsBetaEq.parameter_tolerance = 1e-10;
+			// optionsBetaEq.function_tolerance = 1e-10;
+			// optionsBetaEq.gradient_tolerance=1e-12;
+		// }
+
 		if(rhoB*pow(Mnucleon/hc, 3.) < (1.e-5) ){
 			// optionsBetaEq.parameter_tolerance = 1e-22;
 			// optionsBetaEq.function_tolerance = 1e-22;
@@ -918,8 +982,6 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 
 		}	
 	
-	
-	
 	//}
 		// optionsBetaEq.line_search_direction_type= ceres::STEEPEST_DESCENT;
 		// optionsBetaEq.line_search_type=ceres::ARMIJO;
@@ -949,7 +1011,7 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
 		std::cout << mub_ << " " << mue_ << " " << phi0_ << " " << v0_  << " " << b0_ << 
 			"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4] 
-		<< std::endl << std::endl;
+		<< std::endl <<  std::endl;
 				
 		mub_	=x[0];
 		mue_	=x[1];
@@ -1670,6 +1732,12 @@ void nlwm_class::setInitial_hd(double &mub_, double &mue_, double  &phi0_, doubl
 		phi0_=0.110646;
 		v0_=0.120147;
 		b0_=-0.00466873;
+	}else if(parametrization=="nl3wr*"){
+		mub_=2.56661;
+		mue_= 0.12955;
+		phi0_= 0.0990648;
+		v0_= 0.161139;
+		b0_= -0.000221779	;
 	}else{
 		mub_	= 1.5;	//1.5
 		mue_=0.1;			//0.1								
@@ -1804,7 +1872,13 @@ void nlwm_class::setInitial_hdb(double &mub_, double &mue_, double  &phi0_, doub
 		// phi0_=0.102812;
 		// v0_= 0.131473;
 		// b0_=-0.00427271;
-	}else{		// mub_	= 1.31921;	//1.1.31921 0.228353 0.141197 0.0810486 -0.0103867
+		}else if(parametrization=="nl3wr*"){
+			mub_=2.56661;
+			mue_= 0.12955;
+			phi0_= 0.0990648;
+			v0_= 0.161139;
+			b0_= -0.000221779	;
+		}else{		// mub_	= 1.31921;	//1.1.31921 0.228353 0.141197 0.0810486 -0.0103867
 		// mue_=0.228353;			//0.1								
 	 	// phi0_=0.141197; 		// 0.1 low densities		.2							
 	 	// v0_	=0.0810486;  	// 0.1 low densities 			.15			
@@ -1833,8 +1907,8 @@ std::vector<double> nlwm_class::getHyperonPotential(){
 	double Usm = gv*(xvs*V0+xts*theta0) + gb*xbs*sigmam.I3*b0		 	- gs*xss*phi0;
 	double Us0 = gv*(xvs*V0+xts*theta0) + gb*xbs*sigma0.I3*b0		 	- gs*xss*phi0;
 	double Usp = gv*(xvs*V0+xts*theta0) + gb*xbs*sigmap.I3*b0		 	- gs*xss*phi0;
-	double Uxm = gv*(xvx*V0+xtx*theta0) + gb*xbx*xim.I3*b0		 		-gs*xsx*phi0;
-	double Ux0 = gv*(xvx*V0+xtx*theta0) + gb*xbx*xi0.I3*b0		 		-gs*xsx*phi0;
+	double Uxm = gv*(xvx*V0+xtx*theta0) + gb*xbx*xim.I3*b0		 		- gs*xsx*phi0;
+	double Ux0 = gv*(xvx*V0+xtx*theta0) + gb*xbx*xi0.I3*b0		 		- gs*xsx*phi0;
 
 	return{Ul0, Usm, Us0, Usp, Uxm, Ux0};
 }

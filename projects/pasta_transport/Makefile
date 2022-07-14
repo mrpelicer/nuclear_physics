@@ -22,7 +22,7 @@ APP1= densloop
 APP2= sizeloop
 APP3= xloop
 
-all: APP1 APP2 APP3
+all: $(APP1) $(APP2) $(APP3)
 
 $(APP1) : $(BUILDDIR) \
 	$(OBJS) \

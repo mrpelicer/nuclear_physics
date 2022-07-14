@@ -1,9 +1,9 @@
 #include "bag_model.h"
 
 bag_model_class::bag_model_class(){
-	qu.mass= 4./Mnucleon; 	qu.spin	= 1./2.;	qu.gamma = 6.;    qu.Q=  2./3.;
-	qd.mass= 4./Mnucleon; 	qd.spin	= 1./2.;	qd.gamma = 6.;    qd.Q= -1./3.;
-	qs.mass= 95./Mnucleon;	qs.spin	= 1./2.;	qs.gamma = 6.;    qs.Q= -1./3.;  
+	qu.mass= 4./Mnucleon; 	qu.spin	= 1./2.;	qu.gamma = 6.;    qu.Q=  2./3.; qu.type="Q";   
+	qd.mass= 4./Mnucleon; 	qd.spin	= 1./2.;	qd.gamma = 6.;    qd.Q= -1./3.; qd.type="Q"; 
+	qs.mass= 95./Mnucleon;	qs.spin	= 1./2.;	qs.gamma = 6.;    qs.Q= -1./3.; qs.type="Q";     
 	
 	qu.mass_eff= qu.mass;
 	qd.mass_eff= qd.mass;
@@ -16,7 +16,7 @@ bag_model_class::bag_model_class(){
 	xvd= 1.;
 	xvs= 1.;//1.
 	Bag= 148./Mnucleon;
-  tcrit=130./Mnucleon;
+  tcrit=0./Mnucleon;
 
 }
 
@@ -354,11 +354,15 @@ double bag_model_class::getEnergy(void){
 }
 
 double bag_model_class::getPressure(){
-	double press_meson=pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24.;
-  double press_= qu.pressure + qd.pressure;
-  if(iFlavor==3) press_+= qs.pressure ;
-
-  return press_+press_meson - Bag;
+	// double press_meson=pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24.;
+  // double press_= qu.pressure + qd.pressure;
+  // if(iFlavor==3) press_+= qs.pressure ;
+  // press_+= press_meson - Bag;
+  double press_=qu.chemPot*qu.density + qd.chemPot*qd.density
+                - getEnergy() ;
+  if(iFlavor==3) press_+= qs.chemPot*qs.density;
+  if(temperature>Tmin_integration) press_+=temperature*getEntropy();
+  return press_ ;
 }
 
 double bag_model_class::getEntropy(){
@@ -386,10 +390,13 @@ double bag_model_class::getFenergy(void){
   qu.density= 3.*Yu_*rhoB;
   qd.density= 3.*Yd_*rhoB;
   qs.density= 3.*Ys_*rhoB;
+
   qu.kf= cbrt(6.*pi2*qu.density/qu.gamma);
   qu.kf2=qu.kf*qu.kf;
+
   qd.kf= cbrt(6.*pi2*qd.density/qd.gamma);
   qd.kf2=qd.kf*qd.kf;
+  
   if(iFlavor==3){
     qs.kf= cbrt(6.*pi2*qs.density/qs.gamma);
     qs.kf2=qs.kf*qs.kf;
@@ -401,88 +408,184 @@ double bag_model_class::getFenergy(void){
   
   qu.chemPot=    qu.chemPot_eff +   gv*xvu*V0;
   qd.chemPot=    qd.chemPot_eff +   gv*xvd*V0;
-  if(iFlavor==3) qs.chemPot=    qs.chemPot_eff +   gv*xvs*V0;
+  if(iFlavor==3){
+    qs.chemPot=    qs.chemPot_eff +   gv*xvs*V0;
+  }
 
-  qu.calculateProperties();
-  qd.calculateProperties();
-  if(iFlavor==3) qs.calculateProperties();
-
+  setThermodynamics();
 }
 
 void bag_model_class::setEoSFlavor_muBFixed(double mub_, double temp_, 
                                             particle electron_, particle muon_,
                                             double Yu_,  double Yd_,  double Ys_){
 
-  // iFlavor=3; 
   muB=mub_;
-  double mue_;
   setTemperature(temp_);
   Yu=Yu_; Yd=Yd_; Ys=Ys_;
-  double rhob_, v0_;
-  
-  if(firstRun){
-    rhob_=.8*pow(hc/Mnucleon, 3);
-    v0_=0.0;
+
+  if(Bfield==0){
+
+    double rhob_, v0_;
+
+    if(firstRun){
+      rhob_=1.5*pow(hc/Mnucleon, 3);
+      v0_=0.03;
+    }else{
+      rhob_=rhoB;
+      v0_=V0;
+    }
+
+	  double x[]={rhob_, v0_};
+	  Problem p;
+	  CostFunction* cost= 
+	    						new NumericDiffCostFunction<QuarkFlavor_muBFixed,ceres::CENTRAL, 2, 2>
+	    						(new QuarkFlavor_muBFixed(*this, electron_, muon_));
+
+	    p.AddResidualBlock(cost, NULL, x);
+      p.SetParameterLowerBound(x, 0, 0.);
+      // p.SetParameterLowerBound(x, 1, 0.);
+      // p.SetParameterUpperBound(x, 0, 2.*pow(hc/Mnucleon, 3));
+	    Solver::Options options;
+	    options.parameter_tolerance = 1e-8;
+	    options.function_tolerance = 1e-10;
+	    options.gradient_tolerance=1e-12;
+	    options.max_num_iterations=1e5;	
+
+      // if(PressureTot*Mnucleon*pow(Mnucleon/hc, 3.) < 50. ){
+	  	//   // optionsBetaEq.parameter_tolerance = 1e-22;
+	  	// 	// optionsBetaEq.function_tolerance = 1e-22;
+	  	// 	// optionsBetaEq.gradient_tolerance=1e-25;
+	  	// 	options.parameter_tolerance = 1e-15;
+	  	// 	options.function_tolerance = 1e-15;
+	  	// 	options.gradient_tolerance=1e-16;
+	  	// 	options.max_num_iterations=1e6;	
+
+	  	// }	
+	    // options.line_search_direction_type= ceres::STEEPEST_DESCENT;
+	    options.use_nonmonotonic_steps= true;
+	    options.dense_linear_algebra_library_type=ceres::LAPACK;
+	    options.linear_solver_type= ceres::DENSE_QR;
+      options.update_state_every_iteration = true;
+	    //options.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
+	    //options.linear_solver_type= ceres::DENSE_QR;
+
+	    //options.trust_region_strategy_type = ceres::DOGLEG;
+	    //options.dogleg_type = ceres::TRADITIONAL_DOGLEG;
+
+
+	    options.minimizer_progress_to_stdout = false;
+	    Solver::Summary summary;
+
+	    //Run
+	    Solve(options, &p, &summary);
+
+	    //Print if convergence was achieved.
+	     std::cout << summary.BriefReport() << "\n";
+	     std::cout  <<"quarks: rhob, v0= " <<  rhob_*pow(Mnucleon/hc, 3) << " " << v0_ 
+                    << "---> " << x[0]*pow(Mnucleon/hc, 3) << " " << x[1] 
+	                << std::endl;
+      
+
+	    rhoB=x[0];
+      V0  =x[1];
+      setEoSFlavorFixed(x[0], temperature, x[1], Yu_, Yd_, Ys_);
+      cout << "mus: " << qu.chemPot << " " << qd.chemPot <<  " " << qs.chemPot << endl;
+      muB = (getEnergy() +electron_.energy + muon_.energy
+       -temperature*(getEntropy()+electron_.entropy + muon_.entropy)
+       + getPressure()+electron_.pressure + muon_.pressure)/getBaryonDens();
   }else{
-    rhob_=rhoB;
-    v0_=V0;
-  }
-  mue_=electron_.chemPot;
-	double x[]={rhob_, v0_};
-	Problem p;
-	CostFunction* cost= 
-	  						new NumericDiffCostFunction<QuarkFlavor_muBFixed,ceres::CENTRAL, 2, 2>
-	  						(new QuarkFlavor_muBFixed(*this, electron_, muon_));
 
-	  p.AddResidualBlock(cost, NULL, x);
-    p.SetParameterLowerBound(x, 0, 0.);
-    // p.SetParameterLowerBound(x, 1, 0.);
-    // p.SetParameterUpperBound(x, 0, 2.*pow(hc/Mnucleon, 3));
-	  Solver::Options options;
-	  options.parameter_tolerance = 1e-8;
-	  options.function_tolerance = 1e-10;
-	  options.gradient_tolerance=1e-12;
-	  options.max_num_iterations=1e5;	
+    double rhob_, v0_, muu_, mud_, mus_;
 
-    // if(PressureTot*Mnucleon*pow(Mnucleon/hc, 3.) < 50. ){
-		//   // optionsBetaEq.parameter_tolerance = 1e-22;
-		// 	// optionsBetaEq.function_tolerance = 1e-22;
-		// 	// optionsBetaEq.gradient_tolerance=1e-25;
-		// 	options.parameter_tolerance = 1e-15;
-		// 	options.function_tolerance = 1e-15;
-		// 	options.gradient_tolerance=1e-16;
-		// 	options.max_num_iterations=1e6;	
+    if(firstRun){
+      rhob_= 2.0202*pow(hc/Mnucleon, 3);
+      v0_=0.0368514;
+      muu_=0.71131;
+      mud_=0.78430;
+      mus_=0.49338;
+    }else{
+      rhob_=rhoB;
+      v0_=V0;
+      muu_=qu.chemPot;
+      mud_=qd.chemPot;
+      mus_=qs.chemPot;
+    }
 
-		// }	
-	  // options.line_search_direction_type= ceres::STEEPEST_DESCENT;
-	  options.use_nonmonotonic_steps= true;
-	  options.dense_linear_algebra_library_type=ceres::LAPACK;
-	  options.linear_solver_type= ceres::DENSE_QR;
-    options.update_state_every_iteration = true;
-	  //options.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
-	  //options.linear_solver_type= ceres::DENSE_QR;
+	  double x[]={rhob_, v0_, muu_, mud_, mus_};
+	  Problem p;
+	  CostFunction* cost= 
+	    						new NumericDiffCostFunction<QuarkFlavor_muBFixed_B,ceres::CENTRAL, 5, 5>
+	    						(new QuarkFlavor_muBFixed_B(*this, electron_, muon_));
 
-	  //options.trust_region_strategy_type = ceres::DOGLEG;
-	  //options.dogleg_type = ceres::TRADITIONAL_DOGLEG;
+	    p.AddResidualBlock(cost, NULL, x);
+      p.SetParameterLowerBound(x, 0, 0.);
+      // p.SetParameterLowerBound(x, 2, 0.);
+      // p.SetParameterLowerBound(x, 3, 0.);
+      // p.SetParameterLowerBound(x, 4, 0.);
+    
+      // p.SetParameterLowerBound(x, 1, 0.);
+      // p.SetParameterUpperBound(x, 0, 2.*pow(hc/Mnucleon, 3));
+	    Solver::Options options;
+	    options.parameter_tolerance = 1e-8;
+	    options.function_tolerance = 1e-10;
+	    options.gradient_tolerance=1e-12;
+	    options.max_num_iterations=1e5;	
 
-  
-	  options.minimizer_progress_to_stdout = false;
-	  Solver::Summary summary;
+      // if(PressureTot*Mnucleon*pow(Mnucleon/hc, 3.) < 50. ){
+	  	//   // optionsBetaEq.parameter_tolerance = 1e-22;
+	  	// 	// optionsBetaEq.function_tolerance = 1e-22;
+	  	// 	// optionsBetaEq.gradient_tolerance=1e-25;
+	  	// 	options.parameter_tolerance = 1e-15;
+	  	// 	options.function_tolerance = 1e-15;
+	  	// 	options.gradient_tolerance=1e-16;
+	  	// 	options.max_num_iterations=1e6;	
 
-	  //Run
-	  Solve(options, &p, &summary);
+	  	// }	
+	    // options.line_search_direction_type= ceres::STEEPEST_DESCENT;
+	    options.use_nonmonotonic_steps= true;
+	    options.dense_linear_algebra_library_type=ceres::LAPACK;
+	    options.linear_solver_type= ceres::DENSE_QR;
+      options.update_state_every_iteration = true;
+	    //options.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
+	    //options.linear_solver_type= ceres::DENSE_QR;
 
-	  //Print if convergence was achieved.
-	   std::cout << summary.BriefReport() << "\n";
-	   std::cout  <<"quarks: rhob, v0= " <<  rhob_*pow(Mnucleon/hc, 3) << " " << v0_ 
-                  << "---> " << x[0]*pow(Mnucleon/hc, 3) << " " << x[1] 
-	              << std::endl;
+	    //options.trust_region_strategy_type = ceres::DOGLEG;
+	    //options.dogleg_type = ceres::TRADITIONAL_DOGLEG;
 
+
+	    options.minimizer_progress_to_stdout = false;
+	    Solver::Summary summary;
+
+	    //Run
+	    Solve(options, &p, &summary);
+
+	    //Print if convergence was achieved.
+	     std::cout << summary.BriefReport() << "\n";
+	     std::cout  <<"quarks: rhob, v0, muu, mud, mus= "  <<  rhob_*pow(Mnucleon/hc, 3) << " " 
+          << v0_ << " " <<    muu_ << " "  << mud_ << " " << mus_
+                    << "---> " << x[0]*pow(Mnucleon/hc, 3) << " " << x[1] << " " 
+                      << x[2] << x[3] << " " << x[4] 
+	                << std::endl;      
 
 	  rhoB=x[0];
     V0  =x[1];
-    setEoSFlavorFixed(x[0], temperature, x[1], Yu_, Yd_, Ys_);
-     
+  
+    qu.chemPot=x[2];
+    qd.chemPot=x[3];
+    qu.setQuarkEff(x[2] -xvu*gv*x[1]);
+    qd.setQuarkEff(x[3] -xvd*gv*x[1]);
+    if(iFlavor==3){
+      qs.chemPot=x[4];
+      qs.setQuarkEff(x[4] - xvs*gv*x[1]); 
+    }
+  
+    setThermodynamics();
+
+    muB = (getEnergy() +electron_.energy + muon_.energy
+      -temperature*(getEntropy()+electron_.entropy + muon_.entropy)
+      + getPressure()+electron_.pressure + muon_.pressure)/getBaryonDens();
+  }
+
     firstRun=false;
 }
 
@@ -506,87 +609,229 @@ bool QuarkFlavor_muBFixed::operator()(const T* x, T* residuals) const{
   return true;
 }
 
+template <typename T>
+bool QuarkFlavor_muBFixed_B::operator()(const T* x, T* residuals) const{
+  quarks.V0 = x[1];
+  quarks.qu.chemPot=x[2];
+  quarks.qd.chemPot=x[3];
+
+  quarks.qu.setQuarkEff(x[2] - quarks.xvu*quarks.gv*x[1]);
+  quarks.qd.setQuarkEff(x[3] - quarks.xvd*quarks.gv*x[1]);
+
+  if(quarks.iFlavor==3){
+    quarks.qs.chemPot=x[4];
+    quarks.qs.setQuarkEff(x[4] - quarks.xvs*quarks.gv*x[1]); 
+  }
+  
+  quarks.setThermodynamics();
+
+  double mub_ = (quarks.getEnergy() +electron.energy + muon.energy
+      -quarks.temperature*(quarks.getEntropy()+electron.entropy + muon.entropy)
+      + quarks.getPressure()+electron.pressure + muon.pressure)/x[0];
+  // double mub_=quarks.Yu* quarks.qu.chemPot + quarks.Yd*quarks.qd.chemPot
+  //                 +  quarks.Ys*quarks.qs.chemPot
+	// 								+ (electron.chemPot*electron.density +muon.chemPot*muon.density)/x[0];
+
+  residuals[0]=  quarks.muB - mub_;
+  residuals[1] = quarks.omegaMeson_eom_residue(quarks.getOmegaEffDens());
+  residuals[2]= quarks.qu.density - 3.*quarks.Yu*x[0];
+  residuals[3]= quarks.qd.density - 3.*quarks.Yd*x[0];
+  residuals[4]= quarks.qs.density - 3.*quarks.Ys*x[0];
+  
+  return true;
+}
+
 void bag_model_class::setEoSFlavor_muBFixed2(double mub_, double temp_, 
                                             particle & electron_, particle & muon_,
                                             double Yu_,  double Yd_,  double Ys_, 
                                             double Ye_, double Ym_){
 
-  // iFlavor=3; 
   muB=mub_;
-  double mue_;
   setTemperature(temp_);
   Yu=Yu_; Yd=Yd_; Ys=Ys_;
   Ye=Ye_;  Ym=Ym_;
-  double rhob_, v0_;
-  
-  if(firstRun){
-    rhob_=.8*pow(hc/Mnucleon, 3);
-    v0_=0.0;
+
+  if(Bfield==0){
+
+    double rhob_, v0_;
+
+    if(firstRun){
+      rhob_=2.*pow(hc/Mnucleon, 3);
+      v0_=0.03;
+    }else{
+      rhob_=rhoB;
+      v0_=V0;
+    }
+
+	  double x[]={rhob_, v0_};
+	  Problem p;
+	  CostFunction* cost= 
+	    						new NumericDiffCostFunction<QuarkFlavor_muBFixed2,ceres::CENTRAL, 2, 2>
+	    						(new QuarkFlavor_muBFixed2(*this, electron_, muon_));
+
+	   p.AddResidualBlock(cost, NULL, x);
+     p.SetParameterLowerBound(x, 0, 0.);
+     // p.SetParameterLowerBound(x, 1, 0.);
+     // p.SetParameterUpperBound(x, 0, 2.*pow(hc/Mnucleon, 3));
+	   Solver::Options options;
+	   options.parameter_tolerance = 1e-8;
+	   options.function_tolerance = 1e-10;
+	   options.gradient_tolerance=1e-12;
+	   options.max_num_iterations=1e5;	
+     // if(PressureTot*Mnucleon*pow(Mnucleon/hc, 3.) < 50. ){
+	  //   // optionsBetaEq.parameter_tolerance = 1e-22;
+	  // 	// optionsBetaEq.function_tolerance = 1e-22;
+	  // 	// optionsBetaEq.gradient_tolerance=1e-25;
+	  // 	options.parameter_tolerance = 1e-15;
+	  // 	options.function_tolerance = 1e-15;
+	  // 	options.gradient_tolerance=1e-16;
+	  // 	options.max_num_iterations=1e6;	
+	  // }	
+	   // options.line_search_direction_type= ceres::STEEPEST_DESCENT;
+	   options.use_nonmonotonic_steps= true;
+	   options.dense_linear_algebra_library_type=ceres::LAPACK;
+	   options.linear_solver_type= ceres::DENSE_QR;
+     options.update_state_every_iteration = true;
+	   //options.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
+	   //options.linear_solver_type= ceres::DENSE_QR;
+	   //options.trust_region_strategy_type = ceres::DOGLEG;
+	   //options.dogleg_type = ceres::TRADITIONAL_DOGLEG;
+    	 options.minimizer_progress_to_stdout = false;
+	  Solver::Summary summary;
+	   //Run
+	  Solve(options, &p, &summary);
+	  //Print if convergence was achieved.
+	  std::cout << summary.BriefReport() << "\n";
+	  std::cout  <<"quarks: rhob, v0= " <<  rhob_*pow(Mnucleon/hc, 3) << " " << v0_ 
+                 << "---> " << x[0]*pow(Mnucleon/hc, 3) << " " << x[1] 
+	             << std::endl;
+	  rhoB=x[0];
+    V0  =x[1];
+    setEoSFlavorFixed(x[0], temperature, x[1], Yu_, Yd_, Ys_);
+
+    electron_.density= Ye*x[0];
+    electron_.kf= cbrt(6.*pi2*electron_.density/electron_.gamma);
+    electron_.kf2=electron_.kf*electron_.kf;
+    electron_.solveChemPotEff();
+    electron_.chemPot= electron_.chemPot_eff;
+    electron_.calculateProperties();
+
+    muon_.density= Ym*x[0];
+    muon_.kf= cbrt(6.*pi2*muon_.density/muon_.gamma);
+    muon_.kf2=muon_.kf*muon_.kf;
+    muon_.solveChemPotEff();
+    muon_.chemPot= muon_.chemPot_eff;
+    muon_.calculateProperties();
+
+   cout << "mus: " << qu.chemPot << " " << qd.chemPot <<  " " << qs.chemPot << " " 
+        << electron_.chemPot << " " << muon_.chemPot << endl;
+
+    muB = (getEnergy() +electron_.energy + muon_.energy
+        -temperature*(getEntropy()+electron_.entropy + muon_.entropy)
+        + getPressure()+electron_.pressure + muon_.pressure)/getBaryonDens();
   }else{
-    rhob_=rhoB;
-    v0_=V0;
+    
+    double rhob_, v0_, muu_, mud_, mus_, mue_, mum_;
+
+    if(firstRun){
+      rhob_= 2.0202*pow(hc/Mnucleon, 3);
+      v0_=0.0368514;
+      muu_=0.71131;
+      mud_=0.78430;
+      mus_=0.49338;
+      mue_= 0.12;
+      mum_= 0.12;
+    }else{
+      rhob_=rhoB;
+      v0_=V0;
+      muu_=qu.chemPot;
+      mud_=qd.chemPot;
+      mus_=qs.chemPot;
+      mue_= electron_.chemPot;
+      mum_= muon_.chemPot;
+    }
+
+	  double x[]={rhob_, v0_, muu_, mud_, mus_, mue_, mum_};
+	  Problem p;
+	  CostFunction* cost= 
+	    						new NumericDiffCostFunction<QuarkFlavor_muBFixed2_B,ceres::CENTRAL, 7, 7>
+	    						(new QuarkFlavor_muBFixed2_B(*this, electron_, muon_));
+
+	    p.AddResidualBlock(cost, NULL, x);
+      p.SetParameterLowerBound(x, 0, 0.);
+      // p.SetParameterLowerBound(x, 2, 0.);
+      // p.SetParameterLowerBound(x, 3, 0.);
+      // p.SetParameterLowerBound(x, 4, 0.);
+    
+      // p.SetParameterLowerBound(x, 1, 0.);
+      // p.SetParameterUpperBound(x, 0, 2.*pow(hc/Mnucleon, 3));
+	    Solver::Options options;
+	    options.parameter_tolerance = 1e-8;
+	    options.function_tolerance = 1e-10;
+	    options.gradient_tolerance=1e-12;
+	    options.max_num_iterations=1e5;	
+
+      // if(PressureTot*Mnucleon*pow(Mnucleon/hc, 3.) < 50. ){
+	  	//   // optionsBetaEq.parameter_tolerance = 1e-22;
+	  	// 	// optionsBetaEq.function_tolerance = 1e-22;
+	  	// 	// optionsBetaEq.gradient_tolerance=1e-25;
+	  	// 	options.parameter_tolerance = 1e-15;
+	  	// 	options.function_tolerance = 1e-15;
+	  	// 	options.gradient_tolerance=1e-16;
+	  	// 	options.max_num_iterations=1e6;	
+
+	  	// }	
+	    // options.line_search_direction_type= ceres::STEEPEST_DESCENT;
+	    options.use_nonmonotonic_steps= true;
+	    options.dense_linear_algebra_library_type=ceres::LAPACK;
+	    options.linear_solver_type= ceres::DENSE_QR;
+      options.update_state_every_iteration = true;
+	    //options.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
+	    //options.linear_solver_type= ceres::DENSE_QR;
+
+	    //options.trust_region_strategy_type = ceres::DOGLEG;
+	    //options.dogleg_type = ceres::TRADITIONAL_DOGLEG;
+
+
+	    options.minimizer_progress_to_stdout = false;
+	    Solver::Summary summary;
+
+	    //Run
+	    Solve(options, &p, &summary);
+
+	    //Print if convergence was achieved.
+	     std::cout << summary.BriefReport() << "\n";
+	     std::cout  <<"quarks: rhob, v0, muu, mud, mus= "  <<  rhob_*pow(Mnucleon/hc, 3) << " " 
+        << v0_ << " " <<    muu_ << " "  << mud_ << " " << mus_ << " " << mue_ << " " << mum_
+                    << "---> " << x[0]*pow(Mnucleon/hc, 3) << " " << x[1] << " " 
+                      << x[2] << x[3] << " " << x[4] << " " << x[5] << " " << x[6]
+	                << std::endl;      
+
+	  rhoB=x[0];
+    V0  =x[1];
+  
+    qu.chemPot=x[2];
+    qd.chemPot=x[3];
+    qu.setQuarkEff(x[2] -xvu*gv*x[1]);
+    qd.setQuarkEff(x[3] -xvd*gv*x[1]);
+    if(iFlavor==3){
+      qs.chemPot=x[4];
+      qs.setQuarkEff(x[4] - xvs*gv*x[1]); 
+    }
+  
+    setThermodynamics();
+
+    electron_.setLepton(x[5]);
+    electron_.calculateProperties();
+    muon_.setLepton(x[6]);
+    muon_.calculateProperties();
+
+    muB = (getEnergy() +electron_.energy + muon_.energy
+      -temperature*(getEntropy()+electron_.entropy + muon_.entropy)
+      + getPressure()+electron_.pressure + muon_.pressure)/getBaryonDens();
+
   }
-  
-	double x[]={rhob_, v0_};
-	Problem p;
-	CostFunction* cost= 
-	  						new NumericDiffCostFunction<QuarkFlavor_muBFixed,ceres::CENTRAL, 2, 2>
-	  						(new QuarkFlavor_muBFixed(*this, electron_, muon_));
 
-	 p.AddResidualBlock(cost, NULL, x);
-   p.SetParameterLowerBound(x, 0, 0.);
-   // p.SetParameterLowerBound(x, 1, 0.);
-   // p.SetParameterUpperBound(x, 0, 2.*pow(hc/Mnucleon, 3));
-	 Solver::Options options;
-	 options.parameter_tolerance = 1e-8;
-	 options.function_tolerance = 1e-10;
-	 options.gradient_tolerance=1e-12;
-	 options.max_num_iterations=1e5;	
-   // if(PressureTot*Mnucleon*pow(Mnucleon/hc, 3.) < 50. ){
-	//   // optionsBetaEq.parameter_tolerance = 1e-22;
-	// 	// optionsBetaEq.function_tolerance = 1e-22;
-	// 	// optionsBetaEq.gradient_tolerance=1e-25;
-	// 	options.parameter_tolerance = 1e-15;
-	// 	options.function_tolerance = 1e-15;
-	// 	options.gradient_tolerance=1e-16;
-	// 	options.max_num_iterations=1e6;	
-	// }	
-	 // options.line_search_direction_type= ceres::STEEPEST_DESCENT;
-	 options.use_nonmonotonic_steps= true;
-	 options.dense_linear_algebra_library_type=ceres::LAPACK;
-	 options.linear_solver_type= ceres::DENSE_QR;
-   options.update_state_every_iteration = true;
-	 //options.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
-	 //options.linear_solver_type= ceres::DENSE_QR;
-	 //options.trust_region_strategy_type = ceres::DOGLEG;
-	 //options.dogleg_type = ceres::TRADITIONAL_DOGLEG;
-  	 options.minimizer_progress_to_stdout = false;
-	Solver::Summary summary;
-	 //Run
-	Solve(options, &p, &summary);
-	//Print if convergence was achieved.
-	std::cout << summary.BriefReport() << "\n";
-	std::cout  <<"quarks: rhob, v0= " <<  rhob_*pow(Mnucleon/hc, 3) << " " << v0_ 
-               << "---> " << x[0]*pow(Mnucleon/hc, 3) << " " << x[1] 
-	           << std::endl;
-	rhoB=x[0];
-  V0  =x[1];
-  setEoSFlavorFixed(x[0], temperature, x[1], Yu_, Yd_, Ys_);
-
-  electron_.density= Ye*x[0];
-  electron_.kf= cbrt(6.*pi2*electron_.density/electron_.gamma);
-  electron_.kf2=electron_.kf*electron_.kf;
-  electron_.solveChemPotEff();
-  electron_.chemPot= electron_.chemPot_eff;
-  electron_.calculateProperties();
-
-  muon_.density= Ym*x[0];
-  muon_.kf= cbrt(6.*pi2*muon_.density/muon_.gamma);
-  muon_.kf2=muon_.kf*muon_.kf;
-  muon_.solveChemPotEff();
-  muon_.chemPot= muon_.chemPot_eff;
-  muon_.calculateProperties();
-  
   firstRun=false;
 }
 
@@ -620,5 +865,47 @@ bool QuarkFlavor_muBFixed2::operator()(const T* x, T* residuals) const{
   residuals[1] = quarks.omegaMeson_eom_residue(quarks.getOmegaEffDens());
 
   // residuals[0] = quarks.getPressure() + electron.pressure+ muon.pressure - quarks.PressureTot;
+  return true;
+}
+
+
+template <typename T>
+bool QuarkFlavor_muBFixed2_B::operator()(const T* x, T* residuals) const{
+
+  quarks.V0 = x[1];
+  quarks.qu.chemPot=x[2];
+  quarks.qd.chemPot=x[3];
+
+  quarks.qu.setQuarkEff(x[2] - quarks.xvu*quarks.gv*x[1]);
+  quarks.qd.setQuarkEff(x[3] - quarks.xvd*quarks.gv*x[1]);
+
+  if(quarks.iFlavor==3){
+    quarks.qs.chemPot=x[4];
+    quarks.qs.setQuarkEff(x[4] - quarks.xvs*quarks.gv*x[1]); 
+  }
+  
+  quarks.setThermodynamics();
+  
+  electron.setLepton(x[5]);
+  electron.calculateProperties();
+  
+  muon.setLepton(x[6]);
+  muon.calculateProperties();
+
+  double mub_ = (quarks.getEnergy() +electron.energy + muon.energy
+      -quarks.temperature*(quarks.getEntropy()+electron.entropy + muon.entropy)
+      + quarks.getPressure()+electron.pressure + muon.pressure)/x[0];
+  // double mub_=quarks.Yu* quarks.qu.chemPot + quarks.Yd*quarks.qd.chemPot
+  //                 +  quarks.Ys*quarks.qs.chemPot
+	// 								+ (electron.chemPot*electron.density +muon.chemPot*muon.density)/x[0];
+
+  residuals[0]=  quarks.muB - mub_;
+  residuals[1] = quarks.omegaMeson_eom_residue(quarks.getOmegaEffDens());
+  residuals[2]= quarks.qu.density - 3.*quarks.Yu*x[0];
+  residuals[3]= quarks.qd.density - 3.*quarks.Yd*x[0];
+  residuals[4]= quarks.qs.density - 3.*quarks.Ys*x[0];
+  residuals[5]= electron.density  - quarks.Ye*x[0];
+  residuals[6]= muon.density      - quarks.Ym*x[0];
+  
   return true;
 }

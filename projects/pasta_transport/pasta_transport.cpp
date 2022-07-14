@@ -35,8 +35,8 @@ int main(){
 				<< "B = " << Bfield << " G" <<  endl;
 
 	double Lratio;
-	cout << "Specify L_d/R_d: " << endl;
-	cin >> Lratio ;
+	// cout << "Specify L_d/R_d: " << endl;
+	// cin >> Lratio ;
 
 	//Declare nuclear matter: pasta and gas:
 	nlwm_class cluster(parametrization);
@@ -76,6 +76,7 @@ int main(){
 
 	temperature*=1./Mnucleon;
 	electron.temperature=temperature;
+	double alpha, dim;
 
 	for(int irho=0; irho<=iRhoMax; irho++){
 		rhoB=(rhoBMax-(double)irho*dRho);
@@ -89,7 +90,6 @@ int main(){
 
 		if(pasta.f>=0. && pasta.f<=1. && sigma>0){
 	
-			double alpha, dim;
 			for(int iDim=0; iDim<=2; iDim++){
 			dim = (double) (iDim+1);
 			
@@ -152,29 +152,54 @@ int main(){
 		double rad_slab= RdM(0, minCol);
 		double Vcl= droplet.getVolume();	
 		
-		double L_rod	=Lratio*rad_rods;
-		double L_slab	=Lratio*rad_slab;	
+
+		double b2d= 1.5*alpha*coulEnM(1, minCol);
+		double c2d= pow(10., 2.1*(alpha-0.3))*alpha*coulEnM(1, minCol);
+		double k3 = 0.0655*alpha*coulEnM(1, minCol)*pow(RwM(1, minCol), 2.); 
+		double lambda= sqrt(2.*k3/(b2d+2.*c2d));
+		double a_= sqrt(2.*M_PI/sqrt(3.))*RwM(1, minCol);
+		double L_rod= 2.*RwM(1, minCol)*sqrt( (b2d + 2.*c2d)*sqrt(M_PI*lambda*a_)/(temperature));
+		// Lratio=0;
+		// double L_rod	=10.*RwM(1,minCol);
+		
+		double r_ = 1e3*Mnucleon/hc;
+		double b1d=6.*alpha*coulEnM(0, minCol);
+		double k1=2.*alpha*coulEnM(0, minCol)*(1.+2.*alpha-2.*alpha*alpha)*RwM(0, minCol)*RwM(0, minCol)/15.;
+		double L_slab= 2.*RwM(0, minCol)*sqrt(4.*M_PI*sqrt(b1d*k1)/(temperature*log(r_/(2.*RwM(0, minCol))) ) );
+
+		// double L_slab	=5.*RwM(0, minCol);	
+
 		// double L_rod	=	Vcl/(M_PI*pow(rad_rods, 2.));
 		// double L_slab	= sqrt(Vcl/(2.*rad_slab));
+		double Lsize=0;
 		
+		if(iDimension==1){Lsize=L_slab;}
+		if(iDimension==2){Lsize=L_rod;}
+		if(iDimension==3){Lsize=NAN;}
+
+
 		double Z10=0., Z100=0., Z1000=0.;
 		if(iDimension==3){
 			Z10	=   (cluster.proton.density - gas.proton.density)*4.*M_PI*pow(RdM(2, minCol), 3)/3.;
 			Z100	=Z10;
 			Z1000=Z10;
+			Ze= Z10;
 		}else  if(iDimension==2){
 			Z10	=  (cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*10.*rad_rods;
 			Z100	=  (cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*100.*rad_rods;
 			Z1000=  (cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*1000.*rad_rods;
+			Ze=  (cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*L_rod;
 		}else if(iDimension==1){
 			Z10	=  (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(10.*rad_slab, 2.);
 			Z100	=  (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(100.*rad_slab, 2.);
 			Z1000=  (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(1000.*rad_slab, 2.);
+			Ze=  (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(L_slab, 2.);
 		}else{
 			cout << "error in the dimensionality" << endl;
 			return 1;
 		}
 
+		cout<< "test: " << Lsize/Rd << " " << Lsize/(2.*Rw) << " " << iDimension << endl;
 		outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " " 
 			<< Pressure*Mnucleon*pow(Mnucleon/hc, 3.) << " " 
 		  << (FreeEn - 1.)*Mnucleon << " " 
@@ -183,8 +208,9 @@ int main(){
 			<< Rd*(hc/Mnucleon) << " " << Rw*(hc/Mnucleon) << " " 
 			<< L_rod*(hc/Mnucleon) << " " << L_slab*(hc/Mnucleon) << " "
 			<< iPlot << " " << sigma << " " 
-			<< Z10 << " " << Z100 << " " << Z1000 
-		  << endl;
+			<< Z10 << " " << Z100 << " " << Z1000 << " " << Lsize*(hc/Mnucleon) << " "
+			<<  Lsize/Rd << " " << Lsize/Rw
+			<< endl;
 	
 		rod.setLengths(rad_rods,L_rod);
 		slab.setLengths(L_slab, L_slab, 2.*rad_slab);
@@ -192,34 +218,16 @@ int main(){
 
 		double qmin=0.;
 		double qmax=2.;
-		int iqmax= 300;
+		int iqmax= 200;
 		double q;
-		// ofstream outform("data/form_factor"+to_string(irho)+".txt");
-		cout << "3d form factor calculation" << endl;
-		
-		vector<double> qv, F3v2, Fav2, Fpv2;
+		vector<double> qv, Fav2, Fpv2;
 
-		Ze= (cluster.proton.density - gas.proton.density)*droplet.getVolume();
 		for(int iq=0; iq<=iqmax; iq++){
 			q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
-			droplet.setMomentum(q);
-			double f3_= droplet.getStructureFunction(q);
 			qv.push_back(q);
-			F3v2.push_back(f3_*f3_);
 		}
 		
     reverse(qv.begin(), qv.end());
-    reverse(F3v2.begin() , F3v2.end());
-
-		droplet.setMomentumVec(qv);
-		droplet.setFormFactor2Vec(F3v2);
-    // double coulInt3d=  integrate_coulomb(coulomb_gsl, &droplet);
-		cout << "3d coulomb log calculation" << endl;
-		double coulInt3d=getCoulombIntegral(droplet);
- 		double nu3d			=  getFrequency(Ze, cluster.rhoB, coulInt3d, electron);
-
-		double sigma0_3d=  pow(eGS, 2.)*electron.density/(nu3d*hypot(electron.kf, electron.mass));
-
 		double coulIa=0., coulIp=0., nua=0., nup=0., nu_avg=0., nu_avg_inverse=0.;
 		
 		if(iDimension==2){	
@@ -293,12 +301,35 @@ int main(){
 			nu_avg_inverse= (1./nua + 2./nup)/3.;
 
 		}else{
+
+			vector<double> F3v2;
+			Ze= (cluster.proton.density - gas.proton.density)*droplet.getVolume();
+			
+			for(int iq=0; iq<=iqmax; iq++){
+				q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
+				droplet.setMomentum(q);
+				double f3_= droplet.getStructureFunction(q);
+				F3v2.push_back(f3_*f3_);
+			}
+
+
+	    reverse(F3v2.begin() , F3v2.end());
+			droplet.setMomentumVec(qv);
+			droplet.setFormFactor2Vec(F3v2);
+    	// double coulInt3d=  integrate_coulomb(coulomb_gsl, &droplet);
+			cout << "3d coulomb log calculation" << endl;
+			double coulInt3d=getCoulombIntegral(droplet);
+ 			double nu3d			=  getFrequency(Ze, cluster.rhoB, coulInt3d, electron);
+
+			double sigma0_3d=  pow(eGS, 2.)*electron.density/(nu3d*hypot(electron.kf, electron.mass));
+
+
 			coulIa=   		 coulInt3d;
 			coulIp=   		 coulInt3d;
 			nua	= nu3d;
 			nup	= nu3d;
 			nu_avg= nu3d;
-			nu_avg_inverse= nu3d;
+			nu_avg_inverse= 1./nu3d;
 
 		}
 
@@ -307,6 +338,11 @@ int main(){
 		double sigma0_a= pow(eGS, 2.)*electron.density/(nua*hypot(electron.kf, electron.mass));
 		double sigma0_p= pow(eGS, 2.)*electron.density/(nup*hypot(electron.kf, electron.mass));	
 		double sigma0_avg = pow(eGS, 2.)*electron.density*nu_avg_inverse/hypot(electron.kf, electron.mass);		
+	
+
+		double kappa0_a= sigma0_a*pi2*temperature/(3.*pow(eGS, 2.));
+		double kappa0_p= sigma0_p*pi2*temperature/(3.*pow(eGS, 2.));
+		double kappa0_avg = sigma0_avg*pi2*temperature/(3.*pow(eGS, 2.));
 	
 		
 // 	// Calculation with magnetic field:
@@ -362,18 +398,24 @@ int main(){
 // 		xp1d=omega/nup1d;
 		// const IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
 	
-    outTransport << rhoB*pow(Mnucleon/hc, 3.) << " " 
-						<< Lratio << " " << RdM(2, minCol) << " " << RdM(minRow, minCol) << " "
-						<< coulInt3d << " " << coulIa << " " << coulIp << " "
- 						<< nu3d*Mnucleon/MeVto_Sec << " " //s-1
+    outTransport << rhoB*pow(Mnucleon/hc, 3.) << " " << Lratio << " " 
+						<< RdM(2, minCol)*hc/Mnucleon << " " << RdM(minRow, minCol)*hc/Mnucleon << " "
+					  << RwM(2, minCol)*hc/Mnucleon << " " << RwM(minRow, minCol)*hc/Mnucleon << " "
+						<< Lsize*hc/Mnucleon << " "
+						<< coulIa << " " << coulIp << " "
  						<< nua*Mnucleon/MeVto_Sec << " " //s-1
  						<< nup*Mnucleon/MeVto_Sec << " " //s-1
  						<< nup/nua << " " 
-						<< sigma0_3d*Mnucleon/MeVto_Sec << " " //s-1
 						<< sigma0_a*Mnucleon/MeVto_Sec << " " //s-1
 						<< sigma0_p*Mnucleon/MeVto_Sec << " " //s-1
 						<< sigma0_avg*Mnucleon/MeVto_Sec << " " //s-1
-						<< iDimension << " " << iPlot
+						<< iDimension << " " << iPlot << " " 
+						<< kappa0_a*pow(Mnucleon, 2.)*JouletoErg* //erg s-1 cm-1 K-1
+																								(kBoltz/(MeVto_Sec*MeVto_Cm))	<< " " 
+						<< kappa0_p*pow(Mnucleon, 2.)*JouletoErg* //erg s-1 cm-1 K-1
+																								(kBoltz/(MeVto_Sec*MeVto_Cm))	<< " "
+						<< kappa0_avg*pow(Mnucleon, 2.)*JouletoErg* //erg s-1 cm-1 K-1
+																								(kBoltz/(MeVto_Sec*MeVto_Cm))
 						<< endl;
 
 

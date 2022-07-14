@@ -13,15 +13,15 @@
 
 int main(){
 //Choose pararametrization
-	std::string parametrization= "l3wr";
+	std::string parametrization= "nl3wr*";
 	nlwm_class hmg_matter(parametrization);
 
-	bool doHyperons	=	false;
+	bool doHyperons	=	true;
 	bool doDeltas		=	false;
 	bool doBfield		= true;
 	bool doamm 			= false;
 
-	std::string hyperon_params ="l3wr3"; 
+	std::string hyperon_params ="nl3wr*"; 
 	std::string delta_params 	 ="su6";  //su6(1.), mplA_1(beta=1.1), mplA_2, prd89_1, prd89_1
 	double rhoB, temperature, Bfield;
 	temperature=0.;
@@ -29,7 +29,7 @@ int main(){
 	
 	
 	double rhoBMin=5e-4/pow(Mnucleon/hc, 3);
-  double rhoBMax=1.2/pow(Mnucleon/hc, 3);///7.5*hmg_matter.rho0;
+  double rhoBMax=1./pow(Mnucleon/hc, 3);///7.5*hmg_matter.rho0;
 	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
   int iR=240;
   double dRho=  (rhoBMax-rhoBMin)/iR;
@@ -63,7 +63,7 @@ int main(){
 	if(doDeltas){
 		hmg_matter.includeDeltas(		doDeltas, 	delta_params);
 	}
-
+	hmg_matter.printParameters();
 	if(doBfield){
 		hmg_matter.setBfield(	doBfield, Bfield);
 		electron.setBfield(		doBfield, Bfield);
@@ -127,7 +127,7 @@ int main(){
 		muon.temperature=temperature;
 
 		//=== Loop over barionic density
-		for(int irho=0; irho<=iR; irho++){
+		for(int irho=0; irho<iR; irho++){
 			rhoB=rhoBMax- (double)irho*dRho;
 			//  rhoB=rhoBMax+ (double)irho*dRho;
 			

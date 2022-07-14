@@ -19,9 +19,9 @@ public:
 	double Yu=0., Yd=0., Ys=0.;
 	double Ye=0., Ym=0.;
 //Thermodynamic variables:
-  double rhoB, rhoS, rho3, rhoQ, Yp, temperature;
-	double rhoB_integrated, rhoS_integrated, rho3_integrated, rhoq_integrated; 
-	double rhoB_eff, rhoS_eff, rho3_eff;// w/ hyperon couplings
+  double rhoB, rho3, rhoQ, Yp, temperature;
+	double rhoB_integrated, rho3_integrated, rhoq_integrated; 
+	double rhoB_eff, rho3_eff;// w/ hyperon couplings
 	double muB, muQ, PressureTot;
 
 	double yN, yH, yD;
@@ -169,6 +169,37 @@ private:
 struct QuarkFlavor_muBFixed2{
 public:
 	QuarkFlavor_muBFixed2(bag_model_class & quarks_, particle & electron_, particle &muon_):
+									quarks(quarks_), electron(electron_), muon(muon_)
+  {}
+
+template <typename T>
+  bool operator()(const T* arg, T* residuals) const;
+
+private:
+    bag_model_class 	&quarks;
+		particle 					&electron;
+		particle 					&muon;
+};
+
+
+struct QuarkFlavor_muBFixed_B{
+public:
+	QuarkFlavor_muBFixed_B(bag_model_class & quarks_, particle & electron_, particle &muon_):
+									quarks(quarks_), electron(electron_), muon(muon_)
+  {}
+
+template <typename T>
+  bool operator()(const T* arg, T* residuals) const;
+
+private:
+    bag_model_class 	&quarks;
+		particle 					&electron;
+		particle 					&muon;
+};
+
+struct QuarkFlavor_muBFixed2_B{
+public:
+	QuarkFlavor_muBFixed2_B(bag_model_class & quarks_, particle & electron_, particle &muon_):
 									quarks(quarks_), electron(electron_), muon(muon_)
   {}
 

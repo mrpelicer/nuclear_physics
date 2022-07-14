@@ -48,6 +48,9 @@ void particle::calculateProperties(){
           }else{   //spin 1/2 particles
             in==0 ? gamma=1. : gamma=2.;
           }
+
+          if(type=="Q") gamma*=3;
+            
           if(kf>=0.){ //&& nu_<inumax
             // if(spin<1. || in<inumax){
             ener_  +=gamma*(kf*chemPot_eff + Mn2*log((kf+chemPot_eff)/Mn) ); 
@@ -210,7 +213,7 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
   if(!doamm){
 
     if(!doB || Q==0.){ 
-      //std::cout << "neutral: " << Q << std::endl;
+      // std::cout << "neutral: " << Q << std::endl;
       kf2= pow(chemPot_eff, 2.) -pow(mass_eff, 2.);
       kf2<=0. ? kf=0. : kf=sqrt(kf2);
       calculateDensity();
@@ -252,6 +255,7 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
         }else{   //spin 1/2 particles
           in==0 ? gamma=1. : gamma=2.;
         }
+
 
         if(kf>0.){//&& mass_eff >0
           rho_+= gamma*kf ;
@@ -445,6 +449,139 @@ void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0,
 
 }
 
+void particle::setQuarkEff(double mueff_){
+  chemPot_eff= mueff_;
+
+  if(!doamm){
+
+    if(!doB || Q==0.){ 
+      // std::cout << "quark neutral: " << Q << std::endl;
+      kf2= pow(chemPot_eff, 2.) -pow(mass_eff, 2.);
+      kf2<=0. ? kf=0. : kf=sqrt(kf2);
+      calculateDensity();
+
+      densityP=density/2.;
+      densityM=density/2.;
+    }else{ //if do B and Q!= 0
+      // int in=0;
+      double nu_;
+      double rho_=0.;
+      double eB=std::fabs(Bfield*Q*eHL);
+      densityP =0.;
+      densityM =0.;
+      inumax= floor((pow(chemPot_eff, 2.)  - pow(mass_eff, 2.))/(2.*eB));
+
+      // do{
+      for(int in=0; in<=inumax; in++){
+        nu_=(double) in;
+        kf2= pow(chemPot_eff, 2.) -pow(mass_eff, 2.) - 2.*eB*nu_;
+        kf= (kf2<=0.) ? 0. : sqrt(kf2);
+        in==0 ? gamma=3. : gamma=6.;
+
+        if(kf>0.){
+          rho_+= gamma*kf ;
+          if(in==0 && Q>0){
+           densityP+=kf;
+          }else if(in==0 && Q<0){
+            densityM+=kf;
+          }else{
+            densityP+=kf;
+            densityM+=kf;
+          }
+        }
+          }
+      density=  (rho_>0) ?   eB*rho_/(2.*pi2)  : 0.;
+      densityP*=eB/(2.*pi2);
+      densityM*=eB/(2.*pi2);
+      if(Q!=0.) Qdens= Q*density;
+      //inumax= in-2;
+    }//end doB, Q!=0
+
+  }else{ //if do amm:
+    double Delta= -Bfield*Kb;
+    double rho_=0.;
+    densityP=0.;
+    densityM=0.;
+    double sp= 2.*spin;
+
+    if(Q==0){ //do amm for q=0
+      for(double s=-sp; s<=sp; s+=2.){
+        double Ms= mass_eff + s*Delta;
+        kf2= pow(chemPot_eff, 2.) -pow(Ms, 2.);
+        kf2<=0. ? kf=0. : kf=sqrt(kf2);
+        if(kf >0.){
+          double rho_tmp=(pow(kf, 3.)/3. +s*Delta*( kf*Ms 
+                                    + pow(chemPot_eff, 2.)*(asin(Ms/chemPot_eff) - M_PI/2.) )/2.); 
+          rho_+= rho_tmp;
+
+          if(s==-1.){
+            densityM =rho_tmp;
+          }else if(s==+1.){
+            densityP =rho_tmp;
+          }
+        }
+      }
+      density= (rho_>0)    ? rho_/(2.*pi2) : 0.;      
+      densityM *=1./(2.*pi2);
+      densityP *=1./(2.*pi2);
+    }else{ //doamm for Q!=0
+      size_t in=0;
+      double nu_;
+      double eB=std::fabs(Bfield*Q*eHL);
+      double spmin, spmax;
+      double kf2P=0., kf2M=0.;
+      do{
+        nu_=(double) in;
+        
+        if(in==0 && Q>0){
+          spmin= sp;
+          spmax= sp;
+        }else if(in==0 && Q<0){
+          spmin=-sp;
+          spmax=-sp;
+        }else{
+          spmin=-sp;
+          spmax= sp;
+        }
+
+        double Mn, Ms, Mn2;
+
+        for(double s=spmin; s<=spmax; s+=2.){
+          Mn2= pow(mass_eff, 2.) + 2.*nu_*eB;
+          Mn=sqrt(Mn2);
+          Ms= Mn+ s*Delta;
+          kf2= pow(chemPot_eff, 2.) -pow(Ms, 2.);
+          kf2<=0. ? kf=0. : kf=sqrt(kf2);
+          if(s==-1.){
+            kf2M=kf2;
+          }else if(s==+1.){
+            kf2P=kf2;
+          }
+
+          if(kf>0.){
+            rho_+= kf;
+            
+            if(s==-1.){
+              densityM+=kf;
+            }else if(s==+1.){
+              densityP+=kf;
+            }
+          }
+        }
+            in++;
+          //std::cout << nu_ << " " << in << " " << kf2 << std::endl;
+      }while(kf2P>0. || kf2M>0.);
+      density   = (rho_>0.)   ?  eB*rho_/(2.*pi2)           : 0.;      
+      densityP*=eB/(2.*pi2);
+      densityM*=eB/(2.*pi2);
+      Qdens= Q*density;
+      inumax= in-2;
+
+    }
+  }
+
+}
+
 void particle::setLepton(double mul_){
   chemPot= mul_;
 	chemPot_eff= chemPot;
@@ -591,9 +728,9 @@ double integrate(double (func)(double, void *), void *parametersPointer)
   particle &part= *reinterpret_cast<particle*>(parametersPointer);
   double result = 0e0;
   double er_res = 0e0;
-  double err_abs = 1e-11; //1e-13
-  double err_rel = 1e-8; //1e-10;
-  size_t max_steps = 1e6;
+  double err_abs = 1e-13; //1e-13
+  double err_rel = 1e-10; //1e-10;
+  size_t max_steps = 1e8;
 	
   gsl_integration_workspace *w = gsl_integration_workspace_alloc(max_steps);
 

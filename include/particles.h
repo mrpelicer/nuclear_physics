@@ -19,7 +19,7 @@ using ceres::Problem;
 using ceres::Solver;
 using ceres::Solve;
 
-
+using namespace std;
   
 
 struct particle{
@@ -32,6 +32,7 @@ struct particle{
   double density=0.,  condensate=0., Qdens=0.;//rhob, rhos 
   double energy=0., pressure=0., entropy=0.;   //thermodynamics
   double temperature=0.;
+  string type="H";
   
   bool doB  =false;
   double Bfield=0;
@@ -49,6 +50,7 @@ struct particle{
   void calculateCondensate();
 	void solveChemPotEff();
   void setBaryonEff(double mub_, double muq_, double gphi0_, double gv0_, double gb0_);
+  void setQuarkEff(double mueff_);
   void setLepton(double muq_);
 
   void setBfield(bool dob_,double B_);

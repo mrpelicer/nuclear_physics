@@ -1,9 +1,9 @@
 #include "quark_model.h"
 
 quarks_class::quarks_class(){
-  qu.mass=5./Mnucleon;       qu.gamma = 6.;    qu.Q=  2./3.;
-  qd.mass=10./Mnucleon;      qd.gamma = 6.;    qd.Q= -1./3.;
-  qs.mass=100./Mnucleon;     qs.gamma = 6.;    qs.Q= -1./3.;  
+  qu.mass=5./Mnucleon;       qu.gamma = 6.;    qu.Q=  2./3.;  qu.type="Q";   
+  qd.mass=10./Mnucleon;      qd.gamma = 6.;    qd.Q= -1./3.;  qd.type="Q"; 
+  qs.mass=100./Mnucleon;     qs.gamma = 6.;    qs.Q= -1./3.;  qs.type="Q";     
 }
 
 void quarks_class::setParameters(double C_, double D_, double tcrit_){
@@ -44,6 +44,14 @@ void quarks_class::setTemperature(double temp_){
   qu.temperature=temp_;
   qd.temperature=temp_;
   if(iFlavor==3) qs.temperature=temp_;
+}
+
+void quarks_class::setBfield(bool dob_, double B_){
+	Bfield=B_;
+	
+  qu.setBfield(dob_, B_);
+	qd.setBfield(dob_, B_);
+	if(iFlavor==3)  qs.setBfield(dob_, B_);
 }
 
 void quarks_class::setEffectiveMasses(double rhob_, double temp_){

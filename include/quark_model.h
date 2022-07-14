@@ -57,7 +57,7 @@ class quarks_class{
 	double getOmega();
 	
 	void setTemperature(double temp_);
-	void setBfield(double B_);
+	void setBfield(bool dob_, double B_);
 	void setAMM();
 
 };
