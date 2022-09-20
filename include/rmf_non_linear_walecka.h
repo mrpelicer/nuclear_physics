@@ -13,7 +13,7 @@ public:
   double gs3=0., gs4=0.; //gs3 in fm^(-1) and gs4 is adimensional.
   double xsi=0., Lv=0.;
   double rho0=0., Mstar=0.;
-  double phi0, V0, b0, theta0, Mef;
+  double phi0=0., V0=0., b0=0., theta0=0., Mef;
 	double Bfield=0.;
 
 //Hyperons and deltas parameters:
@@ -21,6 +21,11 @@ public:
 	double xvl=0., xvs=0., xvx=0., xvd=0.;
 	double xbl=0., xbs=0., xbx=0., xbd=0.;
 	double xtl=0., xts=0., xtx=0.;
+
+//density dependent coupling parameters:
+	double as=0., bs=0., cs=0., ds=0.;
+	double av=0., bv=0., cv=0., dv=0.;
+	double ab=0.;
 
 //Thermodynamic variables:
   double rhoB, rhoS, rho3, rhoQ, Yp, temperature;
@@ -37,6 +42,7 @@ public:
 	//Do hyperons and Deltas?  
 	bool doHyperons	=false;
 	bool doDeltas		=false;
+	bool dogRhob		=false;
 	bool firstRun		=true; //so that initializing parameters are only used in the first run, 
 												// afterwards, the previous solution is used!
 // Construct (initialize) the object:
@@ -59,10 +65,9 @@ public:
 	void setEOS_neutrons(double rhoB_, double temp_, particle &electron_, particle &muon_);
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_, particle &muon_);
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_);
-	void setEOS_betaEq_PressureFixed(double press_, double temp_,	
-																		particle &electron_, particle &muon_);
-	void setEOS_betaEq_muB(double mub_, double temp_,	
-																		particle &electron_, particle &muon_);
+	void setEOS_fixedYl(double rhoB_, double temp_, double Yle_, double Ylm_, 
+							particle &electron_, particle &muon_, particle &ne_, particle &nm_);
+
 //Set EOS for the pasta solver: input effective chemical potentials and mass.
 	void setEOS_coexistence(double nup_, double nun_, double mef_);	
 
@@ -73,6 +78,7 @@ public:
 //Input chemical potentials and meson fields and calculate density:
 	void setDensities(double mub_, double muq_, double phi0_, double v0_, double b0_);
 	void setDensities(double mub_, double muq_, double phi0_, double v0_, double b0_, double theta0_);
+	void setDensitiesDD(double mub_, double muq_, double phi0_, double v0_, double b0_, double theta0_, double rear_);
 
 	double getBaryonDens();
 	double getIsoDens();
@@ -87,6 +93,15 @@ public:
 	std::vector<double> getHyperonPotential();
 	std::vector<double> getDeltaPotential();
 
+	double getCoupling_sigma(double rhob_);
+	double getCoupling_omega(double rhob_);
+	double getCoupling_rho(double rhob_);
+	
+	double getDerivativeCoupling_sigma(double rhob_);
+	double getDerivativeCoupling_omega(double rhob_);
+	double getDerivativeCoupling_rho(double rhob_);
+
+	double getRearrangementEnergy(void);
 
 //Set initial value for solvers:
 	//hyperons+ deltas,b=0
@@ -198,9 +213,9 @@ public:
 		particle 	 &electron;
 };
 
-struct BetaEqFunctor_PressFixed{
+struct BetaEqFunctorDD{
 	public:
-	BetaEqFunctor_PressFixed(nlwm_class &baryons_, particle &electron_, particle &muon_):
+	BetaEqFunctorDD(nlwm_class &baryons_, particle &electron_, particle &muon_):
 													baryons(baryons_), electron(electron_), muon(muon_)
 	{}
 
@@ -213,11 +228,13 @@ struct BetaEqFunctor_PressFixed{
 		particle 		&muon;
 };
 
-
-struct BetaEqFunctor2_PressFixed{
+struct YlFunctor{
 	public:
-	BetaEqFunctor2_PressFixed(nlwm_class &baryons_, particle &electron_, particle &muon_):
-													baryons(baryons_), electron(electron_), muon(muon_)
+	YlFunctor(nlwm_class &baryons_, particle &electron_, particle &muon_,
+																		particle &ne_, 			 particle &nm_,
+																		double Yle_, double Ylm_):
+													baryons(baryons_), electron(electron_), muon(muon_),
+																						ne(ne_), nm(nm_), Yle(Yle_), Ylm(Ylm_)
 	{}
 
   template <typename T>
@@ -227,12 +244,18 @@ struct BetaEqFunctor2_PressFixed{
 		nlwm_class 	&baryons;
 		particle 		&electron;
 		particle 		&muon;
+		particle 		&ne;
+		particle 		&nm;
+		double Yle, Ylm;
 };
 
-struct BetaEqFunctor_muBFixed{
+struct YlFunctor2{
 	public:
-	BetaEqFunctor_muBFixed(nlwm_class &baryons_, particle &electron_, particle &muon_):
-													baryons(baryons_), electron(electron_), muon(muon_)
+	YlFunctor2(nlwm_class &baryons_, particle &electron_, particle &muon_,
+																		particle &ne_, 			 particle &nm_,
+																		double Yle_, double Ylm_):
+													baryons(baryons_), electron(electron_), muon(muon_),
+																						ne(ne_), nm(nm_), Yle(Yle_), Ylm(Ylm_)
 	{}
 
   template <typename T>
@@ -242,12 +265,19 @@ struct BetaEqFunctor_muBFixed{
 		nlwm_class 	&baryons;
 		particle 		&electron;
 		particle 		&muon;
+		particle 		&ne;
+		particle 		&nm;
+		double Yle, Ylm;
 };
 
-struct BetaEqFunctor2_muBFixe{
+
+struct YlFunctorDD{
 	public:
-	BetaEqFunctor2_muBFixe(nlwm_class &baryons_, particle &electron_, particle &muon_):
-													baryons(baryons_), electron(electron_), muon(muon_)
+	YlFunctorDD(nlwm_class &baryons_, particle &electron_, particle &muon_,
+																		particle &ne_, 			 particle &nm_,
+																		double Yle_, double Ylm_):
+													baryons(baryons_), electron(electron_), muon(muon_),
+																						ne(ne_), nm(nm_), Yle(Yle_), Ylm(Ylm_)
 	{}
 
   template <typename T>
@@ -257,6 +287,10 @@ struct BetaEqFunctor2_muBFixe{
 		nlwm_class 	&baryons;
 		particle 		&electron;
 		particle 		&muon;
+		particle 		&ne;
+		particle 		&nm;
+		double Yle, Ylm;
 };
+
 
 #endif

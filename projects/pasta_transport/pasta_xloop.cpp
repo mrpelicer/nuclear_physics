@@ -55,14 +55,11 @@ int main(){
 					RdM(3,2), RwM(3,2), VcM(3,2), VwM(3,2), AeM(3, 2), ZeM(3, 2); 
 					// BulkEnM(3,2), GibbsEnM(3,2),  
 	
-	double Pressure, FreeEn, f, Rd, Rw, sigma;
+	double f, sigma, Ze=0.;
 	int iDimension, iPlot=0;
 	//iPlot= 1, 2, 3, 4, 5 (spheres, rods, slabs, tubes, bubbles)	
 	
-
-	double Ae=0., Ze=0.;
-	
-	// ofstream outGlobal("data/cpa_"+parametrization+
+// ofstream outGlobal("data/cpa_"+parametrization+
 	// 																		"_betaEq_T"+to_string(temperature)+".txt");
 
 	rhoB*=pow(hc/Mnucleon, 3);
@@ -101,11 +98,13 @@ int main(){
 		}
 		//Get phase that minimizes energy and fix dimensions:
 		MatrixXd::Index minRow, minCol;
-		FreeEn= FreeEnM.minCoeff(&minRow, &minCol);
-		Pressure=PressureM(minRow, minCol);
-		Rd=RdM(minRow, minCol) ;
-		Rw=RwM(minRow, minCol) ;
-		Ae= AeM(minRow, minCol);
+		double FreeEn= FreeEnM.minCoeff(&minRow, &minCol);
+		(void) FreeEn;
+
+		// Pressure=PressureM(minRow, minCol);
+		// Rd=RdM(minRow, minCol) ;
+		// Rw=RwM(minRow, minCol) ;
+		// Ae= AeM(minRow, minCol);
 		Ze= ZeM(minRow, minCol);
 		iDimension=minRow+1;
 		if(minCol==0){
@@ -117,8 +116,8 @@ int main(){
 			if(iDimension==2){iPlot=4;}
 			if(iDimension==3){iPlot=5;}
 		}
-	double ri= pow(3./(4.*M_PI*cluster.rhoB), 1./3. );
-	double Gamma= pow(Ze*eGS, 2.)/(ri*temperature);
+	// double ri= pow(3./(4.*M_PI*cluster.rhoB), 1./3. );
+	// double Gamma= pow(Ze*eGS, 2.)/(ri*temperature);
 	cDroplet  droplet(electron);
 	cRod      rod(electron);
 	cSlab     slab(electron);
@@ -129,7 +128,7 @@ int main(){
 	droplet.setRadius(RdM(2, minCol));
 	double rad_rods= RdM(1, minCol); 
 	double rad_slab= RdM(0, minCol);
-	double Vcl= droplet.getVolume();	
+	// double Vcl= droplet.getVolume();	
 	
 	double L_rod	=Lratio*RwM(1, minCol); ;
 	double L_slab	=Lratio*RwM(0, minCol);;	
@@ -153,16 +152,28 @@ int main(){
 	double qmax=2.;
 	int iqmax= 300;
 	double q;
-	ofstream outform("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+".txt");
+	ofstream outform("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_L"+to_string(Lratio)+".txt");
 	
+	ofstream outform_ani("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_ani_L"+to_string(Lratio)+".txt");
+	
+	for(int it=0; it<=50; it++){
+		double theta_= M_PI*(1. - it/50.);
+		outform_ani << theta_ << " " 
+								<< rod.getStructureFunction(electron.kf, cos(theta_)) << " "
+								<< slab.getStructureFunction(electron.kf, cos(theta_), 0.) << " "
+								<< slab.getStructureFunction(electron.kf, cos(theta_), M_PI/4.) << endl;
+	}
+	outform_ani.close();
 	vector<double> qv, F3v2, Fav2, Fpv2;
 	double coulIa=0., coulIp=0., nua=0., nup=0., nu_avg=0., nu_avg_inverse=0.;
-	double nu3d, sigma0_3d;
+	double nu3d, sigma0_3d=0.;
 
 	for(int iq=0; iq<=iqmax; iq++){
 		q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
 		qv.push_back(q);
+		
 	}
+	
 		
   reverse(qv.begin(), qv.end());
 	
@@ -176,7 +187,13 @@ int main(){
 			double fp_= rod.getStructureFunction2_Trans(q);
 			Fav2.push_back(fa_);
 			Fpv2.push_back(fp_);
-			outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ << endl;
+
+			droplet.setMomentum(q);
+			double f3_= droplet.getStructureFunction(q);
+			F3v2.push_back(f3_*f3_);
+
+			outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ 
+						<< " " << f3_<< endl;
 		}
    	reverse(Fav2.begin() , Fav2.end());
 		reverse(Fpv2.begin() , Fpv2.end());
@@ -202,7 +219,13 @@ int main(){
 			double fp_= slab.getStructureFunction2_Trans(q);
 			Fav2.push_back(fa_);
 			Fpv2.push_back(fp_);
-			outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ << endl;
+
+			droplet.setMomentum(q);
+			double f3_= droplet.getStructureFunction(q);
+			F3v2.push_back(f3_*f3_);
+
+			outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ 
+					<< " " << f3_ << endl;
 		}
    	reverse(Fav2.begin() , Fav2.end());
 		reverse(Fpv2.begin() , Fpv2.end());
@@ -252,6 +275,8 @@ int main(){
 
 	}
 	
+	(void) nu_avg;
+	(void) sigma0_3d;
 	outform.close();
 	double sigma0_a= pow(eGS, 2.)*electron.density/(nua*hypot(electron.kf, electron.mass));
 	double sigma0_p= pow(eGS, 2.)*electron.density/(nup*hypot(electron.kf, electron.mass));	
@@ -330,18 +355,18 @@ int main(){
 			}
 
 			const IOFormat CleanFmt(4, 0, ", ", "\n", "[", "]");
-  	  cout << nua << " " << nup << " "  << omega << " " << xa << " " << xp << " "
-							<< Bfield*pow(Mnucleon, 2.)/Gauss_to_Mev2_GS << " "
-							<< Hfunc(nua, nup, omega) << " " 
-							<< (omega*omega+nup*nup)*(omega*omega+nup*nua)*Hfunc(nua, nup, omega) << " "  
-							<< - nup << " " 
-							<< sigma_avg_pasta(0)*Mnucleon/MeVto_Sec  << " " 
-							<< ( nup*nua*(omega*omega - nup*nup)*Hfunc(nua, nup, omega) + nup)/2. << " " 
-							<< sigma_avg_pasta(1)*Mnucleon/MeVto_Sec  << " " 
-							<< omega*(1. - nua*nup*nup*Hfunc(nua, nup, omega)) << " "
-							<< sigma_avg_pasta(2)*Mnucleon/MeVto_Sec  << " " 
-							<< nup/nua 
-							<< endl;
+  	  // cout << nua << " " << nup << " "  << omega << " " << xa << " " << xp << " "
+			// 				<< Bfield*pow(Mnucleon, 2.)/Gauss_to_Mev2_GS << " "
+			// 				<< Hfunc(nua, nup, omega) << " " 
+			// 				<< (omega*omega+nup*nup)*(omega*omega+nup*nua)*Hfunc(nua, nup, omega) << " "  
+			// 				<< - nup << " " 
+			// 				<< sigma_avg_pasta(0)*Mnucleon/MeVto_Sec  << " " 
+			// 				<< ( nup*nua*(omega*omega - nup*nup)*Hfunc(nua, nup, omega) + nup)/2. << " " 
+			// 				<< sigma_avg_pasta(1)*Mnucleon/MeVto_Sec  << " " 
+			// 				<< omega*(1. - nua*nup*nup*Hfunc(nua, nup, omega)) << " "
+			// 				<< sigma_avg_pasta(2)*Mnucleon/MeVto_Sec  << " " 
+			// 				<< nup/nua 
+			// 				<< endl;
 
   	  outTransport << xa << " " << xp << " " 
 							<< Bfield*pow(Mnucleon, 2.)/Gauss_to_Mev2_GS << " " << omega*Mnucleon << " " 

@@ -732,6 +732,14 @@ double integrate(double (func)(double, void *), void *parametersPointer)
   double err_rel = 1e-10; //1e-10;
   size_t max_steps = 1e8;
 	
+  if(part.temperature< 1./Mnucleon){
+    double err_abs = 1e-16; //1e-13
+    double err_rel = 1e-15; //1e-10;
+    size_t max_steps = 5e8;
+    gsl_set_error_handler_off();
+  }
+
+  
   gsl_integration_workspace *w = gsl_integration_workspace_alloc(max_steps);
 
 	gsl_function My_function;

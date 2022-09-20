@@ -104,6 +104,9 @@ int main(){
 					<< qhd.b0 << " " 
 					<< qhd.muB << " " 
 					<< qhd.muQ << " " 
+					<< qhd.proton.chemPot_eff  << " " << qhd.neutron.chemPot_eff + qhd.getRearrangementEnergy() << " " 
+					<< qhd.getRearrangementEnergy() << " " << qhd.getDerivativeCoupling_sigma(rhoB) << " "
+				 << qhd.getDerivativeCoupling_omega(rhoB) << " " << qhd.getDerivativeCoupling_rho(rhoB) 
 					<< endl;
 
 
@@ -182,8 +185,8 @@ int main(){
 		cs2v.push_back(deriv_func(rhoB, pressv, rhobv)/deriv_func(rhoB, enerdensv, rhobv));
 	}
 
-	ofstream outBulk("bulk_"+parametrization+"_sym.txt");
-	ofstream outUpar("U_delta_sym_"+parametrization+".txt");
+	ofstream outBulk("data/bulk_"+parametrization+"_sym.txt");
+	ofstream outUpar("data/U_delta_sym_"+parametrization+".txt");
 	for(int irho=0; irho<iR; irho++){
 		rhoB=	rhobv[0]+irho*dRho;
 

@@ -5,6 +5,13 @@
       "**/*.png": true,
       "**/*.pdf": true,
       "**/*.avi": true,
-      "**/*.zip": true
-  }
+      "**/*.zip": true,
+      "**/*.txt": true
+  },
+
+  "files.watcherExclude": {
+    "**/data/**": true,
+    "**/data_save/**": true
+}
+
 }

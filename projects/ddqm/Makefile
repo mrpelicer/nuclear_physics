@@ -31,7 +31,7 @@ all: 	$(APP) $(APP2) $(APP3)
 $(APP) : $(BUILDDIR) \
 	$(OBJS) \
 	symmetricMatter.cpp
-	$(CC) -o $(APP) symmetricMatter.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(WALL) 
+	$(CC) -o $(APP) symmetricMatter.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(EIGEN_LIB) $(WALL) 
 
 $(APP2) : $(BUILDDIR) \
 	$(OBJS) \

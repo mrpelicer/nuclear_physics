@@ -141,12 +141,10 @@ bool cpaFunctor::operator()(const T* x, T* residuals) const{
  
 //=============== Solve CPA in beta equilibrium given dens, temperature ===============
 void pasta_class::solveCPA_betaEq(double rhoB_, double temp_, particle &electron_){
-							// 
 	rhoB=rhoB_;
 	temperature=temp_;
 	cluster.setTemperature(temperature);
 	gas.setTemperature(temperature);
-	// 
 
   double nup1_, nun1_, mef1_, nup2_, nun2_, mef2_, mue_;
   if(firstRun){

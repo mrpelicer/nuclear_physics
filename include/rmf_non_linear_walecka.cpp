@@ -25,7 +25,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.153*pow(hc/Mnucleon, 3); 
 	}
 	//===== GM1wr =========
-	if(parametrization_=="gm1wr")		//Phys. Rev. Lett. 67, 2414 (1991)
+	else if(parametrization_=="gm1wr")		//Phys. Rev. Lett. 67, 2414 (1991)
 	{
 		Mn=938.930;
 		Ms=400./Mnucleon;
@@ -40,7 +40,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.153*pow(hc/Mnucleon, 3); 
 	}
 	//===== NL1 =====
-	if(parametrization_=="nl1") 	//see nl3 ref: 	Phys. Rev. C 55, 540 (1997)
+	else if(parametrization_=="nl1") 	//see nl3 ref: 	Phys. Rev. C 55, 540 (1997)
 	{
 		Mn=938.000;
 		Mstar=0.57;
@@ -55,7 +55,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.153*pow(hc/Mnucleon, 3);
 	}
 	// ===== NL3 =====
-	if(parametrization_=="nl3") 		//Phys. Rev. C 55, 540 (1997)
+	else if(parametrization_=="nl3") 		//Phys. Rev. C 55, 540 (1997)
 	{
 		Mn=939.000;
 		Mstar=0.60;
@@ -70,7 +70,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.148*pow(hc/Mnucleon, 3);
 	}
 	// ==== NL3wr ====
-	if(parametrization_=="nl3wr")		//Phys. Rev. C 55, 540 (1997)
+	else if(parametrization_=="nl3wr")		//Phys. Rev. C 55, 540 (1997)
 	{
 		Mn=939.000;
 		Mstar=0.60;
@@ -86,7 +86,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.1481*pow(hc/Mnucleon, 3); 
 	}
 	// ===FSUGold ====
-	if(parametrization_=="fsu") 		//Phys. Rev. Lett. 95, 122501 (2005)
+	else if(parametrization_=="fsu") 		//Phys. Rev. Lett. 95, 122501 (2005)
 	{
 		Mn=939.000;
 		Ms=491.5/Mnucleon;
@@ -103,7 +103,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 	}
 
 	// ===IU-FSU ====
-	if(parametrization_=="iufsu")			//Phys. Rev. C 82, 055803 (2010)
+	else if(parametrization_=="iufsu")			//Phys. Rev. C 82, 055803 (2010)
 	{
 		Mn=939.000;
 		Ms=491.5/Mnucleon;
@@ -119,7 +119,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.155*pow(hc/Mnucleon, 3); 
 	}
 	//===== FSU2R =========
-	if(parametrization_=="fsu2")		//Phys. Rev. C 90, 044305 (2014)
+	else if(parametrization_=="fsu2")		//Phys. Rev. C 90, 044305 (2014)
 	{
 		Mn=939.000;
 		Mstar=0.593;
@@ -137,7 +137,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 	}
 
 	//===== FSU2R =========
-	if(parametrization_=="fsu2r")		//Astron.Soc.Austral. 34 e065 
+	else if(parametrization_=="fsu2r")		//Astron.Soc.Austral. 34 e065 
 	{
 		Mn=939.000;
 		Mstar=0.593;
@@ -154,7 +154,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.1505*pow(hc/Mnucleon, 3);
 	}
 	//===== FSU2h =========
-	if(parametrization_=="fsu2h")		//Astron.Soc.Austral. 34 e065 
+	else if(parametrization_=="fsu2h")		//Astron.Soc.Austral. 34 e065 
 	{
 		Mn=939.;
 		// Mstar=0.593;
@@ -172,7 +172,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.1505*pow(hc/Mnucleon, 3);
 	}
 
-	if(parametrization_=="l3wr"){
+	else if(parametrization_=="l3wr"){
   	Mn=939.;        
   	Ms=512./Mnucleon;
   	Mv=783./Mnucleon;
@@ -188,7 +188,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.1555*pow(hc/Mnucleon, 3);
 	}
 
-	if(parametrization_=="el3wr"){
+	else if(parametrization_=="el3wr"){
   	Mn=939.;        
   	Ms=512./Mnucleon;
   	Mv=783./Mnucleon;
@@ -204,7 +204,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.156*pow(hc/Mnucleon, 3);
 	}
 
-	if(parametrization=="iobp-I"){
+	else if(parametrization=="iobp-I"){
 		Mn=939.;        
 		Ms=0.533;
 		Mv=0.833;
@@ -220,7 +220,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		
 	}
 
-	if(parametrization=="nl3*"){ //https://arxiv.org/pdf/0909.1432.pdf : wrong gs3 in paper
+	else if(parametrization=="nl3*"){ //https://arxiv.org/pdf/0909.1432.pdf : wrong gs3 in paper
 		Mn=939.000;
 		Ms=502.574/Mnucleon;
 		Mv=782.600/Mnucleon;
@@ -234,7 +234,7 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		rho0=0.150*pow(hc/Mnucleon, 3); 
 	}
 
-	if(parametrization=="nl3wr*"){ //https://arxiv.org/pdf/2111.02247.pdf : wrong gs3 in paper
+	else if(parametrization=="nl3wr*"){ //https://arxiv.org/pdf/2111.02247.pdf : wrong gs3 in paper
 		Mn=939.000;
 		Ms=502.574/Mnucleon;
 		Mv=782.600/Mnucleon;
@@ -248,7 +248,57 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		Lv=0.045;
 		rho0=0.150*pow(hc/Mnucleon, 3); 
 	}
+	else if(parametrization=="ddme1"){ //Phys. Rev. C 66,024306 (2002)
+		Mn=939.000;
+		Ms=549.5255/Mnucleon;
+		Mv=783.0000/Mnucleon;
+		Mb=763.0000/Mnucleon;
+		Mt=1020.00/Mnucleon;
+		gs=10.4434;
+		gv=12.8939;
+		gb=2.*3.8053;
 
+		as=1.3854;
+		bs=0.9781;
+		cs=1.5342;
+		ds=0.4661;
+
+		av=1.3879;
+		bv=0.8525;
+		cv=1.3566;
+		dv=0.4957;
+
+		ab=0.5008;
+
+ 		rho0=0.152*pow(hc/Mnucleon, 3); 
+		dogRhob=true;
+	}
+	
+	else if(parametrization=="ddme2"){ //Phys. Rev. C 71, 024312 (2005)
+		Mn=939.000;
+		Ms=550.1238/Mnucleon;
+		Mv=783.0000/Mnucleon;
+		Mb=763.0000/Mnucleon;
+		Mt=1020.00/Mnucleon;
+		gs=10.5396;
+		gv=13.0189;
+		gb=7.3672;
+	
+		as=1.3881;
+		bs=1.0943;
+		cs=1.7057;
+		ds=0.4421;
+		
+		av=1.3892;
+		bv=0.9240;
+		cv=1.4620;
+		dv=0.4775;
+
+		ab=0.5647;
+
+		rho0=0.152*pow(hc/Mnucleon, 3); 
+		dogRhob=true;
+	}
   else{parametrization_= "";}
 	std::cout << parametrization << " parametrization." << std::endl;
 }
@@ -259,19 +309,19 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 	doHyperons=do_;
 	std::cout << "do Hyperons! " << doHyperons << std::endl;
 
-	lambda0.mass=1116./Mnucleon;
-	sigmam.mass =1193./Mnucleon;
-	sigma0.mass =1193./Mnucleon;
-	sigmap.mass =1193./Mnucleon;
-	xim.mass		=1318./Mnucleon;
-	xi0.mass		=1318./Mnucleon;
+	// lambda0.mass=1116./Mnucleon;
+	// sigmam.mass =1193./Mnucleon;
+	// sigma0.mass =1193./Mnucleon;
+	// sigmap.mass =1193./Mnucleon;
+	// xim.mass		=1318./Mnucleon;
+	// xi0.mass		=1318./Mnucleon;
 
-	// lambda0.mass=1115.7/Mnucleon;
-	// sigmam.mass =1197.5/Mnucleon;
-	// sigma0.mass =1192.6/Mnucleon;
-	// sigmap.mass =1189.4/Mnucleon;
-	// xim.mass		=1321.7/Mnucleon;
-	// xi0.mass		=1314.9/Mnucleon;
+	lambda0.mass=1115.7/Mnucleon;
+	sigmam.mass =1197.5/Mnucleon;
+	sigma0.mass =1192.6/Mnucleon;
+	sigmap.mass =1189.4/Mnucleon;
+	xim.mass		=1321.7/Mnucleon;
+	xi0.mass		=1314.9/Mnucleon;
 
 	lambda0.spin	= 1./2.;			 	lambda0.I3	= 0.;			lambda0.Q		= 0;  lambda0.stg =-1;
 	sigmap.spin		=	1./2.;			 	sigmap.I3		=	1.;			sigmap.Q		= 1.;	sigmap.stg	=-1;
@@ -306,57 +356,67 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 	else if(parhyp=="su3"){ //código do Kauan --
 		xsl= 0.610; xss= 0.3957; xsx= 0.113;
 		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
-			xvl=.667; xvs=.667; xvx=.332;
+		xvl=.667; xvs=.667; xvx=.332;
 		xbl=0.; xbs=1.; xbx=1.; //*** CHECK THIS xbs=2, WHICH MAYBE WAS ADDED IF ISOSPIN WAS NOT ACCOUNTED FOR!!!!
+	}	
+	else if(parhyp=="ddme2-a"){ //Fortin et al. Phys. Rev. C 95 065803
+		xsl= 0.621; xss= 0.467; xsx= 0.321;
+		xvl=2./3.; xvs=2./3.; xvx=1./3.;
+		xbl=0.; xbs=1.; xbx=1.;
+		xtl=-sqrt(2.)/3.; xts=-sqrt(2.)/3.; xtx=-2.*sqrt(2.)/3.;
 	}
+	else if(parhyp=="ddme2-b"){ //Fortin et al. Phys. Rev. C 95 065803
+		xsl= 0.896; xss= 0.467; xsx= 0.321;
+		xvl=1.; xvs=2./3.; xvx=1./3.;
+		xbl=0.; xbs=1.; xbx=1.;
+		xtl=-sqrt(2.)/3.; xts=-sqrt(2.)/3.; xtx=-2.*sqrt(2.)/3.;
+	}
+
 	else if(parhyp=="fsu2h"){//Tolos et al. 1708.08681 -- canonical set
 		xsl= 0.611; xss= 0.467; xsx= 0.316;
-		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
 		xvl=2./3.; xvs=2./3.; xvx=1./3.;
 		xbl=0.; xbs=1.; xbx=1.;
 		xtl=-sqrt(2.)/3.; xts=-sqrt(2.)/3.; xtx=-2.*sqrt(2.)/3.;
 	}
 	else if(parhyp=="fsu2h_1"){//Tolos et al. 1708.08681 -- most repulsive set
 		xsl= 0.611; xss= 0.467; xsx= 0.271;
-		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
 		xvl=.667; xvs=.667; xvx=.332;
 		xbl=0.; xbs=1.; xbx=1.;
 		xtl=-sqrt(2.)/3.; xts=-sqrt(2.)/3.; xtx=-2.*sqrt(2.)/3.;
 	}
 	else if(parhyp=="fsu2h_2"){//Tolos et al. 1708.08681 -- most attractive set
 		xsl= 0.611; xss= 0.541; xsx= 0.316;
-		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
 		xvl=.667; xvs=.667; xvx=.332;
 		xbl=0.; xbs=1.; xbx=1.;
 		xtl=-sqrt(2.)/3.; xts=-sqrt(2.)/3.; xtx=-2.*sqrt(2.)/3.;
 	}
 	else if(parhyp=="l3wr1"){
-		double av=1.;
-		double as=1.582;
+		double av_=1.;
+		double as_=1.582;
 	
-		xsl= (10.+6.*as)/(13.+12.*as); 		 xss= (22.-6.*as)/(13.+12.*as); 			xsx=(13.-6.*as)/(13.+12.*as);
+		xsl= (10.+6.*as_)/(13.+12.*as_); 		 xss= (22.-6.*as_)/(13.+12.*as_); 			xsx=(13.-6.*as_)/(13.+12.*as_);
 		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
-		xvl=(4.+2.*av)/(5+4.*av);					 xvs=(8.-2.*av)/(5+4.*av); 						xvx=(5.-2.*av)/(5+4.*av);
-		xbl=0.;											 			 xbs=2.*av; 													xbx=-(1.-2.*av);
-		xtl=sqrt(2.)*(2.*av-5.)/(5+4.*av); xts=-sqrt(2.)*(2.*av+1.)/(5+4.*av); 	xtx=-sqrt(2.)*(2.*av+4.)/(5+4.*av);
+		xvl=(4.+2.*av_)/(5+4.*av_);					 xvs=(8.-2.*av_)/(5+4.*av_); 						xvx=(5.-2.*av_)/(5+4.*av_);
+		xbl=0.;											 			 xbs=2.*av_; 													xbx=-(1.-2.*av_);
+		xtl=sqrt(2.)*(2.*av_-5.)/(5+4.*av_); xts=-sqrt(2.)*(2.*av_+1.)/(5+4.*av_); 	xtx=-sqrt(2.)*(2.*av_+4.)/(5+4.*av_);
 	}
 	else if(parhyp=="l3wr2"){
-		double av=.75;
-		double as=1.240;
-		xsl= (10.+6.*as)/(13.+12.*as); 		 xss= (22.-6.*as)/(13.+12.*as); 			xsx=(13.-6.*as)/(13.+12.*as);
+		double av_=.75;
+		double as_=1.240;
+		xsl= (10.+6.*as_)/(13.+12.*as_); 		 xss= (22.-6.*as_)/(13.+12.*as_); 			xsx=(13.-6.*as_)/(13.+12.*as_);
 		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
-		xvl=(4.+2.*av)/(5+4.*av);					 xvs=(8.-2.*av)/(5+4.*av); 						xvx=(5.-2.*av)/(5+4.*av);
-		xbl=0.;											 			 xbs=2.*av; 													xbx=-(1.-2.*av);
-		xtl=sqrt(2.)*(2.*av-5.)/(5+4.*av); xts=-sqrt(2.)*(2.*av+1.)/(5+4.*av); 	xtx=-sqrt(2.)*(2.*av+4.)/(5+4.*av);
+		xvl=(4.+2.*av_)/(5+4.*av_);					 xvs=(8.-2.*av_)/(5+4.*av_); 						xvx=(5.-2.*av_)/(5+4.*av_);
+		xbl=0.;											 			 xbs=2.*av_; 													xbx=-(1.-2.*av_);
+		xtl=sqrt(2.)*(2.*av_-5.)/(5+4.*av_); xts=-sqrt(2.)*(2.*av_+1.)/(5+4.*av_); 	xtx=-sqrt(2.)*(2.*av_+4.)/(5+4.*av_);
 	}
 	else if(parhyp=="l3wr3"){
-		double av=.5;
-		double as=.911;
-		xsl= (10.+6.*as)/(13.+12.*as); 		 xss= (22.-6.*as)/(13.+12.*as); 			xsx=(13.-6.*as)/(13.+12.*as);
+		double av_=.5;
+		double as_=.911;
+		xsl= (10.+6.*as_)/(13.+12.*as_); 		 xss= (22.-6.*as_)/(13.+12.*as_); 			xsx=(13.-6.*as_)/(13.+12.*as_);
 		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
-		xvl=(4.+2.*av)/(5+4.*av);					 xvs=(8.-2.*av)/(5+4.*av); 						xvx=(5.-2.*av)/(5+4.*av);
-		xbl=0.;											 			 xbs=2.*av; 													xbx=-(1.-2.*av);
-		xtl=sqrt(2.)*(2.*av-5.)/(5+4.*av); xts=-sqrt(2.)*(2.*av+1.)/(5+4.*av); 	xtx=-sqrt(2.)*(2.*av+4.)/(5+4.*av);
+		xvl=(4.+2.*av_)/(5+4.*av_);					 xvs=(8.-2.*av_)/(5+4.*av_); 						xvx=(5.-2.*av_)/(5+4.*av_);
+		xbl=0.;											 			 xbs=2.*av_; 													xbx=-(1.-2.*av_);
+		xtl=sqrt(2.)*(2.*av_-5.)/(5+4.*av_); xts=-sqrt(2.)*(2.*av_+1.)/(5+4.*av_); 	xtx=-sqrt(2.)*(2.*av_+4.)/(5+4.*av_);
 	}
 	else if(parametrization=="iufsu" && parhyp=="fw"){
 		xsl=0.7098; xss=0.552; xsx=0.522;
@@ -370,12 +430,12 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 
 
 	}else if(parhyp=="nl3wr*"){ /* see tab II of https://arxiv.org/pdf/2111.02247.pdf
-															too determine av and as */
-		double av=0.5;
+															too determine av_ and as_ */
+		double av_=0.5;
 		xsl= 0.651; 		 xss= 0.730; 			xsx=0.473; // 0.428 in the paper! wrong potential here
-		xvl=(4.+2.*av)/(5+4.*av);					 xvs=(8.-2.*av)/(5+4.*av); 						xvx=(5.-2.*av)/(5+4.*av);
-		xbl=0.;											 			 xbs=2.*av; 													xbx=-(1.-2.*av);
-		xtl=sqrt(2.)*(2.*av-5.)/(5+4.*av); xts=-sqrt(2.)*(2.*av+1.)/(5+4.*av); 	xtx=-sqrt(2.)*(2.*av+4.)/(5+4.*av);
+		xvl=(4.+2.*av_)/(5+4.*av_);					 xvs=(8.-2.*av_)/(5+4.*av_); 						xvx=(5.-2.*av_)/(5+4.*av_);
+		xbl=0.;											 			 xbs=2.*av_; 													xbx=-(1.-2.*av_);
+		xtl=sqrt(2.)*(2.*av_-5.)/(5+4.*av_); xts=-sqrt(2.)*(2.*av_+1.)/(5+4.*av_); 	xtx=-sqrt(2.)*(2.*av_+4.)/(5+4.*av_);
 	}
 
 	
@@ -575,8 +635,16 @@ void nlwm_class::setEOS_nucleons(double rhoB_, double Yp_, double temp_){
   proton.solveChemPotEff();
   neutron.solveChemPotEff();
 
-  proton.chemPot  =  proton.chemPot_eff  + gv*V0 + gb*b0*proton.I3;
-  neutron.chemPot =  neutron.chemPot_eff + gv*V0 + gb*b0*neutron.I3;
+	double gv_= dogRhob ? gv*getCoupling_omega(rhoB) 	: gv;
+	double gb_= dogRhob ? gb*getCoupling_rho(rhoB) 		: gb;
+
+  proton.chemPot  =  proton.chemPot_eff  + gv_*V0 + gb_*b0*proton.I3;
+  neutron.chemPot =  neutron.chemPot_eff + gv_*V0 + gb_*b0*neutron.I3;
+	
+	if(dogRhob){
+		proton.chemPot += getRearrangementEnergy();
+		neutron.chemPot += getRearrangementEnergy();
+	}
 	muB = neutron.chemPot;
 	muQ = proton.chemPot - neutron.chemPot;
 
@@ -594,8 +662,11 @@ void nlwm_class::setVectorMeanFields(){
 	
 	double v0_= getOmegaEffDens()*gv/pow(Mv , 2) ;       
 	double b0_= getIsoEffDens()*gb/(pow(Mb, 2) );   
-	// std::cout << " test: " << v0_ << " " << b0_ << std::endl;
-	if(xsi!=0 || Lv!=0){
+
+	if(dogRhob){
+		v0_*=getCoupling_omega(rhoB);
+		b0_*=getCoupling_rho(rhoB);
+	}else{
 		Problem pV;
     CostFunction* costV =	new NumericDiffCostFunction<VFunctor, ceres::CENTRAL, 1, 1>
 														(new VFunctor(*this) );
@@ -671,7 +742,9 @@ void nlwm_class::setScalarMeanFields(){
 	Mef= mef_;
 	proton.mass_eff=Mef;
 	neutron.mass_eff=Mef;
-	phi0=(1.-Mef)/gs;
+
+	double gs_= dogRhob ? gs*getCoupling_sigma(rhoB) : gs;
+	phi0=(1.-Mef)/gs_;
 
 }
 //=============== Functor scalar meson solver for Ceres: ===============
@@ -688,7 +761,8 @@ bool SFunctor::operator()(const T* x, T* residuals) const{
 	baryons.neutron.calculateCondensate();
 	baryons.rhoS= baryons.proton.condensate + baryons.neutron.condensate;
 
-	baryons.phi0= (1.-x[0])/baryons.gs;
+	double gs_= baryons.dogRhob ? baryons.gs*baryons.getCoupling_sigma(baryons.rhoB) : baryons.gs;
+	baryons.phi0= (1.-x[0])/gs_;
 	double res=baryons.sigmaMeson_eom_residue(baryons.rhoS);
 	residuals[0] = res;
 	return true;
@@ -823,41 +897,103 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 	double v0_ ;       
 	double b0_;
 	double theta0_=0.;
-	// if(rhoB<rho0){doHyperons=false;}
-	if(firstRun){
-		if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
-		else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
-		if(xtl!=0. || xts!=0. || xtx!=0.) theta0_ = -0.0118828;
-		if(parametrization=="fsu2h")theta0_ = -0.0252404;
-		if(parametrization=="l3wr") theta0_ = -0.0118828;
-	}else{
-		mub_	= muB;
-		mue_= electron_.chemPot;
-		phi0_=phi0 ;
-		v0_	=V0;       
-		b0_	= b0;
-		if(xtl!=0. || xts!=0. || xtx!=0.) theta0_=theta0;
-	}
-	
-	// // only needed if running for very low densities (for lorene, p.ex.)
-	// if( (rhoB>((5e-4)/pow(Mnucleon/hc, 3.)))  && (rhoB<((1e-3)/pow(Mnucleon/hc, 3.))) ){
-	// 	// std::cout <<"TESTAO " << std::endl;
-	// 	mub_	= 1.00153;
-	// 	mue_=  0.00300678;
-	// 	phi0_=0.000287242 ;
-	// 	v0_	=0.000148557;       
-	// 	b0_	= -8.14458e-05;
-	// }
+	double rear_=0.;
 
-	if(xtl!=0. || xts!=0. || xtx!=0.){ 
-		//must solve 4 meson equations
+	if(dogRhob){ 
+		if(firstRun){
+			if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+			else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+			theta0_= -0.028034;
+			rear_= 	-0.0129762;
+		}else{
+			mub_	= muB;
+			mue_= electron_.chemPot;
+			phi0_=phi0 ;
+			v0_	=V0;       
+			b0_	= b0;
+			if(xtl!=0. || xts!=0. || xtx!=0.) theta0_=theta0;
+			rear_=getRearrangementEnergy();
+		}
+
+		double x[]={mub_, mue_, phi0_, v0_, b0_, theta0_, rear_};
+		Problem pBetaEq;
+		
+		CostFunction* costBetaEq= 
+								new NumericDiffCostFunction<BetaEqFunctorDD,ceres::CENTRAL, 7, 7>
+								(new  BetaEqFunctorDD(*this, electron_, muon_));
+		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
+		pBetaEq.SetParameterLowerBound(x, 6, -0.35);
+		pBetaEq.SetParameterUpperBound(x, 6, 0.35);
+
+
+		Solver::Options optionsBetaEq;
+	
+		optionsBetaEq.parameter_tolerance = 1e-10;
+		optionsBetaEq.function_tolerance = 1e-10;
+		optionsBetaEq.gradient_tolerance=1e-12;
+
+		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
+		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
+		optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
+		optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
+		optionsBetaEq.use_nonmonotonic_steps= true;
+		optionsBetaEq.update_state_every_iteration = true;
+		
+		optionsBetaEq.minimizer_progress_to_stdout = false;
+		Solver::Summary summaryBetaEq;
+		optionsBetaEq.max_num_iterations=1e5;	
+
+		//Run
+		Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
+
+		//Print if convergence was achieved.
+		std::cout << summaryBetaEq.BriefReport() << "\n";
+		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
+		std::cout << mub_ << " " << mue_ << " " 
+							<< phi0_ << " " << v0_  << " " << b0_ <<  " " << theta0_ << " " << rear_ <<
+		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]  << " " << x[5] << " " << x[6]
+		<< std::endl << std::endl;
+				
+		mub_	 =x[0];
+		mue_	 =x[1];
+		phi0_	 =x[2];
+		v0_		 =x[3];
+		b0_		 =x[4];
+		theta0_=x[5];
+		rear_=x[6];
+
+		setDensitiesDD(mub_, -mue_,  phi0_,  v0_, b0_, theta0_, rear_);
+		setThermodynamics();
+		electron_.setLepton(mue_);
+		electron_.calculateProperties();
+		muon_.setLepton(mue_);
+		muon_.calculateProperties();
+
+
+	}else if( xtl!=0. || xts!=0. || xtx!=0.){ 
+		if(firstRun){
+			if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+			else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+			if(xtl!=0. || xts!=0. || xtx!=0.) theta0_ = -0.0118828;
+			if(parametrization=="fsu2h")theta0_ = -0.0252404;
+			if(parametrization=="ddme2")theta0_= -0.028034;
+		}else{
+			mub_	= muB;
+			mue_= electron_.chemPot;
+			phi0_=phi0 ;
+			v0_	=V0;       
+			b0_	= b0;
+			if(xtl!=0. || xts!=0. || xtx!=0.) theta0_=theta0;
+		}
+
+		//must solve 4 meson equations + charge and mass equilibrium
 		double x[]={mub_, mue_, phi0_, v0_, b0_, theta0_};
 
 		Problem pBetaEq;
+		
 		CostFunction* costBetaEq= 
 								new NumericDiffCostFunction<BetaEqFunctor2,ceres::CENTRAL, 6, 6>
 								(new  BetaEqFunctor2(*this, electron_, muon_));
-
 		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
 
 		// if(temperature<Tmin_integration){
@@ -873,36 +1009,6 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 			optionsBetaEq.parameter_tolerance = 1e-10;
 			optionsBetaEq.function_tolerance = 1e-10;
 			optionsBetaEq.gradient_tolerance=1e-12;
-		// }else{
-			// optionsBetaEq.parameter_tolerance = 1e-10;
-			// optionsBetaEq.function_tolerance = 1e-10;
-			// optionsBetaEq.gradient_tolerance=1e-12;
-		// }
-
-		if(rhoB*pow(Mnucleon/hc, 3.) < (1.e-5) ){
-			// optionsBetaEq.parameter_tolerance = 1e-22;
-			// optionsBetaEq.function_tolerance = 1e-22;
-			// optionsBetaEq.gradient_tolerance=1e-25;
-			optionsBetaEq.parameter_tolerance = 1e-20;
-			optionsBetaEq.function_tolerance = 1e-20;
-			optionsBetaEq.gradient_tolerance=1e-23;
-			optionsBetaEq.max_num_iterations=1e7;	
-
-		}	
-			if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-7) ){
-			// optionsBetaEq.parameter_tolerance = 1e-22;
-			// optionsBetaEq.function_tolerance = 1e-22;
-			// optionsBetaEq.gradient_tolerance=1e-25;
-			optionsBetaEq.parameter_tolerance = 1e-45;
-			optionsBetaEq.function_tolerance = 1e-45;
-			optionsBetaEq.gradient_tolerance=1e-60;
-			optionsBetaEq.max_num_iterations=1e9;	
-
-		}	
-	//}
-		// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
-		// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
-		
 		
 		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
 		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
@@ -934,11 +1040,25 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		theta0_=x[5];
 
 		setDensities(mub_, -mue_,  phi0_,  v0_, b0_, theta0_);
+		setThermodynamics();
+		electron_.setLepton(mue_);
+		electron_.calculateProperties();
+		muon_.setLepton(mue_);
+		muon_.calculateProperties();
 
 	}else{
-	
+		if(firstRun){
+			if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+			else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+		}else{
+			mub_	= muB;
+			mue_= electron_.chemPot;
+			phi0_=phi0 ;
+			v0_	=V0;       
+			b0_	= b0;
+		}
+
 		double x[]={mub_, mue_, phi0_, v0_, b0_};
-		
 
 		Problem pBetaEq;
 		CostFunction* costBetaEq= 
@@ -1020,13 +1140,15 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		b0_		=x[4];
 
 		setDensities(mub_, -mue_,  phi0_,  v0_, b0_);
+		
+		setThermodynamics();
+		electron_.setLepton(mue_);
+		electron_.calculateProperties();
+		muon_.setLepton(mue_);
+		muon_.calculateProperties();
+
 	}
 	
-	setThermodynamics();
-	electron_.setLepton(mue_);
-	electron_.calculateProperties();
-	muon_.setLepton(mue_);
-	muon_.calculateProperties();
  	firstRun=false;
 
 }
@@ -1060,6 +1182,24 @@ bool BetaEqFunctor2::operator()(const T* x, T* residuals) const{
 	residuals[3] = baryons.omegaMeson_eom_residue(	baryons.getOmegaEffDens());
 	residuals[4] = baryons.rhoMeson_eom_residue(		baryons.getIsoEffDens());
 	residuals[5] = baryons.thetaMeson_eom_residue(	baryons.getThetaEffDens()) ;
+	return true;
+}
+
+template <typename T>
+bool BetaEqFunctorDD::operator()(const T* x, T* residuals) const{
+
+	electron.setLepton(x[1]);
+	muon.setLepton(x[1]);
+	baryons.setDensitiesDD(x[0], -x[1], x[2], x[3], x[4], x[5], x[6]);
+											//mub, muq, phi0,  v0,    b0, theta0
+
+	residuals[0] = baryons.rhoB - baryons.getBaryonDens();
+	residuals[1] = baryons.getChargeDens() +	electron.Qdens + muon.Qdens;
+	residuals[2] = baryons.sigmaMeson_eom_residue(	baryons.getSigmaEffDens());
+	residuals[3] = baryons.omegaMeson_eom_residue(	baryons.getOmegaEffDens());
+	residuals[4] = baryons.rhoMeson_eom_residue(		baryons.getIsoEffDens());
+	residuals[5] = baryons.thetaMeson_eom_residue(	baryons.getThetaEffDens()) ;
+	residuals[6] = baryons.getRearrangementEnergy() - x[6];
 	return true;
 }
 
@@ -1168,44 +1308,130 @@ bool BetaEqFunctor3::operator()(const T* x, T* residuals) const{
 	return true;
 }
 
-void nlwm_class::setEOS_betaEq_PressureFixed(double press_, double temp_,	
-																	particle &electron_, particle &muon_){
-
-
-	PressureTot=press_;
+//=============== Functor beta-equilibrium w/ only electrons for Ceres (3 mesons only): ===============
+void nlwm_class::setEOS_fixedYl(double rhoB_, double temp_, double Yle_, double Ylm_,	
+										particle &electron_, particle &muon_, particle &ne_, particle &nm_){
+	rhoB=rhoB_;
 	setTemperature(temp_);
   
 	double mub_;
 	double mue_;
+	double munue_;
+	double munum_;
 	double phi0_ ;
 	double v0_ ;       
 	double b0_;
 	double theta0_=0.;
-	
-	if(firstRun){
-		if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
-		else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+	double rear_=0.;
+
+	if(dogRhob){ 
+		if(firstRun){
+			if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+			else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);
+			munue_=mue_/100.;
+			munum_= munue_;
+			theta0_= -0.028034;
+			rear_= 	-0.0129762;
+		}else{
+			mub_	= muB;
+			phi0_=phi0 ;
+			v0_	=V0;       
+			b0_	= b0;
+			if(xtl!=0. || xts!=0. || xtx!=0.) theta0_=theta0;
+			rear_=getRearrangementEnergy();
+		}
+
+
+		double x[]={mub_, mue_, munue_, munum_, phi0_,  v0_, b0_, theta0_, rear_};
+		Problem pYl;
 		
-		if(parametrization=="fsu2h" || parametrization=="l3wr") theta0_ = -0.0118828;
-	}else{
-		mub_	= muB;
-		mue_= electron_.chemPot;
-		phi0_=phi0 ;
-		v0_	=V0;       
-		b0_	= b0;
-		if(parametrization=="fsu2h" || parametrization=="l3wr") theta0_=theta0;
-	}
+		CostFunction* costYl= 
+								new NumericDiffCostFunction<YlFunctorDD,ceres::CENTRAL, 9, 9>
+								(new  YlFunctorDD(*this, electron_, muon_, ne_, nm_, Yle_, Ylm_));
+		pYl.AddResidualBlock(costYl, NULL, x);
+		pYl.SetParameterLowerBound(x, 8, -0.35);
+		pYl.SetParameterUpperBound(x, 8, 0.35);
+
+
+		Solver::Options optionsYl;
 	
-	if(parametrization=="fsu2h" || parametrization=="l3wr"){ 
-		//must solve 4 meson equations
+		optionsYl.parameter_tolerance = 1e-10;
+		optionsYl.function_tolerance = 1e-10;
+		optionsYl.gradient_tolerance=1e-12;
+
+		optionsYl.linear_solver_type= ceres::DENSE_QR;
+		optionsYl.dense_linear_algebra_library_type=ceres::LAPACK;
+		optionsYl.trust_region_strategy_type = ceres::DOGLEG;
+		optionsYl.dogleg_type = ceres::SUBSPACE_DOGLEG;
+		optionsYl.use_nonmonotonic_steps= true;
+		optionsYl.update_state_every_iteration = true;
+		
+		optionsYl.minimizer_progress_to_stdout = false;
+		Solver::Summary summaryYl;
+		optionsYl.max_num_iterations=1e5;	
+
+		//Run
+		Solve(optionsYl, &pYl, &summaryYl);
+
+		//Print if convergence was achieved.
+		std::cout << summaryYl.BriefReport() << "\n";
+		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
+		std::cout << mub_ << " " << mue_ << " " <<  munue_ << " " <<  munum_ << " " 
+							<< phi0_ << " " << v0_  << " " << b0_ <<  " " << theta0_ << " " << rear_ <<
+		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]  << " " 
+					<< x[5] << " "<< x[6] << " " << x[7] << " " << x[8]
+		<< std::endl << std::endl;
+				
+		mub_	 =x[0];
+		mue_	 =x[1];
+		munue_ =x[2];
+		munum_ =x[3];
+		phi0_	 =x[4];
+		v0_		 =x[5];
+		b0_		 =x[6];
+		theta0_=x[7];
+		rear_	 =x[8];
+
+		double muq_= munue_- mue_;
+		setDensitiesDD(mub_, muq_,  phi0_,  v0_, b0_, theta0_, rear_);
+		setThermodynamics();
+
+		double mum_= x[3]- muq_;
+
+		electron_.setLepton(mue_);
+		ne_.setLepton(munue_);
+		muon_.setLepton(mum_);
+		nm_.setLepton(munum_);
+
+		electron_.calculateProperties();
+		muon_.calculateProperties();
+		ne_.calculateProperties();
+		nm_.calculateProperties();
+
+	}else if( xtl!=0. || xts!=0. || xtx!=0.){ 
+		if(firstRun){
+			if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+			else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+			if(xtl!=0. || xts!=0. || xtx!=0.) theta0_ = -0.0118828;
+			if(parametrization=="fsu2h")theta0_ = -0.0252404;
+			if(parametrization=="ddme2")theta0_= -0.028034;
+		}else{
+			mub_	= muB;
+			mue_= electron_.chemPot;
+			phi0_=phi0 ;
+			v0_	=V0;       
+			b0_	= b0;
+			if(xtl!=0. || xts!=0. || xtx!=0.) theta0_=theta0;
+		}
+
+		//must solve 4 meson equations + charge and mass equilibrium
 		double x[]={mub_, mue_, phi0_, v0_, b0_, theta0_};
-		
 
 		Problem pBetaEq;
+		
 		CostFunction* costBetaEq= 
-								new NumericDiffCostFunction<BetaEqFunctor2_PressFixed,ceres::CENTRAL, 6, 6>
-								(new  BetaEqFunctor2_PressFixed(*this, electron_, muon_));
-
+								new NumericDiffCostFunction<BetaEqFunctor2,ceres::CENTRAL, 6, 6>
+								(new  BetaEqFunctor2(*this, electron_, muon_));
 		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
 
 		// if(temperature<Tmin_integration){
@@ -1217,12 +1443,10 @@ void nlwm_class::setEOS_betaEq_PressureFixed(double press_, double temp_,
 		// Set solver
 		Solver::Options optionsBetaEq;
 	//if(parametrization!="iufsu"){
-		optionsBetaEq.parameter_tolerance = 1e-12;
-		optionsBetaEq.function_tolerance = 1e-12;
-		optionsBetaEq.gradient_tolerance=1e-15;
-	// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
-	// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
-		
+		// if(Bfield==0){
+		optionsBetaEq.parameter_tolerance = 1e-10;
+		optionsBetaEq.function_tolerance = 1e-10;
+		optionsBetaEq.gradient_tolerance=1e-12;
 		
 		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
 		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
@@ -1254,16 +1478,30 @@ void nlwm_class::setEOS_betaEq_PressureFixed(double press_, double temp_,
 		theta0_=x[5];
 
 		setDensities(mub_, -mue_,  phi0_,  v0_, b0_, theta0_);
+		setThermodynamics();
+		electron_.setLepton(mue_);
+		electron_.calculateProperties();
+		muon_.setLepton(mue_);
+		muon_.calculateProperties();
 
 	}else{
-	
+		if(firstRun){
+			if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+			else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+		}else{
+			mub_	= muB;
+			mue_= electron_.chemPot;
+			phi0_=phi0 ;
+			v0_	=V0;       
+			b0_	= b0;
+		}
+
 		double x[]={mub_, mue_, phi0_, v0_, b0_};
-		
 
 		Problem pBetaEq;
 		CostFunction* costBetaEq= 
-								new NumericDiffCostFunction<BetaEqFunctor_PressFixed,ceres::CENTRAL, 5, 5>
-								(new  BetaEqFunctor_PressFixed(*this, electron_, muon_));
+								new NumericDiffCostFunction<BetaEqFunctor,ceres::CENTRAL, 5, 5>
+								(new  BetaEqFunctor(*this, electron_, muon_));
 
 		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
 
@@ -1281,6 +1519,26 @@ void nlwm_class::setEOS_betaEq_PressureFixed(double press_, double temp_,
 		optionsBetaEq.gradient_tolerance=1e-12;
 		optionsBetaEq.max_num_iterations=1e6;	
 
+		if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-4) ){
+			// optionsBetaEq.parameter_tolerance = 1e-22;
+			// optionsBetaEq.function_tolerance = 1e-22;
+			// optionsBetaEq.gradient_tolerance=1e-25;
+			optionsBetaEq.parameter_tolerance = 1e-20;
+			optionsBetaEq.function_tolerance = 1e-20;
+			optionsBetaEq.gradient_tolerance=1e-23;
+			optionsBetaEq.max_num_iterations=1e7;	
+
+		}	
+			if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-7) ){
+			// optionsBetaEq.parameter_tolerance = 1e-22;
+			// optionsBetaEq.function_tolerance = 1e-22;
+			// optionsBetaEq.gradient_tolerance=1e-25;
+			optionsBetaEq.parameter_tolerance = 1e-35;
+			optionsBetaEq.function_tolerance = 1e-35;
+			optionsBetaEq.gradient_tolerance=1e-35;
+			optionsBetaEq.max_num_iterations=1e8;	
+
+		}	
 	
 	//}
 		// optionsBetaEq.line_search_direction_type= ceres::STEEPEST_DESCENT;
@@ -1311,7 +1569,7 @@ void nlwm_class::setEOS_betaEq_PressureFixed(double press_, double temp_,
 		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
 		std::cout << mub_ << " " << mue_ << " " << phi0_ << " " << v0_  << " " << b0_ << 
 			"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4] 
-		<< std::endl << std::endl;
+		<< std::endl <<  std::endl;
 				
 		mub_	=x[0];
 		mue_	=x[1];
@@ -1320,220 +1578,45 @@ void nlwm_class::setEOS_betaEq_PressureFixed(double press_, double temp_,
 		b0_		=x[4];
 
 		setDensities(mub_, -mue_,  phi0_,  v0_, b0_);
+		
+		setThermodynamics();
+		electron_.setLepton(mue_);
+		electron_.calculateProperties();
+		muon_.setLepton(mue_);
+		muon_.calculateProperties();
+
 	}
 	
-	setThermodynamics();
-	rhoB=getBaryonDens();
-	electron_.setLepton(mue_);
-	electron_.calculateProperties();
-	muon_.setLepton(mue_);
-	muon_.calculateProperties();
  	firstRun=false;
 
 }
-//=============== Functor beta-equilibrium for Ceres w/ 3 mesons: ===============
+
+
 template <typename T>
-bool BetaEqFunctor_PressFixed::operator()(const T* x, T* residuals) const{
+bool YlFunctorDD::operator()(const T* x, T* residuals) const{
+//mub_, mue_, munue_, munum_, phi0_,  v0_, b0_, theta0_, rear_
+	double muq_= x[2] - x[1];
+	double mum_= x[3]- muq_;
 
 	electron.setLepton(x[1]);
-	muon.setLepton(x[1]);
-	baryons.setDensities(x[0], -x[1], x[2], x[3], x[4]);
-	
-	baryons.setThermodynamics();
-	electron.calculateProperties();
-	muon.calculateProperties();
+	ne.setLepton(x[2]);
+	muon.setLepton(mum_);
+	nm.setLepton(x[3]);
 
-											//mub, muq, phi0,  v0,    b0
-	// double  bar_press= - baryons.getEnergy() + baryons.temperature*baryons.getentropy();
-	
-	residuals[0] = baryons.PressureTot -	baryons.getPressure() - electron.pressure - muon.pressure;
-	residuals[1] = baryons.getChargeDens() +	electron.Qdens + muon.Qdens;
-	residuals[2] = baryons.sigmaMeson_eom_residue(	baryons.getSigmaEffDens());
-	residuals[3] = baryons.omegaMeson_eom_residue(	baryons.getOmegaEffDens());
-	residuals[4] = baryons.rhoMeson_eom_residue(		baryons.getIsoEffDens());
-	return true;
-}
-//=============== Functor beta-equilibrium for Ceres w/ 4 mesons: ===============
-template <typename T>
-bool BetaEqFunctor2_PressFixed::operator()(const T* x, T* residuals) const{
-
-	electron.setLepton(x[1]);
-	muon.setLepton(x[1]);
-	baryons.setDensities(x[0], -x[1], x[2], x[3], x[4], x[5]);
+	baryons.setDensitiesDD(x[0], muq_, x[4], x[5], x[6], x[7], x[8]);
 											//mub, muq, phi0,  v0,    b0, theta0
 
-	residuals[0] = baryons.PressureTot -	baryons.getPressure() - electron.pressure - muon.pressure;
+	residuals[0] = baryons.rhoB - baryons.getBaryonDens();
 	residuals[1] = baryons.getChargeDens() +	electron.Qdens + muon.Qdens;
 	residuals[2] = baryons.sigmaMeson_eom_residue(	baryons.getSigmaEffDens());
 	residuals[3] = baryons.omegaMeson_eom_residue(	baryons.getOmegaEffDens());
 	residuals[4] = baryons.rhoMeson_eom_residue(		baryons.getIsoEffDens());
 	residuals[5] = baryons.thetaMeson_eom_residue(	baryons.getThetaEffDens()) ;
-	return true;
+	residuals[6] = baryons.getRearrangementEnergy() - x[8];
+	residuals[7] = Yle*baryons.getBaryonDens() - electron.density 	- ne.density;
+	residuals[8] = Ylm*baryons.getBaryonDens() - muon.density 			- nm.density;
+ 	return true;
 }
-
-void nlwm_class::setEOS_betaEq_muB(double mub_, double temp_,	
-																	particle &electron_, particle &muon_){
-
-
-	muB=mub_;
-	setTemperature(temp_);
-  
-	double mue_;
-	double phi0_ ;
-	double v0_ ;       
-	double b0_;
-	double theta0_=0.;
-	
-	if(firstRun){
-		if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
-		else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
-		
-		if(parametrization=="fsu2h" || parametrization=="l3wr") theta0_ = -0.0118828;
-	}else{
-		mub_	= muB;
-		mue_= electron_.chemPot;
-		phi0_=phi0 ;
-		v0_	=V0;       
-		b0_	= b0;
-		if(parametrization=="fsu2h" || parametrization=="l3wr") theta0_=theta0;
-	}
-	
-	if(parametrization=="fsu2h" || parametrization=="l3wr"){ 
-		//must solve 4 meson equations
-		double x[]={mub_, mue_, phi0_, v0_, b0_, theta0_};
-		
-
-		Problem pBetaEq;
-		CostFunction* costBetaEq= 
-								new NumericDiffCostFunction<BetaEqFunctor2_PressFixed,ceres::CENTRAL, 6, 6>
-								(new  BetaEqFunctor2_PressFixed(*this, electron_, muon_));
-
-		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
-
-		// if(temperature<Tmin_integration){
-		//  	pBetaEq.SetParameterLowerBound(x, 0, 0.);
-		// 	pBetaEq.SetParameterLowerBound(x, 1, electron_.mass_eff);
-		//  	pBetaEq.SetParameterLowerBound(x, 2, 0.);
-		//pBetaEq.SetParameterLowerBound(x, 3, 0.);
-		// }
-		// Set solver
-		Solver::Options optionsBetaEq;
-	//if(parametrization!="iufsu"){
-		optionsBetaEq.parameter_tolerance = 1e-12;
-		optionsBetaEq.function_tolerance = 1e-12;
-		optionsBetaEq.gradient_tolerance=1e-15;
-	// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
-	// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
-		
-		
-		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
-		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
-		optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
-		optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
-		optionsBetaEq.use_nonmonotonic_steps= true;
-		optionsBetaEq.update_state_every_iteration = true;
-		
-		optionsBetaEq.minimizer_progress_to_stdout = false;
-		Solver::Summary summaryBetaEq;
-		optionsBetaEq.max_num_iterations=1e5;	
-
-		//Run
-		Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
-
-		//Print if convergence was achieved.
-		std::cout << summaryBetaEq.BriefReport() << "\n";
-		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
-		std::cout << mub_ << " " << mue_ << " " 
-							<< phi0_ << " " << v0_  << " " << b0_ <<  " " << theta0_ << 
-		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]  << " " << x[5]
-		<< std::endl << std::endl;
-				
-		mub_	 =x[0];
-		mue_	 =x[1];
-		phi0_	 =x[2];
-		v0_		 =x[3];
-		b0_		 =x[4];
-		theta0_=x[5];
-
-		setDensities(mub_, -mue_,  phi0_,  v0_, b0_, theta0_);
-
-	}else{
-	
-		double x[]={mub_, mue_, phi0_, v0_, b0_};
-		
-
-		Problem pBetaEq;
-		CostFunction* costBetaEq= 
-								new NumericDiffCostFunction<BetaEqFunctor_PressFixed,ceres::CENTRAL, 5, 5>
-								(new  BetaEqFunctor_PressFixed(*this, electron_, muon_));
-
-		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
-
-		// if(temperature<Tmin_integration){
-		// 	pBetaEq.SetParameterLowerBound(x, 0, 0.);
-		//	pBetaEq.SetParameterLowerBound(x, 1, electron_.mass_eff);
-		// 	pBetaEq.SetParameterLowerBound(x, 2, 0.);
-		// 	pBetaEq.SetParameterLowerBound(x, 3, 0.);
-		// }
-		// Set solver
-		Solver::Options optionsBetaEq;
-	//if(parametrization!="iufsu"){
-		optionsBetaEq.parameter_tolerance = 1e-10;
-		optionsBetaEq.function_tolerance = 1e-10;
-		optionsBetaEq.gradient_tolerance=1e-12;
-		optionsBetaEq.max_num_iterations=1e6;	
-
-	
-	//}
-		// optionsBetaEq.line_search_direction_type= ceres::STEEPEST_DESCENT;
-		// optionsBetaEq.line_search_type=ceres::ARMIJO;
-
-		// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
-		// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
-		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
-		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
-		// optionsBetaEq.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT;
-		
-		optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
-		optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
-		
-		optionsBetaEq.use_nonmonotonic_steps= true;
-		optionsBetaEq.update_state_every_iteration = true;
-		// optionsBetaEq.use_explicit_schur_complement= true;
-		
-
-		optionsBetaEq.minimizer_progress_to_stdout = false;
-		Solver::Summary summaryBetaEq;
-
-		//Run
-		Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
-
-		//Print if convergence was achieved.
-		std::cout << summaryBetaEq.BriefReport() << "\n";
-		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
-		std::cout << mub_ << " " << mue_ << " " << phi0_ << " " << v0_  << " " << b0_ << 
-			"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4] 
-		<< std::endl << std::endl;
-				
-		mub_	=x[0];
-		mue_	=x[1];
-		phi0_	=x[2];
-		v0_		=x[3];
-		b0_		=x[4];
-
-		setDensities(mub_, -mue_,  phi0_,  v0_, b0_);
-	}
-	
-	setThermodynamics();
-	rhoB=getBaryonDens();
-	electron_.setLepton(mue_);
-	electron_.calculateProperties();
-	muon_.setLepton(mue_);
-	muon_.calculateProperties();
- 	firstRun=false;
-
-}
-
 
 //=============== Set nucleon EoS inputing effective chemical potentials/mass ===============
 void nlwm_class::setEOS_coexistence(double nup_, double nun_, double mef_){
@@ -1587,6 +1670,7 @@ void nlwm_class::setEOS_coexistence(double nup_, double nun_, double mef_){
   neutron.kf2= neutron.chemPot_eff*neutron.chemPot_eff -neutron.mass_eff*neutron.mass_eff;
   neutron.kf2<0. ? neutron.kf=0	: neutron.kf=sqrt(neutron.kf2);
 	
+	// cout << proton.density << " " << neutron.density << endl;
 	if(temperature<Tmin_integration){
 		neutron.kf==0. ? neutron.density=0. : neutron.density= integrate(densityFunc, &neutron);
 	}else{
@@ -1618,24 +1702,28 @@ void nlwm_class::setDensities(double mub_, double muq_, double phi0_, double v0_
 	phi0=phi0_;
 	V0=v0_;
 	b0=b0_;
+	double gs_= 	dogRhob ? gs*getCoupling_sigma(rhoB) : gs;
+	double gv_= 	dogRhob ? gv*getCoupling_omega(rhoB) : gv;
+	double gb_= 	dogRhob ? gb*getCoupling_rho(rhoB) : gb;
+	double rear_= dogRhob ? getRearrangementEnergy() : 0.;	
 
-	neutron.setBaryonEff(		muB, muQ, gs*phi0, gv*V0, gb*b0);
-	proton.setBaryonEff(		muB, muQ, gs*phi0, gv*V0, gb*b0);
+	neutron.setBaryonEff(		muB, muQ, gs_*phi0, gv_*V0 + rear_, gb_*b0);
+	proton.setBaryonEff(		muB, muQ, gs_*phi0, gv_*V0 + rear_, gb_*b0);
 
 	if(doHyperons){ 
-		lambda0.setBaryonEff(	muB, muQ, gs*xsl*phi0, gv*xvl*V0, gb*xbl*b0);
-		sigmap.setBaryonEff(	muB, muQ, gs*xss*phi0, gv*xvs*V0, gb*xbs*b0);
-		sigma0.setBaryonEff(	muB, muQ, gs*xss*phi0, gv*xvs*V0, gb*xbs*b0);
-		sigmam.setBaryonEff(	muB, muQ, gs*xss*phi0, gv*xvs*V0, gb*xbs*b0);
-		xi0.setBaryonEff(			muB, muQ, gs*xsx*phi0, gv*xvx*V0, gb*xbx*b0);
-		xim.setBaryonEff(			muB, muQ, gs*xsx*phi0, gv*xvx*V0, gb*xbx*b0);
+		lambda0.setBaryonEff(	muB, muQ, gs_*xsl*phi0, gv_*xvl*V0 + rear_, gb_*xbl*b0);
+		sigmap.setBaryonEff(	muB, muQ, gs_*xss*phi0, gv_*xvs*V0 + rear_, gb_*xbs*b0);
+		sigma0.setBaryonEff(	muB, muQ, gs_*xss*phi0, gv_*xvs*V0 + rear_, gb_*xbs*b0);
+		sigmam.setBaryonEff(	muB, muQ, gs_*xss*phi0, gv_*xvs*V0 + rear_, gb_*xbs*b0);
+		xi0.setBaryonEff(			muB, muQ, gs_*xsx*phi0, gv_*xvx*V0 + rear_, gb_*xbx*b0);
+		xim.setBaryonEff(			muB, muQ, gs_*xsx*phi0, gv_*xvx*V0 + rear_, gb_*xbx*b0);
 	}
 	
 	if(doDeltas){
-		deltam.setBaryonEff(	muB, muQ, xsd*gs*phi0, xvd*gv*V0, xbd*gb*b0);
-		delta0.setBaryonEff(	muB, muQ, xsd*gs*phi0, xvd*gv*V0, xbd*gb*b0);
-		deltap.setBaryonEff(	muB, muQ, xsd*gs*phi0, xvd*gv*V0, xbd*gb*b0);
-		deltapp.setBaryonEff(	muB, muQ, xsd*gs*phi0, xvd*gv*V0, xbd*gb*b0);
+		deltam.setBaryonEff(	muB, muQ, xsd*gs_*phi0, xvd*gv_*V0 + rear_, xbd*gb_*b0);
+		delta0.setBaryonEff(	muB, muQ, xsd*gs_*phi0, xvd*gv_*V0 + rear_, xbd*gb_*b0);
+		deltap.setBaryonEff(	muB, muQ, xsd*gs_*phi0, xvd*gv_*V0 + rear_, xbd*gb_*b0);
+		deltapp.setBaryonEff(	muB, muQ, xsd*gs_*phi0, xvd*gv_*V0 + rear_, xbd*gb_*b0);
 	}
 
 }
@@ -1651,23 +1739,66 @@ void nlwm_class::setDensities(double mub_, double muq_, double phi0_, double v0_
 	b0=b0_;
 	theta0=theta0_;
 
-	neutron.setBaryonEff(	muB, muQ, gs*phi0, gv*V0, gb*b0);
-	proton.setBaryonEff(	muB, muQ, gs*phi0, gv*V0, gb*b0);
+	double gs_= 	dogRhob ? gs*getCoupling_sigma(rhoB) : gs;
+	double gv_= 	dogRhob ? gv*getCoupling_omega(rhoB) : gv;
+	double gb_= 	dogRhob ? gb*getCoupling_rho(rhoB) 	 : gb;
+	double rear_= dogRhob ? getRearrangementEnergy() 		 : 0.;	
+
+	neutron.setBaryonEff(	muB, muQ, gs_*phi0, gv_*V0+rear_, gb_*b0);
+	proton.setBaryonEff(	muB, muQ, gs_*phi0, gv_*V0+rear_, gb_*b0);
 
 	if(doHyperons){ 
-		lambda0.setBaryonEff(	muB, muQ, gs*xsl*phi0, gv*(xvl*V0+xtl*theta0), gb*xbl*b0);
-		sigmap.setBaryonEff(	muB, muQ, gs*xss*phi0, gv*(xvs*V0+xts*theta0), gb*xbs*b0);
-		sigma0.setBaryonEff(	muB, muQ, gs*xss*phi0, gv*(xvs*V0+xts*theta0), gb*xbs*b0);
-		sigmam.setBaryonEff(	muB, muQ, gs*xss*phi0, gv*(xvs*V0+xts*theta0), gb*xbs*b0);
-		xi0.setBaryonEff(			muB, muQ, gs*xsx*phi0, gv*(xvx*V0+xtx*theta0), gb*xbx*b0);
-		xim.setBaryonEff(			muB, muQ, gs*xsx*phi0, gv*(xvx*V0+xtx*theta0), gb*xbx*b0);
+		lambda0.setBaryonEff(	muB, muQ, gs_*xsl*phi0, gv_*(xvl*V0+xtl*theta0)+rear_, gb_*xbl*b0);
+		sigmap.setBaryonEff(	muB, muQ, gs_*xss*phi0, gv_*(xvs*V0+xts*theta0)+rear_, gb_*xbs*b0);
+		sigma0.setBaryonEff(	muB, muQ, gs_*xss*phi0, gv_*(xvs*V0+xts*theta0)+rear_, gb_*xbs*b0);
+		sigmam.setBaryonEff(	muB, muQ, gs_*xss*phi0, gv_*(xvs*V0+xts*theta0)+rear_, gb_*xbs*b0);
+		xi0.setBaryonEff(			muB, muQ, gs_*xsx*phi0, gv_*(xvx*V0+xtx*theta0)+rear_, gb_*xbx*b0);
+		xim.setBaryonEff(			muB, muQ, gs_*xsx*phi0, gv_*(xvx*V0+xtx*theta0)+rear_, gb_*xbx*b0);
 	}
 	
 	if(doDeltas){
-		deltam.setBaryonEff(	muB, muQ, gs*xsd*phi0, gv*xvd*V0, gb*xbd*b0);
-		delta0.setBaryonEff(	muB, muQ, gs*xsd*phi0, gv*xvd*V0, gb*xbd*b0);
-		deltap.setBaryonEff(	muB, muQ, gs*xsd*phi0, gv*xvd*V0, gb*xbd*b0);
-		deltapp.setBaryonEff(	muB, muQ, gs*xsd*phi0, gv*xvd*V0, gb*xbd*b0);
+		deltam.setBaryonEff(	muB, muQ, gs_*xsd*phi0, gv_*xvd*V0+rear_, gb_*xbd*b0);
+		delta0.setBaryonEff(	muB, muQ, gs_*xsd*phi0, gv_*xvd*V0+rear_, gb_*xbd*b0);
+		deltap.setBaryonEff(	muB, muQ, gs_*xsd*phi0, gv_*xvd*V0+rear_, gb_*xbd*b0);
+		deltapp.setBaryonEff(	muB, muQ, gs_*xsd*phi0, gv_*xvd*V0+rear_, gb_*xbd*b0);
+	}
+
+	yN=(proton.density + neutron.density)/getBaryonDens();
+	yH=(lambda0.density+ sigmap.density+ sigma0.density+ sigmam.density
+													+ xi0.density+ xim.density)/getBaryonDens();
+	yD=(deltapp.density + deltap.density+ delta0.density + deltam.density)/getBaryonDens();
+}
+
+void nlwm_class::setDensitiesDD(double mub_, double muq_, double phi0_, double v0_, double b0_, double theta0_, double rear_){
+	 
+	muB=mub_;
+	muQ=muq_;
+	phi0=phi0_;
+	V0=v0_;
+	b0=b0_;
+	theta0=theta0_;
+
+	double gs_= 	dogRhob ? gs*getCoupling_sigma(rhoB) : gs;
+	double gv_= 	dogRhob ? gv*getCoupling_omega(rhoB) : gv;
+	double gb_= 	dogRhob ? gb*getCoupling_rho(rhoB) 	 : gb;
+
+	neutron.setBaryonEff(	muB, muQ, gs_*phi0, gv_*V0+rear_, gb_*b0);
+	proton.setBaryonEff(	muB, muQ, gs_*phi0, gv_*V0+rear_, gb_*b0);
+
+	if(doHyperons){ 
+		lambda0.setBaryonEff(	muB, muQ, gs_*xsl*phi0, gv_*(xvl*V0+xtl*theta0)+rear_, gb_*xbl*b0);
+		sigmap.setBaryonEff(	muB, muQ, gs_*xss*phi0, gv_*(xvs*V0+xts*theta0)+rear_, gb_*xbs*b0);
+		sigma0.setBaryonEff(	muB, muQ, gs_*xss*phi0, gv_*(xvs*V0+xts*theta0)+rear_, gb_*xbs*b0);
+		sigmam.setBaryonEff(	muB, muQ, gs_*xss*phi0, gv_*(xvs*V0+xts*theta0)+rear_, gb_*xbs*b0);
+		xi0.setBaryonEff(			muB, muQ, gs_*xsx*phi0, gv_*(xvx*V0+xtx*theta0)+rear_, gb_*xbx*b0);
+		xim.setBaryonEff(			muB, muQ, gs_*xsx*phi0, gv_*(xvx*V0+xtx*theta0)+rear_, gb_*xbx*b0);
+	}
+	
+	if(doDeltas){
+		deltam.setBaryonEff(	muB, muQ, gs_*xsd*phi0, gv_*xvd*V0+rear_, gb_*xbd*b0);
+		delta0.setBaryonEff(	muB, muQ, gs_*xsd*phi0, gv_*xvd*V0+rear_, gb_*xbd*b0);
+		deltap.setBaryonEff(	muB, muQ, gs_*xsd*phi0, gv_*xvd*V0+rear_, gb_*xbd*b0);
+		deltapp.setBaryonEff(	muB, muQ, gs_*xsd*phi0, gv_*xvd*V0+rear_, gb_*xbd*b0);
 	}
 
 	yN=(proton.density + neutron.density)/getBaryonDens();
@@ -1738,6 +1869,12 @@ void nlwm_class::setInitial_hd(double &mub_, double &mue_, double  &phi0_, doubl
 		phi0_= 0.0990648;
 		v0_= 0.161139;
 		b0_= -0.000221779	;
+	}else if(parametrization=="ddme2"){
+		mub_	= 1.82908;
+		mue_=0.0883155;		
+	 	phi0_=0.0966946; 	
+	 	v0_	=0.12012;  	
+	 	b0_	= -0.000751007;	
 	}else{
 		mub_	= 1.5;	//1.5
 		mue_=0.1;			//0.1								
@@ -1894,21 +2031,28 @@ void nlwm_class::setInitial_hdb(double &mub_, double &mue_, double  &phi0_, doub
 
 //=============== Calculate nucleon potential: ===============
 std::vector<double> nlwm_class::getNucleonPotential(){
-
-	double Un= gv*V0 + gb*neutron.I3*b0 - gs*phi0;
-	double Up= gv*V0 + gb*proton.I3*b0 - gs*phi0;
+	double gs_= dogRhob ? gs*getCoupling_sigma(rhoB) : gs;
+	double gv_= dogRhob ? gv*getCoupling_omega(rhoB) : gv;
+	double gb_= dogRhob ? gb*getCoupling_rho(rhoB) : gb;
+	
+	double Un= gv_*V0 + gb_*neutron.I3*b0 - gs_*phi0;
+	double Up= gv_*V0 + gb_*proton.I3*b0 	- gs_*phi0;
 
 	return {Un, Up};
 }
 
 //=============== Calculate hyperon potential: ===============
 std::vector<double> nlwm_class::getHyperonPotential(){
-	double Ul0 = gv*(xvl*V0+xtl*theta0) + gb*xbl*lambda0.I3*b0		- gs*xsl*phi0;
-	double Usm = gv*(xvs*V0+xts*theta0) + gb*xbs*sigmam.I3*b0		 	- gs*xss*phi0;
-	double Us0 = gv*(xvs*V0+xts*theta0) + gb*xbs*sigma0.I3*b0		 	- gs*xss*phi0;
-	double Usp = gv*(xvs*V0+xts*theta0) + gb*xbs*sigmap.I3*b0		 	- gs*xss*phi0;
-	double Uxm = gv*(xvx*V0+xtx*theta0) + gb*xbx*xim.I3*b0		 		- gs*xsx*phi0;
-	double Ux0 = gv*(xvx*V0+xtx*theta0) + gb*xbx*xi0.I3*b0		 		- gs*xsx*phi0;
+	double gs_= dogRhob ? gs*getCoupling_sigma(rhoB) : gs;
+	double gv_= dogRhob ? gv*getCoupling_omega(rhoB) : gv;
+	double gb_= dogRhob ? gb*getCoupling_rho(rhoB) : gb;
+
+	double Ul0 = gv_*(xvl*V0+xtl*theta0) + gb_*xbl*lambda0.I3*b0		- gs_*xsl*phi0;
+	double Usm = gv_*(xvs*V0+xts*theta0) + gb_*xbs*sigmam.I3*b0		 	- gs_*xss*phi0;
+	double Us0 = gv_*(xvs*V0+xts*theta0) + gb_*xbs*sigma0.I3*b0		 	- gs_*xss*phi0;
+	double Usp = gv_*(xvs*V0+xts*theta0) + gb_*xbs*sigmap.I3*b0		 	- gs_*xss*phi0;
+	double Uxm = gv_*(xvx*V0+xtx*theta0) + gb_*xbx*xim.I3*b0		 		- gs_*xsx*phi0;
+	double Ux0 = gv_*(xvx*V0+xtx*theta0) + gb_*xbx*xi0.I3*b0		 		- gs_*xsx*phi0;
 
 	return{Ul0, Usm, Us0, Usp, Uxm, Ux0};
 }
@@ -1916,12 +2060,108 @@ std::vector<double> nlwm_class::getHyperonPotential(){
 //=============== Calculate delta potential: ===============
 std::vector<double> nlwm_class::getDeltaPotential(){
 
-	double Udm= gv*xvd*V0 + gb*xbd*deltam.I3*b0 - gs*xsd*phi0;
-	double Ud0= gv*xvd*V0 + gb*xbd*delta0.I3*b0 - gs*xsd*phi0;
-	double Udp= gv*xvd*V0 + gb*xbd*deltap.I3*b0 - gs*xsd*phi0;
-	double Udpp=gv*xvd*V0 + gb*xbd*deltapp.I3*b0 -gs*xsd*phi0;
+	double gs_= dogRhob ? gs*getCoupling_sigma(rhoB)	: gs;
+	double gv_= dogRhob ? gv*getCoupling_omega(rhoB)	: gv;
+	double gb_= dogRhob ? gb*getCoupling_rho(rhoB)		: gb;
+
+	double Udm= gv_*xvd*V0 + gb_*xbd*deltam.I3*b0 	- gs_*xsd*phi0;
+	double Ud0= gv_*xvd*V0 + gb_*xbd*delta0.I3*b0 	- gs_*xsd*phi0;
+	double Udp= gv_*xvd*V0 + gb_*xbd*deltap.I3*b0 	- gs_*xsd*phi0;
+	double Udpp=gv_*xvd*V0 + gb_*xbd*deltapp.I3*b0 	- gs_*xsd*phi0;
 
 	return {Udm, Ud0, Udp, Udpp};
+}
+
+//=============== Density dependent coupling for sigma  meson: ===============
+double nlwm_class::getCoupling_sigma(double rhob_){
+		double x_= rhob_/rho0;
+	
+	double ed2_=pow(x_+ds, 2.);
+	return as*(1.+bs*ed2_)/(1.+cs*ed2_);
+}
+
+//=============== Density dependent coupling for sigma  meson: ===============
+double nlwm_class::getCoupling_omega(double rhob_){
+	double x_= rhob_/rho0;
+
+	double ed2_=pow(x_+dv, 2.);
+	return av*(1.+bv*ed2_)/(1.+cv*ed2_);
+}
+
+//=============== Density dependent coupling for rho meson: ===============
+double nlwm_class::getCoupling_rho(double rhob_){
+	double x_= rhob_/rho0;
+
+	return exp(-ab*(x_-1.));
+}
+
+//=============== Derivative of density dependent coupling for sigma  meson: ===============
+double nlwm_class::getDerivativeCoupling_sigma(double rhob_){
+	double x_= rhob_/rho0;
+
+	double ed2_=pow(x_+ds, 2.);
+	return (2.*as/rho0)*(bs-cs)*(x_+ds)/pow((1.+cs*ed2_), 2.);
+}
+
+//=============== Derivative of density dependent coupling for sigma  meson: ===============
+double nlwm_class::getDerivativeCoupling_omega(double rhob_){
+	double x_= rhob_/rho0;
+
+	double ed2_=pow(x_+dv, 2.);
+	return (2.*av/rho0)*(bv-cv)*(x_+dv)/pow((1.+cv*ed2_), 2.);
+}
+
+//=============== Derivative of density dependent coupling for rho meson: ===============
+double nlwm_class::getDerivativeCoupling_rho(double rhob_){
+	double x_= rhob_/rho0;
+
+	return -ab*exp(-ab*(x_-1.))/rho0;
+}
+
+//=============== rearrangement term due to density dependent coupling for rho meson: ===============
+double nlwm_class::getRearrangementEnergy(void){
+
+	double sigmar_=0.;
+	double sigmar_s_=0., sigmar_v_=0., sigmar_b_=0., sigmar_t_=0.;
+	
+	if(dogRhob){
+		sigmar_s_=getDerivativeCoupling_sigma(rhoB)*gs*phi0*(proton.condensate+neutron.condensate);
+		sigmar_v_=getDerivativeCoupling_omega(rhoB)*gv*V0*(proton.density+neutron.density);
+		sigmar_b_=getDerivativeCoupling_rho(rhoB)*gb*b0*(proton.I3*proton.density+
+																											neutron.I3*neutron.density);
+
+		if(doHyperons){
+			sigmar_s_+=getDerivativeCoupling_sigma(rhoB)*gs*phi0*(xsl*lambda0.condensate
+						+xss*(sigmap.condensate+sigma0.condensate+sigmam.condensate) 
+						+xsx*(xi0.condensate+xim.condensate) );
+
+			sigmar_v_+=getDerivativeCoupling_omega(rhoB)*gv*V0*(xvl*lambda0.density
+						+xvs*(sigmap.density+sigma0.density+sigmam.density) 
+						+xvx*(xi0.density+xim.density) );
+
+			sigmar_b_+=getDerivativeCoupling_rho(rhoB)*gb*b0*(xbl*lambda0.I3*lambda0.density
+					+xbs*(sigmap.I3*sigmap.density+sigma0.I3*sigma0.density+sigmam.I3*sigmam.density) 
+					+xbx*(xi0.I3*xi0.density+xim.I3*xim.density) );
+
+			sigmar_t_=getDerivativeCoupling_omega(rhoB)*gv*theta0*(xtl*lambda0.density
+									+xts*(sigmap.density+sigma0.density+sigmam.density) 
+									+xtx*(xi0.density+xim.density) );																									
+		}																							
+		if(doDeltas){
+			sigmar_s_+=getDerivativeCoupling_sigma(rhoB)*gs*phi0*xsd*(deltapp.condensate
+						+deltap.condensate+delta0.condensate+deltam.condensate);
+
+			sigmar_v_+=getDerivativeCoupling_omega(rhoB)*gv*V0*xvd*(deltapp.density
+						+deltap.density+delta0.density+deltam.density);
+
+			sigmar_b_+=getDerivativeCoupling_rho(rhoB)*gb*b0*xbd*(deltapp.I3*deltapp.density
+					+deltap.I3*deltap.density+delta0.I3*delta0.density+deltam.I3*deltam.density);
+		}	
+
+		sigmar_=sigmar_v_+ sigmar_b_ + sigmar_t_ - sigmar_s_;
+	}
+
+	return sigmar_;
 }
 
 
@@ -2031,25 +2271,34 @@ double nlwm_class::getThetaEffDens(){
 
 //=============== Calculate residue of scalar meson eom: ===============
 double nlwm_class::sigmaMeson_eom_residue(double rhoS_){
-  return gs*rhoS_- ( pow(Ms, 2.)*phi0 +gs3*pow(phi0, 2.)/2. + gs4*pow(phi0, 3.)/6. );
+	double gs_= dogRhob ? gs*getCoupling_sigma(rhoB) : gs;
+	
+  return gs_*rhoS_- ( pow(Ms, 2.)*phi0 +gs3*pow(phi0, 2.)/2. + gs4*pow(phi0, 3.)/6. );
 }
 
 //=============== Calculate residue of isoscalar-vector meson eom: ===============
 double nlwm_class::omegaMeson_eom_residue(double rhoB_){
-  return gv*rhoB_ -(V0*pow(Mv, 2.) 
-								+xsi*pow(gv, 4.)*pow(V0, 3.)/6.
-                + 2.*Lv*V0*pow(gv*gb*b0, 2.) );
+	double gv_= dogRhob ? gv*getCoupling_omega(rhoB) : gv;
+	double gb_= dogRhob ? gb*getCoupling_rho(rhoB) : gb;
+  
+	return gv_*rhoB_ -(V0*pow(Mv, 2.) 
+								+xsi*pow(gv_, 4.)*pow(V0, 3.)/6.
+                + 2.*Lv*V0*pow(gv_*gb_*b0, 2.) );
 }
 
 //=============== Calculate residue of isovector-vector meson eom: ===============
 double nlwm_class::rhoMeson_eom_residue(double rho3_){
-  return   (gb*rho3_) -b0*(pow(Mb, 2.)+2.*Lv*pow(gv*gb*V0, 2.));
+	double gv_= dogRhob ? gv*getCoupling_omega(rhoB) : gv;
+	double gb_= dogRhob ? gb*getCoupling_rho(rhoB) 	 : gb;
+
+  return   (gb_*rho3_) -b0*(pow(Mb, 2.)+2.*Lv*pow(gv_*gb_*V0, 2.));
 }
 
 //=============== Calculate residue of strange-scalar meson eom: ===============
 double nlwm_class::thetaMeson_eom_residue(double rhoT_){
-
-	return gv*rhoT_ - pow(Mt, 2.)*theta0;
+	double gv_= dogRhob ? gv*getCoupling_omega(rhoB) : gv;
+	
+	return gv_*rhoT_ - pow(Mt, 2.)*theta0;
 }
 
 
@@ -2079,10 +2328,12 @@ double nlwm_class::getPressure(void){
 		// 					-pow(Ms*phi0, 2)/2. - gs3*pow(phi0, 3)/6.- gs4*pow(phi0, 4)/24.
     //       		+pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24. + pow(Mt*theta0, 2)/2.
     //       		+pow(Mb*b0, 2)/2. 	+ Lv*pow(gv*gb*V0*b0, 2);
-
 	double press= proton.chemPot*proton.density+ neutron.chemPot*neutron.density 
  					- getEnergy();
+	
 	// double press= proton.pressure+ neutron.pressure ;
+	//if(dogRhob) press+=rearragementEnergy())*rhoB;
+
 	if(temperature>Tmin_integration){press+=temperature*getEntropy();}
 	
 	if(doHyperons){
@@ -2102,6 +2353,7 @@ double nlwm_class::getPressure(void){
 	}
 	return press;
 }
+
 
 //=============== Calculate baryonic pressure parallel to magnetic field: ===============
 double nlwm_class::getPressureParallel(void){

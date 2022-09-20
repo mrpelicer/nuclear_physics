@@ -120,15 +120,14 @@ double quarks_class::getOmega(){
 }
 
 double quarks_class::sigma(double temp_){
-  double s_= 1.-  8*temp_*exp(-lambda*tcrit/temp_)/(lambda*tcrit);
+  double s_= temp_<=tcrit ? 1.-  8*temp_*exp(-lambda*tcrit/temp_)/(lambda*tcrit) : 0.;
 
-  if(temp_>tcrit) s_=0.;
-  return temp_>Tmin_integration ? s_ : 1.;
+  return (temp_>Tmin_integration && tcrit>0.) ? s_ : 1.;
 }
 
 double quarks_class::getDmassDdens(){
   double d0_= (-D/pow(rhoB, 4./3.) + C/pow(rhoB, 2./3.))/3.;
-  if(temperature>Tmin_integration) d0_*=sigma(temperature);
+  if(temperature>Tmin_integration && tcrit>0.) d0_*=sigma(temperature);
   return d0_;
 }
 
@@ -139,7 +138,7 @@ double quarks_class::getDmassDtemp(){
   dsigma_*=(D/cbrt(rhoB) + C*cbrt(rhoB));
   
   if(temperature>tcrit) dsigma_=0.;
-  return temperature>Tmin_integration ? dsigma_ : 0.;
+  return (temperature>Tmin_integration && tcrit>0.) ? dsigma_ : 0.;
 }
 
 
@@ -361,7 +360,8 @@ bool SymmetricFunctor::operator()(const T* x, T* residuals) const{
   Yu=Yu_; Yd=Yd_; Ys=Ys_;
   qu.density= 3.*Yu_*rhoB;
   qd.density= 3.*Yd_*rhoB;
-  qs.density= 3.*Ys_*rhoB;
+  if(iFlavor==3)qs.density= 3.*Ys_*rhoB;
+
   qu.kf= cbrt(6.*pi2*qu.density/qu.gamma);
   qu.kf2=qu.kf*qu.kf;
   qd.kf= cbrt(6.*pi2*qd.density/qd.gamma);
@@ -378,12 +378,14 @@ bool SymmetricFunctor::operator()(const T* x, T* residuals) const{
   qd.calculateQProperties();
   if(iFlavor==3) qs.calculateQProperties();
 
-  double dOmegadM_= qu.getDOmega0Dmass() +qd.getDOmega0Dmass() + qs.getDOmega0Dmass();
+  double dOmegadM_= qu.getDOmega0Dmass() +qd.getDOmega0Dmass();
+  if(iFlavor==3) dOmegadM_+= qs.getDOmega0Dmass();
+
   qu.chemPot=    qu.chemPot_eff +    dOmegadM_*getDmassDdens()/3.;
   qd.chemPot=    qd.chemPot_eff +    dOmegadM_*getDmassDdens()/3.;
   if(iFlavor==3) qs.chemPot=    qs.chemPot_eff +    dOmegadM_*getDmassDdens()/3.;
-//  muB= (qu.energy + qd.energy + qs.energy  -temperature*(qu.entropy + qd.entropy + qs.entropy )
-//            +qu.pressure + qd.pressure + qs.pressure )/rhoB;
+
+
 }
 
 void quarks_class::setEoSFlavor_PressFixed(double press_, double temp_, 
@@ -480,7 +482,7 @@ void quarks_class::setEoSFlavor_muBFixed(double mub_, double temp_,
   Yu=Yu_; Yd=Yd_; Ys=Ys_;
   double rhob_;
   if(firstRun){
-    rhob_=0.5*pow(hc/Mnucleon, 3);
+    rhob_=1.*pow(hc/Mnucleon, 3);
   }else{
     rhob_=rhoB;
   }
@@ -497,7 +499,7 @@ void quarks_class::setEoSFlavor_muBFixed(double mub_, double temp_,
 	Solver::Options options;
 	options.parameter_tolerance = 1e-8;
 	options.function_tolerance = 1e-10;
-	options.gradient_tolerance=1e-10;
+	options.gradient_tolerance=1e-12;
 	options.max_num_iterations=1e5;	
 
    // if(PressureTot*Mnucleon*pow(Mnucleon/hc, 3.) < 50. ){

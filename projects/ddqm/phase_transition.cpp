@@ -33,8 +33,8 @@ private:
 
 int main(){
 //Choose pararametrization
-	std::string parametrization= 	"l3wr";
-	std::string hyperon_params =	"l3wr3"; 
+	string parametrization= "nl3wr*";
+	string hyperon_params =	"nl3wr*"; 
 
 	nlwm_class hadrons(parametrization);
 	quarks_class quarks;
@@ -46,11 +46,17 @@ int main(){
 	quarks.setFlavorNumber(iflavor);
 
 	double tcrit=170./Mnucleon;
+	bool domT;
 	double C, sqrtD;
-	cout << "Choose C and sqrt(D)" << endl;
-	cin >> C >> sqrtD; 
-	// double C= 0.2;
+	cout << "Choose C, sqrt(D) and dotcrit (0 for m(nb) or 1 for m(nb, T)) " << endl;
+	cin >> C >> sqrtD >> domT; 
+
+	if(domT==false) tcrit=0;	
+	// if(tcrit!=0 || tcrit!=170.) cout << "You must change the constant lambda if you choose this temperature!!" << endl;
+	cout << tcrit*Mnucleon << endl;
 	double D= pow(sqrtD, 2.)/pow(Mnucleon, 2);
+
+
 	quarks.setParameters(C, D, tcrit);
 
 
@@ -68,36 +74,42 @@ int main(){
 //Set system variables
 	// double temperature;
 	double tempMin=0./Mnucleon;
-  double tempMax=150./Mnucleon;
-  int itMax=50;
+  double tempMax=170./Mnucleon;
+  int itMax=85;
   double dt=  (tempMax-tempMin)/itMax;
 
 	double rhoB;
-	double rhoBMin=0.2/pow(Mnucleon/hc, 3);
-  double rhoBMax=1.1/pow(Mnucleon/hc, 3);///7.5*hadrons.rho0;
+	double rhoBMin=0.003/pow(Mnucleon/hc, 3);
+  double rhoBMax=1./pow(Mnucleon/hc, 3);///7.5*hadrons.rho0;
 	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
-  int iR=120;
+  int iR=110;
   double dRho=  (rhoBMax-rhoBMin)/iR;
 	double Yu, Yd, Ys, Ye, Ym;
 
-	std::string filename1;
+	string filename1;
 	filename1="data/diagram_H_" +parametrization+
 												"_Q_"+to_string(C)+"_"+to_string(sqrt(D)*Mnucleon)+".txt";
-
-		std::ofstream outDiag(filename1);
-
+	
+	ofstream outDiag(filename1);
+	
 	for(int it=0; it<itMax; it++){
  		double temperature=tempMin+ it*dt;
 
-		std::string filenameH, filenameQ;
-		vector<double>mubHv, mubQv, pressHv, pressQv, rhobHv, rhobQv;
+		string filenameH, filenameQ, file_densH, file_densQ;
+		vector<double>mubHv, mubQv, pressHv, pressQv, rhobHv, rhobQv, enerHv, enerQv;
 
 		filenameH="data/press_H_" +parametrization+
 														"_T"+to_string(temperature*Mnucleon)+".txt";
 		filenameQ="data/press_Q_"+to_string(C)+"_"+to_string(sqrt(D)*Mnucleon)+
 			 											"_T"+to_string(temperature*Mnucleon)+".txt";
-		std::ofstream outHadron(filenameH);
-		std::ofstream outQuark (filenameQ);
+
+		file_densH= "data/densH_" +parametrization+"_T"+to_string(temperature*Mnucleon)+".txt";
+		file_densQ= "data/densQ_" +parametrization+"_T"+to_string(temperature*Mnucleon)+".txt";
+
+		ofstream outHadron(filenameH);
+		ofstream outQuark (filenameQ);
+		ofstream outDensH(file_densH);
+		ofstream outDensQ(file_densQ);
 
 		electron.temperature=temperature;
 		muon.temperature=temperature;
@@ -134,29 +146,29 @@ int main(){
 			Ye=electron.density/rhoB;
 			Ym=muon.density/rhoB;
 
-			// quarks.setEoSFlavor_muBFixed(hadrons.muB, temperature, electron, muon,
-														// Yu, Yd, Ys);			
-			quarks.setEoSFlavor_muBFixed2(hadrons.muB, temperature, electron, muon,
-																		Yu, Yd, Ys, Ye, Ym);			
-
-
+			quarks.setEoSFlavor_muBFixed(hadrons.muB, temperature, electron, muon,
+														Yu, Yd, Ys);			
+			
+			
+			// quarks.setEoSFlavor_muBFixed2(hadrons.muB, temperature, electron, muon,
+			// 															Yu, Yd, Ys, Ye, Ym);			
 			// quarks.setEoSFlavor_PressFixed(PressureH, temperature, electron, muon,
 																			// Yu, Yd, Ys);			
-			
-
 			// quarks.setEoSFlavorFixed(hadrons.getBaryonDens(), temperature, Yu, Yd, Ys);
 			
+			double EnergyQ	= quarks.getEnergy()+electron.energy+muon.energy;
 			double PressureQ= quarks.getPressure()+electron.pressure+muon.pressure;
 			
-			quarks.muB= (quarks.getEnergy() +electron.energy + muon.energy
+			quarks.muB= (EnergyQ+ PressureQ
       -temperature*(quarks.getEntropy()+electron.entropy + muon.entropy)
-      + PressureQ)/quarks.getBaryonDens();
+      )/quarks.getBaryonDens();
 
 				outHadron << hadrons.muB*Mnucleon << " " 
 									<< PressureH*Mnucleon*pow(Mnucleon/hc, 3) << " "
 									<< hadrons.getBaryonDens()*pow(Mnucleon/hc, 3) << " " 
-									<< Yu << " " << Yd << " " << Ys
-									<< std::endl;
+									<< Yu << " " << Yd << " " << Ys << " "
+									<< quarks.qu.mass_eff*Mnucleon 
+									<< endl;
 			
 				outQuark << quarks.muB*Mnucleon << " " 
 								 << PressureQ*Mnucleon*pow(Mnucleon/hc, 3) << " "
@@ -171,6 +183,9 @@ int main(){
 				pressQv.push_back(PressureQ);
 				rhobHv.push_back(hadrons.rhoB);
 				rhobQv.push_back(quarks.rhoB);
+				enerHv.push_back(EnergyH);
+				enerQv.push_back(EnergyQ);
+
 			}
 			// ip++;
 		// }while((hadrons.getBaryonDens()*pow(Mnucleon/hc, 3))>0.05);
@@ -184,6 +199,9 @@ int main(){
 		reverse(pressQv.begin(), pressQv.end());
 		reverse(rhobHv.begin(), rhobHv.end());
 		reverse(rhobQv.begin(), rhobQv.end());
+		reverse(enerHv.begin(), enerHv.end());
+		reverse(enerQv.begin(), enerQv.end());
+
 
 		if(mubHv[0] == mubHv[mubHv.size()-1]){
 			break;
@@ -199,23 +217,35 @@ int main(){
 				<< interpolation_func(rhoht, mubHv, rhobHv)*Mnucleon  << " " 
 				<< interpolation_func(rhoqt, mubQv, rhobQv)*Mnucleon  << " "
 				 << endl;
+		double Le=interpolation_func(rhoht, pressHv, rhobHv)
+						*(interpolation_func(rhoqt, enerQv, rhobQv)    
+						- interpolation_func(rhoht, enerHv, rhobHv))
+						/(interpolation_func(rhoqt, enerQv, rhobQv)*interpolation_func(rhoht, enerHv, rhobHv));
 
-		double mub_= interpolation_func(rhoht, mubHv, rhobHv);
-		double pressure_=interpolation_func(rhoht, pressHv, rhobHv);
+			cout << "$P_0 = " << interpolation_func(rhoqt, pressQv, rhobQv)*Mnucleon*pow(Mnucleon/hc, 3.) << " " 
+			<< "$ \\\\ $ \\mu_0 =" << interpolation_func(rhoqt, mubQv, rhobQv)*Mnucleon 
+			<< "$ \\\\ $ L \\big{|}_\\varepsilon =" << Le << "$" << endl;
+
+		double mu0= interpolation_func(rhoht, mubHv, rhobHv);
+		double pressure0=interpolation_func(rhoht, pressHv, rhobHv);
 		if(interpolation_func(rhoht, pressHv, rhobHv)-interpolation_func(rhoqt, pressQv, rhobQv)>1e-6 
 		|| interpolation_func(rhoht, mubHv, rhobHv)-interpolation_func(rhoqt, mubQv, rhobQv) >1e-6){
-			mub_=NAN;
-			pressure_=NAN;
+			mu0=NAN;
+			pressure0=NAN;
 		}
-		outDiag << mub_*Mnucleon  << " " 
+		outDiag << mu0*Mnucleon  << " " 
 						<< temperature*Mnucleon << " " 
-						<<	pressure_*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
+						<<	pressure0*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
 						<< rhoht*pow(Mnucleon/hc, 3.)  << " " << rhoqt*pow(Mnucleon/hc, 3.) << " "
-						<< Yu << " " << Yd << " " << Ys
+						<<	interpolation_func(rhoht, enerHv, rhobHv)*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
+						<<	interpolation_func(rhoqt, enerQv, rhobQv)*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
+						<< Le
 						<< endl;
 		}
 			outHadron.close();
 			outQuark.close();
+			outDensH.close();
+			outDensQ.close();
 
 	}
 		
@@ -227,8 +257,8 @@ vector<double> findTransition(vector<double> mubHv_, vector<double> mubQv_,
 							vector<double> pressHv_, vector<double> pressQv_, 
 							vector<double> rhobHv_, vector<double> rhobQv_){
 
-	double rhobh_=1.*pow(hc/Mnucleon, 3);
-	double rhobq_=1.2*pow(hc/Mnucleon, 3);
+	double rhobh_=rhobHv_[rhobHv_.size() -50];
+	double rhobq_=rhobQv_[rhobQv_.size() -50];
 	double x[]={rhobh_, rhobq_};
 	 
 	Problem p;
@@ -262,9 +292,9 @@ vector<double> findTransition(vector<double> mubHv_, vector<double> mubQv_,
 	//Run
 	Solve(options, &p, &summary);
 	//Print if convergence was achieved.
-	 std::cout << summary.FullReport() <<  "\n" << summary.IsSolutionUsable() << "\n"; 
-	 std::cout  << rhobh_ << " " << rhobq_  << " ---> " << x[0] << " " << x[1] 
-	            << std::endl;
+	 cout << summary.FullReport() <<  "\n" << summary.IsSolutionUsable() << "\n"; 
+	 cout  << rhobh_ << " " << rhobq_  << " ---> " << x[0] << " " << x[1] 
+	            << endl;
 	
 	vector<double> sol(2);
 	sol[0] = summary.IsSolutionUsable() == true ? x[0] : NAN;

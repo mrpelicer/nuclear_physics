@@ -138,9 +138,9 @@ int main(){
 		double coulIa=0., coulIp=0., nua=0., nup=0., nu_avg=0., nu_avg_inverse=0.;
 		double L;
 
-		int ilmax=400;
-		double Lmin=Rw;
-		double Lmax= 200.*Rw;
+		int ilmax=100;
+		double Lmin=0.05*Rw;
+		double Lmax= 80.*Rw;
 		double logLmin= log10(Lmin);
 		double logLmax= log10(Lmax);
 		ofstream outTransport("data/transport_Ld_T"+to_string(temperature*Mnucleon)+"_"
@@ -150,8 +150,8 @@ int main(){
 			vector<double> Fav2, Fpv2;
 //			L= Lmin + (Lmax-Lmin)*il/ilmax;
 			L= pow(10., logLmax- il*(logLmax-logLmin)/ilmax);
-			ofstream outform("data/form_factor"+to_string(L/Rd)+"_"
-					+to_string(iDimension)+".txt");
+			// ofstream outform("data/form_factor"+to_string(L/Rw)+"_"
+					// +to_string(iDimension)+".txt");
 
 		if(iDimension==2){	
 			double L_rod	=L;
@@ -165,7 +165,7 @@ int main(){
 				double fp_= rod.getStructureFunction2_Trans(q);
 				Fav2.push_back(fa_);
 				Fpv2.push_back(fp_);
-				outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ << endl;
+				// outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ << endl;
 			}
 
     	reverse(Fav2.begin() , Fav2.end());
@@ -198,7 +198,7 @@ int main(){
 				double fp_= slab.getStructureFunction2_Trans(q);
 				Fav2.push_back(fa_);
 				Fpv2.push_back(fp_);
-				outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ << endl;
+				// outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ << endl;
 
 			}
 
@@ -261,7 +261,7 @@ int main(){
 						<< Rd*(hc/Mnucleon) << " " << rhoB*pow(Mnucleon/hc, 3.) << " " << Ze << " " 
 						<< iDimension << " " << iPlot
 						<< endl;
-		outform.close();
+		// outform.close();
 	}
 	  outTransport.close();
 
