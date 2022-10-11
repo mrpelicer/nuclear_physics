@@ -124,7 +124,7 @@ int main(){
 
 
 //always calculate for 3d
-		double Ze=(cluster.proton.density - gas.proton.density)*droplet.getVolume();
+		double Ze=0., Zg=0.;
 
 		for(int iq=0; iq<=iqmax; iq++){
 			q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
@@ -156,7 +156,8 @@ int main(){
 		if(iDimension==2){	
 			double L_rod	=L;
 			rod.setLengths(rad_rods,L_rod);
-			Ze= (cluster.proton.density - gas.proton.density)*rod.getVolume();
+			Ze= lround((cluster.proton.density - gas.proton.density)*rod.getVolume());
+			Zg= lround(gas.proton.density*M_PI*pow(RwM(1, minCol), 2.)*L_rod);
 
 			for(int iq=0; iq<=iqmax; iq++){
 				q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
@@ -189,8 +190,9 @@ int main(){
 			// double L_slab	= sqrt(droplet.getVolume()/(2.*rad_slab));
 			double L_slab=L;
 			slab.setLengths(L_slab, L_slab, 2.*rad_slab);
-			Ze= (cluster.proton.density - gas.proton.density)*slab.getVolume();
-			
+			Ze= lround((cluster.proton.density - gas.proton.density)*slab.getVolume());
+			Zg= lround(gas.proton.density*2.*RwM(0, minCol)*pow(L_slab, 2.));
+
 			for(int iq=0; iq<=iqmax; iq++){
 				q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
 				slab.setMomentum(q);
@@ -224,8 +226,10 @@ int main(){
 		}else{
 
 			vector<double> F3v2;
-			Ze= (cluster.proton.density - gas.proton.density)*droplet.getVolume();
-			
+			Ze= lround((cluster.proton.density - gas.proton.density)*droplet.getVolume());
+			Zg= lround(gas.proton.density*4.*M_PI*pow(RwM(2, minCol), 3)/3.);
+
+
 			for(int iq=0; iq<=iqmax; iq++){
 				q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
 				droplet.setMomentum(q);
@@ -249,6 +253,9 @@ int main(){
 
 		}
 		
+		double sigma0_a= pow(eGS, 2.)*electron.density/(nua*hypot(electron.kf, electron.mass));
+		double sigma0_p= pow(eGS, 2.)*electron.density/(nup*hypot(electron.kf, electron.mass));	
+		double sigma0_avg = pow(eGS, 2.)*electron.density*nu_avg_inverse/hypot(electron.kf, electron.mass);		
 
     outTransport << L/RwM(minRow, minCol) << " " 
  						<< Rw*(hc/Mnucleon)  << " " //s-1
@@ -258,8 +265,11 @@ int main(){
 						<< nu_avg*Mnucleon/MeVto_Sec << " " << nu_avg_inverse*MeVto_Sec/Mnucleon << " " 
 						<< coulIp/coulIa << " "
 						<< coulIa << " " << coulIp << " " 
-						<< Rd*(hc/Mnucleon) << " " << rhoB*pow(Mnucleon/hc, 3.) << " " << Ze << " " 
-						<< iDimension << " " << iPlot
+						<< Rd*(hc/Mnucleon) << " " << rhoB*pow(Mnucleon/hc, 3.) << " " << Ze+Zg << " " 
+						<< iDimension << " " << iPlot << " "
+						<< sigma0_a*Mnucleon/MeVto_Sec << " " //s-1
+						<< sigma0_p*Mnucleon/MeVto_Sec << " " //s-1
+						<< sigma0_avg*Mnucleon/MeVto_Sec      //s-1
 						<< endl;
 		// outform.close();
 	}

@@ -24,7 +24,7 @@ int main(){
 	std::string hyperon_params ="ddme2-a"; 
 	std::string delta_params 	 ="su6";  //su6(1.), mplA_1(beta=1.1), mplA_2, prd89_1, prd89_1
 	double rhoB, temperature, Bfield;
-	temperature=0.;
+	temperature=50.;
 	double Bg=3.e18; // Gauss
 	
 	

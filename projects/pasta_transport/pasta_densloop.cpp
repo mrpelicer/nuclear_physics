@@ -172,8 +172,8 @@ int main(){
 
 
 //Fixed by cell size
-		double L_rod	=5.*RwM(1,minCol);
-		double L_slab	=3.*RwM(0, minCol);
+		double L_rod	=2.*RwM(1,minCol);
+		double L_slab	=1.*RwM(0, minCol);
 
 
 //deGenne's estimate of thermal coherence:
@@ -202,22 +202,22 @@ int main(){
 		double Z10=0., Z100=0., Z1000=0., Zg=0.;
 		if(iDimension==3){
 			Z10	=   (cluster.proton.density - gas.proton.density)*4.*M_PI*pow(RdM(2, minCol), 3)/3.;
-			Z100	=Z10;
-			Z1000=Z10;
-			Ze= Z10;
-			Zg= gas.proton.density*4.*M_PI*pow(RwM(2, minCol), 3)/3.;
+			Z100	= lround(Z10);
+			Z1000 = lround(Z10);
+			Ze		= lround(Z10);
+			Zg		= lround(gas.proton.density*4.*M_PI*pow(RwM(2, minCol), 3)/3.);
 		}else  if(iDimension==2){
-			Z10	=  (cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*10.*rad_rods;
-			Z100	=  (cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*100.*rad_rods;
-			Z1000=  (cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*1000.*rad_rods;
-			Ze=  (cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*L_rod;
-			Zg=  gas.proton.density*M_PI*pow(RwM(1, minCol), 2.)*L_rod;
+			Z10		=  lround((cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*10.*rad_rods);
+			Z100	=  lround((cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*100.*rad_rods);
+			Z1000	=  lround((cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*1000.*rad_rods);
+			Ze		=  lround((cluster.proton.density - gas.proton.density)*M_PI*pow(rad_rods, 2.)*L_rod);
+			Zg		=  lround(gas.proton.density*M_PI*pow(RwM(1, minCol), 2.)*L_rod);
 		}else if(iDimension==1){
-			Z10	=  (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(10.*rad_slab, 2.);
-			Z100	=  (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(100.*rad_slab, 2.);
-			Z1000=  (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(1000.*rad_slab, 2.);
-			Ze=  (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(L_slab, 2.);
-			Zg=  gas.proton.density*2.*RwM(0, minCol)*pow(L_slab, 2.);
+			Z10		= lround( (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(10.*rad_slab, 2.));
+			Z100	= lround( (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(100.*rad_slab, 2.));
+			Z1000	= lround( (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(1000.*rad_slab, 2.));
+			Ze		= lround( (cluster.proton.density - gas.proton.density)*2.*rad_slab*pow(L_slab, 2.));
+			Zg		= lround( gas.proton.density*2.*RwM(0, minCol)*pow(L_slab, 2.));
 		}else{
 			cout << "error in the dimensionality" << endl;
 			return 1;
@@ -260,7 +260,7 @@ int main(){
 		
 		if(iDimension==2){	
 			cout << "2d form factor calculation" << endl;
-			Ze= (cluster.proton.density - gas.proton.density)*rod.getVolume();
+			Ze= lround((cluster.proton.density - gas.proton.density)*rod.getVolume());
 
 			for(int iq=0; iq<=iqmax; iq++){
 				q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
@@ -296,7 +296,7 @@ int main(){
 		}else if(iDimension==1){
 			cout << "1d form factor calculation" << endl;
 
-			Ze= (cluster.proton.density - gas.proton.density)*slab.getVolume();
+			Ze= lround((cluster.proton.density - gas.proton.density)*slab.getVolume());
 
 			for(int iq=0; iq<=iqmax; iq++){
 				q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
@@ -331,7 +331,7 @@ int main(){
 		}else{
 
 			vector<double> F3v2;
-			Ze= (cluster.proton.density - gas.proton.density)*droplet.getVolume();
+			Ze= lround((cluster.proton.density - gas.proton.density)*droplet.getVolume());
 			
 			for(int iq=0; iq<=iqmax; iq++){
 				q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;

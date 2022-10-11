@@ -109,7 +109,9 @@ int main(){
 			
 			//Solve self-consistently:
 
-				hmg_matter.setEOS_betaEq(rhoB, temperature, electron, muon);
+				// hmg_matter.setEOS_betaEq(rhoB, temperature, electron, muon);
+			hmg_matter.setEOS_fixedYl(rhoB, temperature, Yle, Ylm,	
+										electron, muon, neut_e, neut_m);
 
 			// cout << "test: " << hmg_matter.proton.chemPot_eff + hmg_matter.getRearrangementEnergy()  << " " << hmg_matter.neutron.chemPot_eff + hmg_matter.getRearrangementEnergy() << " " 
 			// 									<< hmg_matter.getRearrangementEnergy() << " " << hmg_matter.getDerivativeCoupling_sigma(rhoB) << " "
@@ -166,6 +168,8 @@ int main(){
 				<< hmg_matter.deltap.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
 				<< hmg_matter.delta0.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
 				<< hmg_matter.deltam.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< neut_e.density						*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< neut_m.density								*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
 				<< std::endl;
 
 			// outEos << rhoB*pow(Mnucleon/hc, 3) << " "

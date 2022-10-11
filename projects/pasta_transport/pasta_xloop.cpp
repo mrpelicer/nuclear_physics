@@ -179,7 +179,7 @@ int main(){
 	
 	if(iDimension==2){	
 		cout << " form factor calculation" << endl;
-		Ze= (cluster.proton.density - gas.proton.density)*rod.getVolume();
+		Ze= lround((cluster.proton.density - gas.proton.density)*rod.getVolume());
 		for(int iq=0; iq<=iqmax; iq++){
 			q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
 			rod.setMomentum(q);
@@ -211,7 +211,7 @@ int main(){
 		nu_avg_inverse= (2./nup + 1./nua)/3.;
 	}else if(iDimension==1){
 		cout << " form factor calculation" << endl;
-		Ze= (cluster.proton.density - gas.proton.density)*slab.getVolume();
+		Ze= lround((cluster.proton.density - gas.proton.density)*slab.getVolume());
 		for(int iq=0; iq<=iqmax; iq++){
 			q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
 			slab.setMomentum(q);
@@ -244,7 +244,7 @@ int main(){
 	}else{
 	cout << "3d form factor calculation" << endl;
 
-		Ze= (cluster.proton.density - gas.proton.density)*droplet.getVolume();
+		Ze= lround((cluster.proton.density - gas.proton.density)*droplet.getVolume());
 		for(int iq=0; iq<=iqmax; iq++){
 			q= (qmax - (qmax-qmin)*iq/iqmax)*electron.kf;
 			droplet.setMomentum(q);
