@@ -36,22 +36,23 @@ int main(int argc, char** argv)
 	electron.mass= electron.mass_eff;
 	electron.Q=-1.;
 
-	double rhoBMax=1./pow(Mnucleon/hc, 3);
+  double rhoBMax=1./pow(Mnucleon/hc, 3);
 	double rhoBMin=(1e-3)/pow(Mnucleon/hc, 3);
-	int iR=200;
-	double dRho= (rhoBMax-rhoBMin)/iR;
+  int iR=200;
+  double dRho= (rhoBMax-rhoBMin)/iR;
 
 // 	//Define thermodynamic variables
 	double Energy, FreeEn, Pressure, Entropy;
-	
+	vector<double> rhobv, enerv;
+
 	//Adimensional temperature;
 	if(temperature>0.)	temperature*=1./Mnucleon;
 		
 		//=== Loop over barionic density
-		for(int irho=0; irho<iR; irho++){
+		for(int irho=0; irho<=iR; irho++){
 			rhoB=(rhoBMax- (double)irho*dRho);
 
-			qhd.setEOS_nucleons(rhoB, Yp, temperature);
+			qhd.setEOS_src_nucleons(rhoB, Yp, temperature);
 
 			electron.density=Yp*rhoB;
 			electron.temperature=temperature;
@@ -59,12 +60,26 @@ int main(int argc, char** argv)
 			electron.solveChemPotEff();
 			electron.chemPot=electron.chemPot_eff;
 			electron.calculateProperties();
-			 cout << qhd.proton.chemPot << " " << qhd.neutron.chemPot << endl;
+
 			Energy= qhd.getEnergy()		 	;//+electron.energy; 		
 			Pressure= qhd.getPressure()	;//+electron.pressure;
 			Entropy= qhd.getEntropy()	 	;//+electron.entropy;
 			FreeEn= Energy -temperature*Entropy;
 			
+			rhobv.push_back(rhoB);
+			enerv.push_back(FreeEn);
+
+
+	// double enerp_phi= sqrt(pow(qhd.proton.phi_*qhd.proton.kf, 2.) + pow(qhd.proton.mass_eff, 2.));
+	// double enern_phi= sqrt(pow(qhd.neutron.phi_*qhd.neutron.kf, 2.) + pow(qhd.neutron.mass_eff, 2.));
+
+
+	// double proton_chempot_src= 3.*qhd.proton.c_*(qhd.proton.chemPot_eff - enerp_phi/qhd.proton.phi_ )
+	// 					+ 4.*qhd.proton.c_*qhd.proton.kf*log( (qhd.proton.phi_*qhd.proton.kf + enerp_phi)/(qhd.proton.kf +qhd.proton.chemPot_eff));
+
+	// double neutron_chempot_src= 3.*qhd.neutron.c_*(qhd.neutron.chemPot_eff - enern_phi/qhd.neutron.phi_ )
+	// 				+ 4.*qhd.neutron.c_*qhd.neutron.kf*log( (qhd.neutron.phi_*qhd.neutron.kf + enern_phi)/(qhd.neutron.kf +qhd.neutron.chemPot_eff) );
+
 			outFile << rhoB*pow(Mnucleon/hc, 3) << " " ///qhd.rho0 << " " // 
 					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " " 
 					<< (FreeEn/rhoB - 1.)*Mnucleon  << " " 
@@ -76,13 +91,27 @@ int main(int argc, char** argv)
 					<< qhd.V0 << " " 
 					<< qhd.b0 << " " 
 					<< qhd.muB << " " 
-					<< qhd.muQ << " "
+					<< qhd.muQ << " " 
 					<< qhd.proton.chemPot_eff  << " "
-					<< qhd.neutron.chemPot_eff << " " 
+					<< qhd.neutron.chemPot_eff << " "
 					<< endl;
 
 		}
 		
+		reverse(rhobv.begin(), rhobv.end());
+		reverse(enerv.begin(), enerv.end());
+
+		// for(int irho=0; irho<iR; irho++){
+		// 	rhoB=(rhoBMax- (double)irho*dRho);
+		// 			qhd.setEOS_src_nucleons(rhoB, Yp, temperature);
+
+			// double mun_an= deriv_func(rhoB, enerv, rhobv)/(1. - Yp);
+			// double mup_an= deriv_func(rhoB, enerv, rhobv);
+
+			// cout << "mup: " << qhd.proton.chemPot << " " << mup_an << endl <<
+						//  "mun: " << qhd.neutron.chemPot << " " << mun_an << endl;
+		// }
+
 	outFile.close();
 
   return 0;

@@ -60,7 +60,9 @@ public:
 	void setAMM(bool doa_);
 	
 //Set EOS fixed proton fraction: input density, proton fraction and temperature
-  void setEOS_nucleons(double rhoB_, double Yp_, double temp_); //npe
+  void setEOS_nucleons(double rhoB_, double Yp_, double temp_);
+//Set EOS fixed proton fraction with short range correlations
+	void setEOS_src_nucleons(double rhoB_, double Yp_, double temp_); //npe
 //Set EOS beta-equilibrium: input density and temperature
 	void setEOS_neutrons(double rhoB_, double temp_, particle &electron_, particle &muon_);
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_, particle &muon_);
@@ -70,6 +72,7 @@ public:
 
 //Set EOS for the pasta solver: input effective chemical potentials and mass.
 	void setEOS_coexistence(double nup_, double nun_, double mef_);	
+	void setEOS_coexistence_src(double nup_, double nun_, double mef_, double yp_);	
 
 //Set the solver for meson equations of motion:
 	void setScalarMeanFields();

@@ -46,6 +46,218 @@ void pasta_class::setInitialCPA(double &nup1_, double &nun1_, double &mef1_,
       // nun2_ = 0.97;
       // mef2_ = 0.95;
     }
+    }else if(cluster.parametrization=="fsu2r"){
+    if(YpG>0.3){
+      nup1_ =0.653539;
+      nun1_ =0.653539;
+      mef1_ =0.593137;
+      nup2_ =0.982678;
+      nun2_ =0.982678;
+      mef2_ =1.;
+    }else if(YpG>0.1){
+      nup1_ = 0.662231;
+      nun1_ = 0.690429;
+      mef1_ = 0.623059;
+      nup2_ = 0.948231;
+      nun2_ = 0.995136;
+      mef2_ = 0.991232;
+    }else{
+      nup1_ = 0.680758;
+      nun1_ = 0.719669;
+      mef1_ = 0.653893;
+      nup2_ = 0.907799;
+      nun2_ = 0.959066;
+      mef2_ = 0.944864;
+    }
+   }else if(cluster.parametrization=="nl3"){
+    if(YpG>0.3){
+      nup1_ = 0.669306;
+      nun1_ = 0.669306;
+      mef1_ = 0.609329;
+      nup2_ = 0.982546; 
+      nun2_ = 0.982546;
+      mef2_ = 0.999;
+    }else if(YpG>0.25){
+      nup1_ = 0.703773;
+      nun1_ = 0.729064;
+      mef1_ = 0.671236;
+      nup2_ = 0.893763; 
+      nun2_= 0.930002;
+      mef2_  = 0.907816;
+
+    }else if(YpG>0.2){
+      nup1_ = 0.742175;
+      nun1_ = 0.775904;
+      mef1_ = 0.723012;
+      nup2_ = 0.830711; 
+      nun2_= 0.868157;
+      mef2_  = 0.831097;
+    }else if(YpG>0.15){
+      nup1_ = 0.729249;
+      nun1_ = 0.760442;
+      mef1_ = 0.705812;
+      nup2_ = 0.845653; 
+      nun2_= 0.881817;
+      mef2_  = 0.848119;
+    }else {
+      nup1_ = 0.74609;
+      nun1_ = 0.78048;
+      mef1_ = 0.728145;
+      nup2_ = 0.827205; 
+      nun2_= 0.865034;
+      mef2_  = 0.827197;
+    }
+  }else{
+    nup1_ = 0.669306;
+    nun1_ = 0.669306;
+    mef1_ = 0.609329;
+    nup2_ = 0.982546; 
+    nun2_ = 0.982546;
+    mef2_ = 0.999;
+  }
+}
+
+//=============== Guess CPA conditions with src ===============
+void pasta_class::setInitialCPA_src(double &nup1_, double &nun1_, double &mef1_, double &yp1_,
+									double &nup2_, double &nun2_, double &mef2_, double &yp2_){
+
+	if(cluster.parametrization=="iufsu-src"){
+    if(YpG>=0.45){
+      nup1_ = 0.669306;
+      nun1_ = 0.669306;
+      mef1_ = 0.609329;
+      yp1_=0.5;
+      nup2_ = 0.982546; 
+      nun2_ = 0.982546;
+      mef2_ = 0.999;
+      yp2_=0.;
+    }else if(YpG>=0.4){
+       nup1_ = 0.667804;
+      nun1_ = 0.682713;
+      mef1_ = 0.617251;
+      yp1_=YpG;
+      nup2_ = 0.963167; 
+      nun2_ = 0.999459;
+      mef2_ = 0.997986;
+      yp2_=0.;
+    }else if(YpG>=0.35){
+       nup1_ = 0.667804;
+      nun1_ = 0.682713;
+      mef1_ = 0.617251;
+      yp1_=YpG;
+      nup2_ = 0.963167; 
+      nun2_ = 0.999459;
+      mef2_ = 0.997986;
+      yp2_=0.;
+    }else if(YpG>0.3){
+      nup1_ = 0.667804;
+      nun1_ = 0.682713;
+      mef1_ = 0.617251;
+      yp1_=YpG;
+      nup2_ = 0.963167; 
+      nun2_ = 0.999459;
+      mef2_ = 0.997986;
+      yp2_=0.;
+    }else if(YpG>0.26){
+      nup1_= 0.667177;
+      nun1_= 0.68762;
+      mef1_= 0.620302;
+      yp1_= 0.362036;
+      nup2_= 0.925531;
+      nun2_= 0.946895;
+      mef2_= 0.929183;
+      yp2_=0.;
+    }else if(YpG>0.19){
+        nup1_= 0.666744;
+        nun1_= 0.688117;
+        mef1_= 0.620414;
+        yp1_= 0.355784;
+        nup2_= 0.912302;
+        nun2_= 0.931726;
+        mef2_= 0.910713; 
+        yp2_=0.;
+      }else if(YpG>0.15){
+        nup1_= 0.666402;
+        nun1_= 0.687817;
+        mef1_= 0.620012;
+        yp1_= 0.355697;
+        nup2_= 0.916107;
+        nun2_= 0.935586;
+        mef2_= 0.915281;
+        yp2_=0.;
+      }
+      else{
+      nup1_= 0.666448;
+      nun1_= 0.687866;
+      mef1_= 0.620073;
+      yp1_= 0.355646;
+      nup2_= 0.915324;
+      nun2_= 0.934799;
+      mef2_= 0.914344;
+      yp2_=0.;
+    }
+    }else if(cluster.parametrization=="iufsu"){
+    if(YpG>0.3){
+      nup1_ = 0.669306;
+      nun1_ = 0.669306;
+      mef1_ = 0.609329;
+      nup2_ = 0.982546; 
+      nun2_ = 0.982546;
+      mef2_ = 0.999;
+    }else if(YpG>0.1){
+      nup1_ =0.677603;     
+      nun1_ =0.705576;
+      mef1_ =0.638736;
+      nup2_ =0.946885;
+      nun2_ =0.994252;
+      mef2_ =0.989749;
+
+    }else{
+      //0.70, 0.73, 0.65,0.92, 0.97, 0.95
+      // nup1_ = 0.73049;
+      // nun1_ = 0.778542;
+      // mef1_ = 0.719429 ;
+      // nup2_ = 0.819118;
+      // nun2_ = 0.866568;
+      // mef2_ = 0.829265;
+       nup1_ =0.721149;     
+       nun1_ =0.767649;
+       mef1_ =0.706676;
+       nup2_ =0.843373;
+       nun2_ =0.892196;
+       mef2_ =0.861294;
+
+      // nup1_ = 0.7;
+      // nun1_ = 0.73;
+      // mef1_ = 0.65 ;
+      // nup2_ = 0.92;
+      // nun2_ = 0.97;
+      // mef2_ = 0.95;
+    }
+    
+    }else if(cluster.parametrization=="fsu2r-src"){
+    if(YpG>0.3){
+      nup1_ =0.653539;
+      nun1_ =0.653539;
+      mef1_ =0.593137;
+      nup2_ =0.982678;
+      nun2_ =0.982678;
+      mef2_ =1.;
+    }else if(YpG>0.1){
+      nup1_ = 0.662231;
+      nun1_ = 0.690429;
+      mef1_ = 0.623059;
+      nup2_ = 0.948231;
+      nun2_ = 0.995136;
+      mef2_ = 0.991232;
+    }else{
+      nup1_ = 0.680758;
+      nun1_ = 0.719669;
+      mef1_ = 0.653893;
+      nup2_ = 0.907799;
+      nun2_ = 0.959066;
+      mef2_ = 0.944864;
+    }
 	}else{
     nup1_ = 0.669306;
     nun1_ = 0.669306;
@@ -55,6 +267,7 @@ void pasta_class::setInitialCPA(double &nup1_, double &nun1_, double &mef1_,
     mef2_ = 0.999;
   }
 }
+
 
 //=============== Solve CPA equilibrium given dens, yp, temperature ===============
 void pasta_class::solveCPA(double rhoB_, double Yp_, double temp_){
@@ -110,8 +323,14 @@ void pasta_class::solveCPA(double rhoB_, double Yp_, double temp_){
 
 	 std::cout << "Solution-> "  << nup1 <<  " " << nun1 << " " << mef1 <<  " "
 	 					<< nup2 <<  " " <<  nun2 << " " << mef2 << std::endl;
-	 std::cout << "----> " << x[0] <<  " " << x[1] << " " << x[2] <<  " "
-	 					<< x[3] <<  " " << x[4] << " " << x[5] << std::endl;
+
+	 std::cout << "----> " << endl << 
+      "nup1_= "  << x[0] << ";" << endl << 
+      "nun1_= "  << x[1] << ";" << endl << 
+      "mef1_= "  << x[2] << ";" << endl << 
+      "nup2_= "  << x[3] << ";" << endl << 
+      "nun2_= "  << x[4] << ";" << endl << 
+      "mef2_= "  << x[5] << ";" << endl;
 
 
 	cluster.setEOS_coexistence(x[0], x[1], x[2]);
@@ -135,6 +354,120 @@ bool cpaFunctor::operator()(const T* x, T* residuals) const{
 																																-pasta.YpG*pasta.rhoB;
 		residuals[4] = pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS);
 		residuals[5] = pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS);
+		// 
+		return true;
+}
+
+
+//=============== Solve CPA with short range correlations 
+//                  equilibrium given dens, yp, temperature ===============
+void pasta_class::solveCPA_src(double rhoB_, double Yp_, double temp_){
+								// 
+	rhoB=rhoB_;
+	YpG=Yp_;
+	temperature=temp_;
+	cluster.setTemperature(temperature);
+	gas.setTemperature(temperature);
+
+  cluster.proton.dosrc=true;
+  cluster.neutron.dosrc=true;
+  gas.proton.dosrc=true;
+  gas.neutron.dosrc=true;
+
+  double nup1, nun1, mef1, yp1, nup2, nun2, mef2, yp2;
+
+  if(firstRun) setInitialCPA_src(nup1, nun1, mef1, yp1, nup2, nun2, mef2, yp2);
+  else{ nup1 = cluster.proton.chemPot_eff;
+        nun1 = cluster.neutron.chemPot_eff;
+        mef1 = cluster.proton.mass_eff;
+        yp1= cluster.Yp;
+        nup2 = gas.proton.chemPot_eff;
+        nun2 = gas.neutron.chemPot_eff;
+        mef2 = gas.proton.mass_eff;
+        yp2= 1e-6;
+  }
+
+	double x[]={nup1, nun1, mef1, yp1,  nup2, nun2, mef2, yp2};
+  
+	Problem pCPA;
+	CostFunction* costCPA =	new NumericDiffCostFunction<cpa_srcFunctor, ceres::CENTRAL, 8, 8>
+																														(new cpa_srcFunctor(*this));
+	// 
+	pCPA.AddResidualBlock(costCPA, NULL, x);
+	// pCPA.SetParameterLowerBound(x, 3, 0.);
+  // pCPA.SetParameterLowerBound(x, 7, 0.);
+  // pCPA.SetParameterUpperBound(x, 7, 0.1);
+
+	Solver::Options optionsCPA; 		
+	optionsCPA.dense_linear_algebra_library_type=ceres::LAPACK;
+	// 
+	optionsCPA.parameter_tolerance = 1e-12;	 		//1e-8					
+	optionsCPA.function_tolerance = 1e-12;			//1e-6				
+	optionsCPA.gradient_tolerance=1e-14;			//1e-10			
+	optionsCPA.max_num_iterations=2e3;	
+	// 
+	optionsCPA.use_nonmonotonic_steps=true;	
+	optionsCPA.linear_solver_type= ceres::DENSE_QR;
+	//optionsCPA.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT; //default
+	//optionsCPA.dogleg_type = ceres::TRADITIONAL_DOGLEG;// default	
+// 
+	//optionsCPA.minimizer_type= ceres::LINE_SEARCH;
+	//optionsCPA.line_search_direction_type= 	ceres::NONLINEAR_CONJUGATE_GRADIENT;
+	//optionsCPA.line_search_type= ceres::ARMIJO;
+	//optionsCPA.trust_region_strategy_type = ceres::DOGLEG;
+	//optionsCPA.dogleg_type = ceres::SUBSPACE_DOGLEG;
+
+	optionsCPA.minimizer_progress_to_stdout = true;	
+	Solver::Summary summaryCPA;
+	Solve(optionsCPA, &pCPA, &summaryCPA);
+
+	std::cout << summaryCPA.BriefReport() << "\n";
+
+	 std::cout << "Solution-> "  << nup1 <<  " " << nun1 << " " << mef1 <<  " " << yp1 << " " 
+	 					<< nup2 <<  " " <<  nun2 << " " << mef2 << " " << yp2 << std::endl;
+	 
+	 std::cout << "----> " << endl << 
+      "nup1_= "  << x[0] << endl << 
+      "nun1_= "  << x[1] << endl << 
+      "mef1_= "  << x[2] << endl << 
+      "yp1_= "   << x[3] << endl <<
+      "nup2_= "  << x[4] << endl << 
+      "nun2_= "  << x[5] << endl << 
+      "mef2_= "  << x[6] << endl << 
+      "yp2_= "   << x[7] << endl;
+
+	cluster.setEOS_coexistence_src(x[0], x[1], x[2], x[3]);
+	gas.setEOS_coexistence_src( x[4], x[5], x[6], x[7]);
+	f= (rhoB- gas.rhoB)/(cluster.rhoB-gas.rhoB);
+	 
+  firstRun=false;
+}
+ 
+
+ //=============== Functor for CPA equilibrium w/ fixed yp ===============
+template <typename T>
+bool cpa_srcFunctor::operator()(const T* x, T* residuals) const{
+		pasta.cluster.setEOS_coexistence_src(x[0], x[1], x[2], x[3]);
+		pasta.gas.setEOS_coexistence_src( x[4], x[5], x[6], x[7]);
+		double u= (pasta.rhoB- pasta.gas.rhoB)/(pasta.cluster.rhoB - pasta.gas.rhoB);
+		
+    //calculated yp:
+    double yp1= pasta.cluster.rhoB == 0.? 0.: pasta.cluster.proton.density/pasta.cluster.rhoB;
+    double yp2= pasta.gas.rhoB == 0.? 0.    : pasta.gas.proton.density/pasta.gas.rhoB;
+
+    // double yp1=pasta.cluster.proton.density/pasta.cluster.rhoB;
+    // double yp2=pasta.gas.prot  on.density/pasta.gas.rhoB;
+		residuals[0] = pasta.cluster.proton.chemPot -  pasta.gas.proton.chemPot;
+		residuals[1] = pasta.cluster.neutron.chemPot -  pasta.gas.neutron.chemPot;
+		residuals[2] = pasta.cluster.getPressure() - pasta.gas.getPressure();
+		residuals[3] = u*pasta.cluster.proton.density + (1.-u)*pasta.gas.proton.density
+																																-pasta.YpG*pasta.rhoB;
+		residuals[4] = pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS);
+		residuals[5] = pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS);
+
+
+    residuals[6] = pasta.cluster.Yp - yp1;
+    residuals[7] = pasta.gas.Yp     - yp2;
 		// 
 		return true;
 }
@@ -387,26 +720,34 @@ double getSurfaceTension(nlwm_class &cluster_, double Yp_, double T){
  																			  ca0, ca1, ca2, ca3, ca4, ca5);
 // 
 	// 
-	double x=pow(1.-2.*Yp_, 2.);
-	double sigma_= sigma0*exp(-sigma1*pow(x, 1.5))
-                      *(1.+ sa1*x          + sa2*pow(x, 2.)
-                          + sa3*pow(x, 3.) + sa4*pow(x, 4.)
-                          + sa5*pow(x, 5.) + sa6*pow(x, 6.)
-						);
-	if(T!=0.){
-		T*=Mnucleon;
-		double aT= aa0 + aa1*T +aa2*pow(T, 2.) + aa3*pow(T, 3.)
-                           + aa4*pow(T, 4.) + aa5*pow(T, 5.);
-// 
-		double bT= ba0 + ba1*T +ba2*pow(T, 2.) + ba3*pow(T, 3.)
-                           + ba4*pow(T, 4.) + ba5*pow(T, 5.);
-// 
-		double cT= ca0 + ca1*T +ca2*pow(T, 2.) + ca3*pow(T, 3.)
-                           + ca4*pow(T, 4.) + ca5*pow(T, 5.);
-// 
-		sigma_*=(1.- aT*x*T - bT*pow(T, 2.)- cT*T*pow(x, 2.) );
-	}
-// 
+  double sigma_=0.;
+
+  if(cluster_.parametrization=="iufsu" || cluster_.parametrization=="iufsu-src" 
+    || cluster_.parametrization=="nl3" || cluster_.parametrization=="nl3wr"  ){
+
+	  double x=pow(1.-2.*Yp_, 2.);
+	  sigma_= sigma0*exp(-sigma1*pow(x, 1.5))
+                        *(1.+ sa1*x          + sa2*pow(x, 2.)
+                            + sa3*pow(x, 3.) + sa4*pow(x, 4.)
+                            + sa5*pow(x, 5.) + sa6*pow(x, 6.)
+	  					);
+	  if(T!=0.){
+	  	T*=Mnucleon;
+	  	double aT= aa0 + aa1*T +aa2*pow(T, 2.) + aa3*pow(T, 3.)
+                             + aa4*pow(T, 4.) + aa5*pow(T, 5.);
+//   
+	  	double bT= ba0 + ba1*T +ba2*pow(T, 2.) + ba3*pow(T, 3.)
+                             + ba4*pow(T, 4.) + ba5*pow(T, 5.);
+//   
+	  	double cT= ca0 + ca1*T +ca2*pow(T, 2.) + ca3*pow(T, 3.)
+                             + ca4*pow(T, 4.) + ca5*pow(T, 5.);
+//   
+	  	sigma_*=(1.- aT*x*T - bT*pow(T, 2.)- cT*T*pow(x, 2.) );
+	  }
+  }else{
+    sigma_=sigma0;
+  }
+
    return sigma_; // abs only for very small yp
 }
 // 
@@ -499,7 +840,7 @@ void setSurfaceParameters(nlwm_class &cluster_, double &sigma0, double &sigma1,
   		double &ca0, double &ca1, double &ca2, double &ca3, double &ca4, double &ca5){
 
 // parameters provided by:
-  if(cluster_.parametrization=="nl3")
+  if(cluster_.parametrization=="nl3" || cluster_.parametrization=="nl3-src")
 	{
     sigma0=1.12307/( pow(Mnucleon, 3.)/pow(hc, 2.) );
     sigma1= 20.7779;
@@ -599,7 +940,7 @@ void setSurfaceParameters(nlwm_class &cluster_, double &sigma0, double &sigma1,
   }
 	// 
 // ===IU-FSU ====
-  if(cluster_.parametrization=="iufsu")
+  if(cluster_.parametrization=="iufsu" || cluster_.parametrization=="iufsu-src")
   {
     sigma0 = 1.16473/( pow(Mnucleon, 3.)/pow(hc, 2.) );
     sigma1 =-0.659167;
@@ -630,6 +971,10 @@ void setSurfaceParameters(nlwm_class &cluster_, double &sigma0, double &sigma1,
     ca3=-0.000427613;
     ca4= 0.;
     ca5= 0.;
+  }
+  if(cluster_.parametrization=="fsu2r"|| cluster_.parametrization=="fsu2r-src" )
+	{
+    sigma0=1.2/( pow(Mnucleon, 3.)/pow(hc, 2.) );
   }
 // 
 }

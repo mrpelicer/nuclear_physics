@@ -16,12 +16,16 @@ void particle::calculateProperties(){
           if(density>0.){
             // cout << mass_eff*Mnucleon << " " << Q <<endl;
             energy             = energyT0();
-            pressure           = pressureT0();//chemPot*density - energy; 
+            pressure           = pressureT0();
+            // cout << "no src ok?" << endl;
+            if(dosrc){
+              energy*= delta_;
+              pressure*= delta_;
+              energy+=  energyT0_src();//integrate_src(energyFunc_src, this);
+              pressure+=pressureT0_src();//integrate_src(pressureFunc_src, this);
+            } 
           }
         }
-        // std::cout << "chargeless?: " <<  Q << " " << kf2 << " " 
-        //           << mass_eff << endl;
-
       
       }else if(density>0.){
  // dob, q!=0
@@ -200,7 +204,13 @@ void particle::calculateCondensate(){
   if(temperature>Tmin_integration){
 		condensate         = integrate(density_condensateFunc,  this);
 	}else{
-    condensate = condensateT0();
+    if(density>0.){
+      condensate = condensateT0();
+      if(dosrc){
+        condensate*= delta_;
+        condensate+=condensateT0_src();//integrate_src(density_condensateFunc_src, this);
+      }
+    }else{condensate=0.;}
 	}
 }
 
@@ -732,7 +742,7 @@ double integrate(double (func)(double, void *), void *parametersPointer)
   double err_rel = 1e-10; //1e-10;
   size_t max_steps = 1e8;
 	
-  if(part.temperature< 1./Mnucleon){
+  if(part.temperature< 1./Mnucleon && part.temperature >0.){
     double err_abs = 1e-16; //1e-13
     double err_rel = 1e-15; //1e-10;
     size_t max_steps = 5e8;
@@ -759,6 +769,29 @@ double integrate(double (func)(double, void *), void *parametersPointer)
 	gsl_integration_workspace_free(w);
   return result;
 }
+
+
+double integrate_src(double (func)(double, void *), void *parametersPointer)
+{
+  particle &part= *reinterpret_cast<particle*>(parametersPointer);
+  double result = 0e0;
+  double er_res = 0e0;
+  double err_abs = 1e-13; //1e-13
+  double err_rel = 1e-10; //1e-10;
+  size_t max_steps = 1e8;
+ 
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(max_steps);
+
+	gsl_function My_function;
+  My_function.function = func;
+  My_function.params = parametersPointer;
+		
+  gsl_integration_qag(&My_function, part.kf, part.phi_*part.kf, err_abs, err_rel, max_steps, 1,
+                                                          w, &result, &er_res);	
+	
+	gsl_integration_workspace_free(w);
+  return result;
+}
 // ================= Thermodynamic functions - T=0 =================
 
 
@@ -778,9 +811,7 @@ double particle::condensateT0(){
 }
 
 double particle::energyT0(){
-  double ener= hypot(kf, mass_eff);
-  //  return  gamma*( ( 2.*pow(kf, 2.) + pow(mass_eff, 2.) )*kf*ener 
-  //                 - pow(mass_eff, 4.)*log( (kf+ener)/mass_eff )) /(16.*pi2);
+  double ener= hypot(kf, mass_eff); // = sqrt(kf*kf+m*m)
 
    return  gamma*(kf*pow(ener, 3.) + pow(kf, 3.)*ener 
                   - pow(mass_eff, 4.)*log( (kf+ener)/mass_eff )) /(16.*pi2);
@@ -881,7 +912,7 @@ double densityFunc(double x, void *p){
   double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F;
 
-  if(part_.temperature!=0){
+  if(part_.temperature>Tmin_integration){
     double fdp, fdm;
     fdp= fermiDirac(ener, part_.chemPot_eff, part_.temperature);
     fdm= fermiDirac(ener, -part_.chemPot_eff, part_.temperature);
@@ -898,7 +929,7 @@ double density_condensateFunc(double x, void *p){
   double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F;
 
-  if(part_.temperature!=0){
+  if(part_.temperature>Tmin_integration){
     double fdp, fdm;
     fdp= fermiDirac(ener, part_.chemPot_eff, part_.temperature);
     fdm= fermiDirac(ener, -part_.chemPot_eff, part_.temperature);
@@ -915,7 +946,7 @@ double energyFunc(double x, void *p){
   double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F;
 
-  if(part_.temperature!=0){
+  if(part_.temperature>Tmin_integration){
     double fdp, fdm;
     fdp= fermiDirac(ener, part_.chemPot_eff, part_.temperature);
     fdm= fermiDirac(ener, -part_.chemPot_eff, part_.temperature);
@@ -932,7 +963,7 @@ double pressureFunc(double x, void *p){
   double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F;
 
-  if(part_.temperature!=0){
+  if(part_.temperature>Tmin_integration){
     double fdp, fdm;
     fdp= fermiDirac(ener,  part_.chemPot_eff, part_.temperature);
     fdm= fermiDirac(ener, -part_.chemPot_eff, part_.temperature);
@@ -974,3 +1005,51 @@ double fermiDirac(double ener, double chemPotEff, double T){
   return 1./(exp(x1)+1.);
 }
 
+double density_condensateFunc_src(double x, void *p){
+  particle &part_= *reinterpret_cast<particle*>(p);
+  double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
+  double F=1.;
+  return part_.c_*pow(part_.kf, 4. )*part_.gamma
+                  *part_.mass_eff*F/(2.*pow(x, 2.)*ener*pi2);
+}
+
+double energyFunc_src(double x, void *p){
+  particle &part_= *reinterpret_cast<particle*>(p);
+  double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
+  double F=1.;
+
+  return part_.gamma*part_.c_*pow(part_.kf, 4. )*ener*F/(2.*pow(x, 2.)*pi2);
+}
+
+double pressureFunc_src(double x, void *p){
+  particle &part_= *reinterpret_cast<particle*>(p);
+  double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
+  double F=1.;
+
+  return part_.gamma*part_.c_*pow(part_.kf, 4. )*F/(6.*pi2*ener);
+}
+
+
+double particle::condensateT0_src(){
+  double cond=0.;
+  if(kf>0. && mass_eff >0)
+     cond= gamma*c_*pow(kf, 4.)*( sqrt(1.+pow(mass_eff/kf, 2.)) 
+                      - sqrt(1.+pow(mass_eff/(phi_*kf), 2.)) )/(2.*pi2* mass_eff);
+  
+  return cond;
+}
+
+double particle::energyT0_src(){
+
+   return   gamma*c_*pow(kf, 4.)*( sqrt(1.+pow(mass_eff/kf, 2.)) - asinh(kf/mass_eff)
+            - sqrt(1.+pow(mass_eff/(phi_*kf), 2.)) + asinh(phi_*kf/mass_eff))/(2.*pi2);
+  
+}
+
+double particle::pressureT0_src(){
+ 
+   return   gamma*c_*pow(kf, 4.)*( asinh(phi_*kf/mass_eff)-asinh(kf/mass_eff)
+           )/(6.*pi2);
+}
+        
+  

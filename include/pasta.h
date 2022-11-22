@@ -48,6 +48,7 @@ public:
 	double rhoB, YpG, temperature, dim;
 	string type_solver;
 	bool firstRun=true;
+  bool doSRC=false;
 	int iType;
 	double nup1_guess, nun1_guess, Mef1_guess, nup2_guess, nun2_guess, Mef2_guess;
 	double f, Rd, Rw, VN, Vw;
@@ -61,18 +62,34 @@ public:
 	void setInitialCPA(double &nup1_, double &nun1_, double &mef1_,
 									double &nup2_, double &nun2_, double &mef2_);
 
+  void setInitialCPA_src(double &nup1_, double &nun1_, double &mef1_, double &yp1,
+									double &nup2_, double &nun2_, double &mef2_, double &yp2_);
+
 	void solveCPA(double rhoB_, double Yp_, double temp_);
+  void solveCPA_src(double rhoB_, double Yp_, double temp_);
 	void solveCPA_betaEq(double rhoB_, double temp_, particle &electron_);
 
 	void solveCLD(double rhoB_, double Yp_, double temp_, double dim_, int it_);
-	
-
 		
 };
 
 struct cpaFunctor{
 public:
 	cpaFunctor(pasta_class & pasta_): pasta(pasta_){
+	}
+
+	template <typename T>
+	bool operator()(const T* x, T* residuals) const;
+  
+
+private:
+		pasta_class &pasta;
+};
+
+
+struct cpa_srcFunctor{
+public:
+	cpa_srcFunctor(pasta_class & pasta_): pasta(pasta_){
 	}
 
 	template <typename T>

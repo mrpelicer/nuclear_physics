@@ -16,22 +16,22 @@ int main(){
 	std::string parametrization= "ddme2";
 	nlwm_class hmg_matter(parametrization);
 
-	bool doHyperons	=	true;
-	bool doDeltas		=	true;
+	bool doHyperons	=	false;
+	bool doDeltas		=	false;
 	bool doBfield		= false;
 	bool doamm 			= false;
 
 	std::string hyperon_params ="ddme2-a"; 
 	std::string delta_params 	 ="su6";  //su6(1.), mplA_1(beta=1.1), mplA_2, prd89_1, prd89_1
 	double rhoB, temperature, Bfield;
-	temperature=50.;
+	temperature=3.;
 	double Bg=3.e18; // Gauss
 	
 	
 	double rhoBMin=5e-3/pow(Mnucleon/hc, 3);
   double rhoBMax=1./pow(Mnucleon/hc, 3);///7.5*hmg_matter.rho0;
 	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
-  int iR=240;
+  int iR=20;
   double dRho=  (rhoBMax-rhoBMin)/iR;
 
 	//Construct a gas of p,n,e matter
@@ -120,6 +120,7 @@ int main(){
 		std::ofstream outFile(filename2);
 		std::ofstream outSpin(filename3);
 		std::ofstream outEos(filename4);
+		std::ofstream outSolution("data/solution_" +parametrization+".txt");
 
 		//Adimensional temperature;
 		temperature*=1./Mnucleon;
@@ -162,9 +163,14 @@ int main(){
 						+ hmg_matter.xi0.density+ hmg_matter.xim.density)/rhoB;
 			yD= (hmg_matter.deltapp.density + hmg_matter.deltap.density+ hmg_matter.delta0.density+ hmg_matter.deltam.density)/rhoB;
 		  
+		  outSolution <<rhoB*pow(Mnucleon/hc, 3) << " " <<  hmg_matter.muB*Mnucleon << " " << hmg_matter.proton.chemPot*Mnucleon << " " << hmg_matter.phi0*Mnucleon << " "<< hmg_matter.V0*Mnucleon << " " 
+		  					<< hmg_matter.b0*Mnucleon << " " << hmg_matter.getRearrangementEnergy()*Mnucleon << endl;
+		  					
+		  					
 			outFile << rhoB*pow(Mnucleon/hc, 3) << " "
 					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " " 
 					<< (FreeEn/rhoB - 1.)*Mnucleon  << " " 
+					<< Entropy << " "
 					<< Energy*Mnucleon*pow(Mnucleon/hc, 3)  << " " <<  hmg_matter.neutron.mass_eff*Mnucleon << " "
 					<< hmg_matter.neutron.chemPot*Mnucleon 			<< " " << electron.chemPot*Mnucleon << " " 
 					<< yN << " " << yH << " " << yD  << " "
@@ -280,7 +286,7 @@ int main(){
 	//  }
 	
 	outEos.close();
-
+	outSolution.close();
 	// }
 
   std::reverse(rhobv.begin(), rhobv.end());

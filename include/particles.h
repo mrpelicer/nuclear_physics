@@ -45,6 +45,9 @@ struct particle{
   double Kb=0.;
   int inumaxPP=0, inumaxP=0, inumaxM=0, inumaxMM=0;
   
+  bool dosrc=false; //short range correlations
+  double c_=0., phi_=0., delta_=0.;
+
   void calculateProperties();
   void calculateDensity();
   void calculateCondensate();
@@ -60,6 +63,10 @@ struct particle{
   double condensateT0();
   double energyT0();
   double pressureT0();
+  
+  double condensateT0_src();
+  double energyT0_src();
+  double pressureT0_src();
 
 };
 
@@ -90,6 +97,8 @@ private:
 
 
 double integrate(double (func)(double, void *), void *parametersPointer);
+double integrate_src(double (func)(double, void *), void *parametersPointer);
+
 
 double densityFunc(double x, void *p);
 double density_condensateFunc(double x, void *p);
@@ -97,5 +106,9 @@ double energyFunc(double x, void *p);
 double pressureFunc(double x, void *p);
 double entropyFunc(double x, void *p);
 double fermiDirac(double ener, double chemPotEff, double T);
+
+double density_condensateFunc_src(double x, void *p);
+double energyFunc_src(double x, void *p);
+double pressureFunc_src(double x, void *p);
 
 #endif

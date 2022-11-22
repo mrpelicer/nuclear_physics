@@ -69,6 +69,21 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		gs4=-173.31;
 		rho0=0.148*pow(hc/Mnucleon, 3);
 	}
+	else if(parametrization_=="nl3-src") 		//Private communication O.Lourenço
+	{
+		Mn=939.000;
+		Mstar=0.60;
+		Ms=508.194/Mnucleon;
+		Mv=782.501/Mnucleon;
+		Mb=763.000/Mnucleon;
+		gs=10.495965168181097  ;
+		gv=12.013019178168182 ;
+		gb= 14.848527065665982;      
+		gs3=2.*2.9964708544616308; 
+		gs4= -6.*45.697449558726071;
+		Lv=(1.9291481766492405E-004)/2.;
+		rho0=0.148*pow(hc/Mnucleon, 3);		
+	}
 	// ==== NL3wr ====
 	else if(parametrization_=="nl3wr")		//Phys. Rev. C 55, 540 (1997)
 	{
@@ -117,6 +132,20 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		xsi=0.03;
 		Lv=0.046;
 		rho0=0.155*pow(hc/Mnucleon, 3); 
+	}else if(parametrization_=="iufsu-src")			//Private communication
+	{
+		Mn=939.000;
+		Ms=491.5/Mnucleon;
+		Mv=782.5/Mnucleon;
+		Mb=763./Mnucleon;
+		gs=10.132389686488604;
+		gv=11.867320024781414;
+		gb=15.551063183598112;
+		gs3= 2.*2.9556603254255340;
+		gs4=-6.*29.880147636307864;
+		xsi=0.03;
+		Lv=(1.0941815626967822e-2)/2.;
+		rho0=0.155*pow(hc/Mnucleon, 3); 
 	}
 	//===== FSU2R =========
 	else if(parametrization_=="fsu2")		//Phys. Rev. C 90, 044305 (2014)
@@ -151,6 +180,22 @@ void nlwm_class::setParametrization(std::string parametrization_){
 		gs4=-0.001680*pow(gs, 4.);
 		xsi=0.024;
 		Lv=0.045;
+		rho0=0.150*pow(hc/Mnucleon, 3);
+	}
+	else if(parametrization_=="fsu2r-src")		//PhysRevD.105.023008
+	{
+		Mn=939.000;
+		Mstar=0.593;
+		Ms=497.479/Mnucleon;
+		Mv=782.500/Mnucleon;
+		Mb=763.000/Mnucleon;
+		gs=10.5174;
+		gv=12.3648;
+		gb=15.5988;      
+		gs3=2.*2.9133; //(1/Mnucleon)
+		gs4=-6.*32.4432;
+		xsi=0.024;
+		Lv=0.0093/2.;
 		rho0=0.1505*pow(hc/Mnucleon, 3);
 	}
 	//===== FSU2h =========
@@ -298,6 +343,32 @@ void nlwm_class::setParametrization(std::string parametrization_){
 
 		rho0=0.152*pow(hc/Mnucleon, 3); 
 		dogRhob=true;
+	}else if(parametrization=="ffg"){ //PhysRevC.93.014619
+		Mn=939.000;
+		Ms=500.000/Mnucleon;
+		Mv=782.500/Mnucleon;
+		Mb=763.000/Mnucleon;
+		gs=10.9310;
+		gv=14.5947;
+		gb=5.9163;
+		gs3=2.*0.0007473*pow(gs, 3.); //1/MeV
+		gs4=6.*0.003882*pow(gs, 4.);
+		Lv=0.2736/2.;
+		xsi= 6.*0.01;
+		rho0=0.150*pow(hc/Mnucleon, 3); 
+	}else if(parametrization=="hmt"){ //PhysRevC.93.014619
+		Mn=939.000;
+		Ms=500.000/Mnucleon;
+		Mv=782.500/Mnucleon;
+		Mb=763.000/Mnucleon;
+		gs= 10.8626;
+		gv= 12.9185 ;
+		gb= 7.8712;
+		gs3=2.*0.0007473*pow(gs, 3.); //1/MeV
+		gs4=6.*0.0005139*pow(gs, 4.);
+		Lv=0.03740/2.;
+		xsi= 6.*0.01;
+		rho0=0.150*pow(hc/Mnucleon, 3); 
 	}
   else{parametrization_= "";}
 	std::cout << parametrization << " parametrization." << std::endl;
@@ -656,6 +727,91 @@ void nlwm_class::setEOS_nucleons(double rhoB_, double Yp_, double temp_){
 
 }
 
+
+//=============== Set nucleon EoS with short range correlations 
+//								with fixed proton fraction and temperature  ===============
+void nlwm_class::setEOS_src_nucleons(double rhoB_, double Yp_, double temp_){
+  rhoB=rhoB_;
+  Yp=Yp_;  
+	setTemperature(temp_);
+
+	proton.dosrc= true;
+	neutron.dosrc= true;
+
+//set constants:
+	double c0_=0.161;
+	double c1_= -0.25;
+	double phi0_= 2.38;
+	double phi1_= -0.56;
+	
+	//test if recovers no src
+	// double c0_=0.;
+	// double c1_= 0.;
+	// double phi0_= 1.; 
+	// double phi1_= 0.;
+	
+	
+	proton.phi_ = phi0_*(1.-phi1_*(1.-2.*Yp_));
+	neutron.phi_= phi0_*(1.+phi1_*(1.-2.*Yp_));
+
+	proton.c_= c0_*(1.-c1_*(1.-2.*Yp_));
+	neutron.c_= c0_*(1.+c1_*(1.-2.*Yp_));
+
+	proton.delta_ = 1.- 3.*proton.c_*(1.-1./proton.phi_);
+	neutron.delta_= 1.- 3.*neutron.c_*(1.-1./neutron.phi_);
+
+  proton.density=Yp*rhoB;
+  proton.kf=pow(3.*pi2*proton.density, 1./3.);
+  proton.kf2=pow(proton.kf, 2.);
+
+  neutron.density=(1.-Yp)*rhoB;
+  neutron.kf=pow(3.*pi2*neutron.density, 1./3.);
+  neutron.kf2=pow(neutron.kf, 2.);
+
+  rho3= proton.I3*proton.density+neutron.I3*neutron.density;
+	
+	setVectorMeanFields();
+	setScalarMeanFields();			
+	
+  proton.solveChemPotEff();
+  neutron.solveChemPotEff();
+
+	double gv_= dogRhob ? gv*getCoupling_omega(rhoB) 	: gv;
+	double gb_= dogRhob ? gb*getCoupling_rho(rhoB) 		: gb;
+
+	double enerp_phi= sqrt(pow(proton.phi_*proton.kf, 2.) + pow(proton.mass_eff, 2.));
+	double enern_phi= sqrt(pow(neutron.phi_*neutron.kf, 2.) + pow(neutron.mass_eff, 2.));
+
+
+	double proton_chempot_src= 3.*proton.c_*(proton.chemPot_eff - enerp_phi/proton.phi_ )
+						+ 4.*proton.c_*proton.kf
+						*log( (proton.phi_*proton.kf + enerp_phi)/(proton.kf +proton.chemPot_eff));
+
+	double neutron_chempot_src= 3.*neutron.c_*(neutron.chemPot_eff - enern_phi/neutron.phi_ )
+					+ 4.*neutron.c_*neutron.kf
+					*log( (neutron.phi_*neutron.kf + enern_phi)/(neutron.kf +neutron.chemPot_eff) );
+
+  proton.chemPot  =  proton_chempot_src + proton.delta_*proton.chemPot_eff  + gv_*V0 + gb_*b0*proton.I3;
+  neutron.chemPot =  neutron_chempot_src + neutron.delta_*neutron.chemPot_eff + gv_*V0 + gb_*b0*neutron.I3;
+
+	
+	if(dogRhob){
+		proton.chemPot += getRearrangementEnergy();
+		neutron.chemPot += getRearrangementEnergy();
+	}
+
+	muB = neutron.chemPot;
+	muQ = proton.chemPot - neutron.chemPot;
+
+	proton.calculateCondensate();
+	neutron.calculateCondensate();
+
+	rhoS= proton.condensate + neutron.condensate;
+	
+	proton.calculateProperties();
+  neutron.calculateProperties();
+
+}
 
 //=============== Solve for the vector meson fields with Ceres library: ===============
 void nlwm_class::setVectorMeanFields(){
@@ -1621,78 +1777,121 @@ bool YlFunctorDD::operator()(const T* x, T* residuals) const{
 //=============== Set nucleon EoS inputing effective chemical potentials/mass ===============
 void nlwm_class::setEOS_coexistence(double nup_, double nun_, double mef_){
 	
-  // proton.chemPot_eff= nup_;
-  // proton.mass_eff= mef_;
-  
-	// proton.kf2= proton.chemPot_eff*proton.chemPot_eff -proton.mass_eff*proton.mass_eff;
-  // proton.kf2<=0. ? proton.kf=0. : proton.kf=sqrt(proton.kf2);
-	// proton.calculateDensity();  
-  // proton.calculateProperties();
-	// proton.calculateCondensate();
-
-  // neutron.chemPot_eff= nun_;
-  // neutron.mass_eff= mef_;
-
-  // neutron.kf2= neutron.chemPot_eff*neutron.chemPot_eff -neutron.mass_eff*neutron.mass_eff;
-  // neutron.kf2<0. ? neutron.kf=0	: neutron.kf=sqrt(neutron.kf2);
-	// neutron.calculateDensity();  
-	// neutron.calculateProperties();
-	// neutron.calculateCondensate();
-
-  // rhoB= proton.density + neutron.density;
-  // rho3= proton.I3*proton.density + neutron.I3*neutron.density;
-	// rhoS= proton.condensate + neutron.condensate;
-  // //rhoS= integrate(density_condensateFunc, &proton)+
-	// //			integrate(density_condensateFunc, &neutron);
-	// Yp = proton.density/rhoB;	
-	
-	// Mef=mef_;
-	// phi0=(1.-mef_	)/gs;
-	// setVectorMeanFields();
-	
-  // proton.chemPot  = proton.chemPot_eff  + gv*V0 + proton.I3	*gb*b0;
-  // neutron.chemPot = neutron.chemPot_eff + gv*V0 + neutron.I3*gb*b0;
-
   proton.chemPot_eff= nup_;
   proton.mass_eff= mef_;
   proton.kf2= proton.chemPot_eff*proton.chemPot_eff -proton.mass_eff*proton.mass_eff;
   proton.kf2<=0. ? proton.kf=0. : proton.kf=sqrt(proton.kf2);
 	
-	if(temperature<Tmin_integration){
-		proton.kf==0. ? proton.density=0. : proton.density= integrate(densityFunc, &proton);
-	}else{
-		proton.density= integrate(densityFunc, &proton);
-	}
-  proton.calculateProperties();
 
   neutron.chemPot_eff= nun_;
   neutron.mass_eff= mef_;
   neutron.kf2= neutron.chemPot_eff*neutron.chemPot_eff -neutron.mass_eff*neutron.mass_eff;
   neutron.kf2<0. ? neutron.kf=0	: neutron.kf=sqrt(neutron.kf2);
 	
-	// cout << proton.density << " " << neutron.density << endl;
 	if(temperature<Tmin_integration){
-		neutron.kf==0. ? neutron.density=0. : neutron.density= integrate(densityFunc, &neutron);
+		proton.kf==0. ? proton.density=0. : proton.density		=	proton.gamma*pow(proton.kf, 3.)/(6.*pi2); //integrate(densityFunc, &proton);
+		neutron.kf==0. ? neutron.density=0. : neutron.density	= neutron.gamma*pow(neutron.kf, 3.)/(6.*pi2); //integrate(densityFunc, &neutron);
+
 	}else{
+		proton.density= integrate(densityFunc, &proton);
 		neutron.density= integrate(densityFunc, &neutron);
 	}
+  proton.calculateProperties();
   neutron.calculateProperties();
 
   rhoB= proton.density + neutron.density;
   rho3= proton.I3*proton.density + neutron.I3*neutron.density;
-  rhoS= integrate(density_condensateFunc, &proton)+
-				integrate(density_condensateFunc, &neutron);
+	proton.calculateCondensate();
+	neutron.calculateCondensate();
+  rhoS= proton.condensate + neutron.condensate;
 	Yp = proton.density/rhoB;	
 	
 	Mef=mef_;
 	phi0=(1.-mef_	)/gs;
 	setVectorMeanFields();
 	
-  proton.chemPot  = proton.chemPot_eff  + gv*V0 + gb*b0/2.;
-  neutron.chemPot = neutron.chemPot_eff + gv*V0 - gb*b0/2.;
+  proton.chemPot  = proton.chemPot_eff  + gv*V0 + proton.I3*gb*b0;
+  neutron.chemPot = neutron.chemPot_eff + gv*V0 + neutron.I3*gb*b0;
 
 }
 
+
+//=============== Set nucleon EoS inputing effective chemical potentials/mass 
+//																 					with short range correlations	 ===============
+void nlwm_class::setEOS_coexistence_src(double nup_, double nun_, double mef_, double yp_){
+	
+  proton.chemPot_eff= nup_;
+  proton.mass_eff= mef_;
+  proton.kf2= proton.chemPot_eff*proton.chemPot_eff -proton.mass_eff*proton.mass_eff;
+  proton.kf2<=0. ? proton.kf=0. : proton.kf=sqrt(proton.kf2);
+
+  neutron.chemPot_eff= nun_;
+  neutron.mass_eff= mef_;
+  neutron.kf2= neutron.chemPot_eff*neutron.chemPot_eff -neutron.mass_eff*neutron.mass_eff;
+  neutron.kf2<0. ? neutron.kf=0	: neutron.kf=sqrt(neutron.kf2);
+	
+	Yp= yp_;
+
+	double c0_=0.161;
+	double c1_= -0.25;
+	double phi0_= 2.38;
+	double phi1_= -0.56;
+	
+	// double phi0_= 1.; //test if recovers no src
+	// double phi1_= 0.;
+	// double c0_=0.;
+	// double c1_=0.;
+	proton.phi_ = phi0_*(1.-phi1_*(1.-2.*Yp));
+	neutron.phi_= phi0_*(1.+phi1_*(1.-2.*Yp));
+
+	proton.c_= c0_*(1.-c1_*(1.-2.*Yp));
+	neutron.c_= c0_*(1.+c1_*(1.-2.*Yp));
+
+	proton.delta_ = 1.- 3.*proton.c_*(1.-1./proton.phi_);
+	neutron.delta_= 1.- 3.*neutron.c_*(1.-1./neutron.phi_);
+
+	double enerp_phi= sqrt(pow(proton.phi_*proton.kf, 2.) + pow(proton.mass_eff, 2.));
+	double enern_phi= sqrt(pow(neutron.phi_*neutron.kf, 2.) + pow(neutron.mass_eff, 2.));
+
+	if(temperature<Tmin_integration){
+		// proton.kf==0. ? proton.density=0. : proton.density		=	proton.gamma*pow(proton.kf, 3.)/(6.*pi2); //integrate(densityFunc, &proton);
+		// neutron.kf==0. ? neutron.density=0. : neutron.density	= neutron.gamma*pow(neutron.kf, 3.)/(6.*pi2); //integrate(densityFunc, &neutron);
+
+			proton.kf==0. ? proton.density=0. : 
+					 	proton.density		=	proton.gamma*pow(proton.kf, 3.)/(6.*pi2);
+			
+			neutron.kf==0. ? neutron.density=0. : 
+						neutron.density =	neutron.gamma*pow(neutron.kf, 3.)/(6.*pi2);
+
+	}else{
+		proton.density= integrate(densityFunc, &proton);
+		neutron.density= integrate(densityFunc, &neutron);
+	}
+	
+  proton.calculateProperties();
+  neutron.calculateProperties();
+
+	double proton_chempot_src= 3.*proton.c_*(proton.chemPot_eff - enerp_phi/proton.phi_ )
+						+ 4.*proton.c_*proton.kf*log( (proton.phi_*proton.kf + enerp_phi)/(proton.kf +proton.chemPot_eff));
+
+	double neutron_chempot_src= 3.*neutron.c_*(neutron.chemPot_eff - enern_phi/neutron.phi_ )
+					+ 4.*neutron.c_*neutron.kf*log( (neutron.phi_*neutron.kf + enern_phi)/(neutron.kf +neutron.chemPot_eff) );
+
+// cout << "neutron okay: " << neutron.density << " " << endl;
+ 
+  rhoB= proton.density + neutron.density;
+  rho3= proton.I3*proton.density + neutron.I3*neutron.density;
+	proton.calculateCondensate();
+	neutron.calculateCondensate();
+  rhoS= proton.condensate + neutron.condensate;
+	
+	Mef=mef_;
+	phi0=(1.-mef_	)/gs;
+	setVectorMeanFields();
+	
+  proton.chemPot  =  proton_chempot_src + proton.delta_*proton.chemPot_eff  + gv*V0 + gb*b0*proton.I3;
+  neutron.chemPot =  neutron_chempot_src + neutron.delta_*neutron.chemPot_eff + gv*V0 + gb*b0*neutron.I3;
+}
 
 //=============== Set baryon densities inputing chemical potentials and (3) meson fields ===============
 void nlwm_class::setDensities(double mub_, double muq_, double phi0_, double v0_, double b0_){
@@ -2324,16 +2523,16 @@ double nlwm_class::getEnergy(void){
 //=============== Calculate total baryonic pressure: ===============
 double nlwm_class::getPressure(void){
  
-    // double  	Emeson=
-		// 					-pow(Ms*phi0, 2)/2. - gs3*pow(phi0, 3)/6.- gs4*pow(phi0, 4)/24.
-    //       		+pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24. + pow(Mt*theta0, 2)/2.
-    //       		+pow(Mb*b0, 2)/2. 	+ Lv*pow(gv*gb*V0*b0, 2);
+  // double press= proton.pressure+ neutron.pressure ;
+	// if(dogRhob) press+=getRearrangementEnergy()*rhoB;
+
+	// press+=
+							// -pow(Ms*phi0, 2)/2. - gs3*pow(phi0, 3)/6.- gs4*pow(phi0, 4)/24.
+          		// +pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24. + pow(Mt*theta0, 2)/2.
+          		// +pow(Mb*b0, 2)/2. 	+ Lv*pow(gv*gb*V0*b0, 2);
+
 	double press= proton.chemPot*proton.density+ neutron.chemPot*neutron.density 
  					- getEnergy();
-	
-	// double press= proton.pressure+ neutron.pressure ;
-	//if(dogRhob) press+=rearragementEnergy())*rhoB;
-
 	if(temperature>Tmin_integration){press+=temperature*getEntropy();}
 	
 	if(doHyperons){
@@ -2341,14 +2540,14 @@ double nlwm_class::getPressure(void){
 					+ sigma0.chemPot*sigma0.density + sigmam.chemPot*sigmam.density 
 					+ xi0.chemPot*xi0.density+ xim.chemPot*xim.density;
 		// press+= lambda0.pressure + sigmap.pressure 
-		// 			+ sigma0.pressure + sigmam.pressure 
-		// 			+ xi0.pressure+ xim.pressure;
+					// + sigma0.pressure + sigmam.pressure 
+					// + xi0.pressure+ xim.pressure;
 		}
 	if(doDeltas){
 		press+= deltapp.chemPot*deltapp.density + deltap.chemPot*deltap.density 
 					+ delta0.chemPot*delta0.density + deltam.chemPot*deltam.density;
-		// press+= deltapp.chemPot*deltapp.density + deltap.chemPot*deltap.density 
-					// + delta0.chemPot*delta0.density + deltam.chemPot*deltam.density;
+		// press+= deltapp.pressure + deltap.pressure 
+					// + delta0.pressure + deltam.pressure;
 
 	}
 	return press;

@@ -11,7 +11,7 @@
 
 using namespace std;
 
-//===========================main code =============================
+//=========================== main code =============================
 
 int main(){
 
@@ -32,13 +32,16 @@ int main(){
 
 	nlwm_class hmg_matter(parametrization);
 
-	double rhoBMax;
 
-	if(Yp>0.3)			rhoBMax= 0.16;
-	else if(Yp>0.2)	rhoBMax= 0.14;
-	else if(Yp>0.15)	rhoBMax= 0.12;
-	else if(Yp>0.1)	rhoBMax= 0.12;
-	else 						rhoBMax= 0.12;
+	double rhoBMax;
+	if(Yp>0.4)			rhoBMax= 0.16;
+	else if(Yp>0.3)	rhoBMax= 0.09;
+	else if(Yp>0.28)	rhoBMax= 0.075;
+	else if(Yp>0.26)	rhoBMax= 0.07;
+	else if(Yp>0.2)	rhoBMax= 0.06;
+	else if(Yp>0.19)	rhoBMax= 0.051;
+	else if(Yp>0.14)	rhoBMax= 0.041;
+	else 						rhoBMax= 0.036;
 	rhoBMax*=pow(hc/Mnucleon, 3);
 
 	int iRhoMax=200;
@@ -92,11 +95,12 @@ int main(){
 
 
 		//homogeneous matter:
-		hmg_matter.setEOS_nucleons(rhoB, Yp, temperature);
+		hmg_matter.setEOS_src_nucleons(rhoB, Yp, temperature);
 		FreeEn_hmg	= (hmg_matter.getEnergy() + electron.energy -temperature*(hmg_matter.getEntropy()+electron.entropy))/rhoB;
 		
 		//pasta:
-		pasta.solveCPA(rhoB, Yp, temperature);
+		pasta.solveCPA_src(rhoB, Yp, temperature);
+		
 		f=pasta.f;
 		
 		if(pasta.f>=0. && pasta.f<=1.){
@@ -179,24 +183,69 @@ int main(){
 				<< (FreeEnM(1, 1)-1.)*Mnucleon << " " << (FreeEnM(2, 1)-1.)*Mnucleon 
 			  	<< std::endl;
 
-		outSol  << rhoB*pow(Mnucleon/hc, 3.) << " " << cluster.Yp << " " << gas.Yp << " " 
+	outSol  << rhoB*pow(Mnucleon/hc, 3.) << " " 
+				<< cluster.Yp << " " << gas.Yp << " "  
 				<< cluster.proton.chemPot_eff << " " << cluster.neutron.chemPot_eff << " "
 				<< cluster.proton.mass_eff << " "
 				<< gas.proton.chemPot_eff << " " << gas.neutron.chemPot_eff << " " 
 				<< gas.proton.mass_eff  << " "
-				<< cluster.proton.chemPot << " " << cluster.neutron.chemPot << " "
-				<< gas.proton.chemPot << " " << gas.neutron.chemPot << " "
+				// << cluster.proton.chemPot << " " << cluster.neutron.chemPot << " "
+				// << gas.proton.chemPot << " " << gas.neutron.chemPot << " "
+				<< cluster.proton.density*pow(Mnucleon/hc, 3.) << " " 
+				<< cluster.neutron.density*pow(Mnucleon/hc, 3.) << " " 
+				<< gas.proton.density*pow(Mnucleon/hc, 3.) << " " 
+				<< gas.neutron.density*pow(Mnucleon/hc, 3.) << " "
+				<< cluster.rhoB*pow(Mnucleon/hc, 3.) << " "
+				<< gas.rhoB*pow(Mnucleon/hc, 3.) << " "
+				<< gas.neutron.kf
+							    << std::endl;
+		outSol  << rhoB*pow(Mnucleon/hc, 3.) << " " << cluster.Yp << " " << gas.Yp << " " 
 				<< cluster.proton.density*pow(Mnucleon/hc, 3.) << " " 
 				<< cluster.neutron.density*pow(Mnucleon/hc, 3.) << " " 
 				<< gas.proton.density*pow(Mnucleon/hc, 3.) << " " 
 				<< gas.neutron.density*pow(Mnucleon/hc, 3.) << " " 
+				<< gas.proton.density/(gas.neutron.density+ gas.proton.density) << " "
+				<< cluster.proton.chemPot_eff << " " << cluster.neutron.chemPot_eff << " "
+				<< cluster.proton.mass_eff << " "
+				<< gas.proton.chemPot_eff << " " << gas.neutron.chemPot_eff << " " 
+				<< gas.proton.mass_eff  << " "
 			    << std::endl;
+
+			cout << "test: " << pasta.cluster.proton.chemPot -  pasta.gas.proton.chemPot << " "
+						<< 			pasta.cluster.neutron.chemPot -  pasta.gas.neutron.chemPot << " "
+						<< pasta.cluster.getPressure() - pasta.gas.getPressure() << " "
+						<< f*pasta.cluster.proton.density + (1.-f)*pasta.gas.proton.density << " "
+						<< 																							-pasta.YpG*pasta.rhoB << " "
+						<< pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS) << " "
+						<< pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS) << " " 
+						<< pasta.cluster.Yp*pasta.cluster.rhoB - pasta.cluster.proton.density << " " 
+						<< pasta.gas.Yp*pasta.gas.rhoB - pasta.gas.proton.density						
+						<< endl;
 
 		}
 		else{
 			std::cout << "no pasta: " << rhoB*pow(Mnucleon/hc, 3.) << " " << f << std::endl;
 			//setInitialGibbs(nup1, nun1, Mef1, nup2, nun2, Mef2);
 
+		outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " " << Pressure << " " 
+				  << 1./0 << " " << GibbsEn - Mnucleon << " " 
+				  << BulkEn << " "   << Entropy*temperature*Mnucleon/rhoB << " " 
+				  << coulEn << " " << surfEn << " "
+				  << f << " " << Rd << " " << Rw << " " << iPlot << " " 
+					<< Ae << " " << Ze << " " << (FreeEn_hmg -1.)*Mnucleon 
+				  << std::endl;
+
+outSol  << rhoB*pow(Mnucleon/hc, 3.) << " " << cluster.Yp << " " << gas.Yp << " " 
+				<< cluster.proton.density*pow(Mnucleon/hc, 3.) << " " 
+				<< cluster.neutron.density*pow(Mnucleon/hc, 3.) << " " 
+				<< gas.proton.density*pow(Mnucleon/hc, 3.) << " " 
+				<< gas.neutron.density*pow(Mnucleon/hc, 3.) << " " 
+				<< gas.proton.density/(gas.neutron.density+ gas.proton.density) << " "
+				<< cluster.proton.chemPot_eff << " " << cluster.neutron.chemPot_eff << " "
+				<< cluster.proton.mass_eff << " "
+				<< gas.proton.chemPot_eff << " " << gas.neutron.chemPot_eff << " " 
+				<< gas.proton.mass_eff  << " "
+			    << std::endl;
 		}
 	}
 

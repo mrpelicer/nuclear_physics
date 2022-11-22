@@ -24,7 +24,6 @@ int main(){
 
 	string parametrization;
 	
-	
 	double rhoB, Yp, temperature;
 	
 	//, Bfield;, thetab=0.;and magnetic field (G):
@@ -232,7 +231,7 @@ int main(){
 			<< L_rod*(hc/Mnucleon) << " " << L_slab*(hc/Mnucleon) << " "
 			<< iPlot << " " << sigma << " " 
 			<< Z10 << " " << Z100 << " " << Z1000 << " " << Lsize*(hc/Mnucleon) << " "
-			<< xi << " " << exp(1/(2.*eta)) << " "
+			<< xi*(hc/Mnucleon) << " " << eta*(hc/Mnucleon)  << " " << exp(1/(2.*eta)) << " "
 			<< c0v_[0]*Mnucleon*pow(Mnucleon/hc, 3.) << " " << c0v_[1]*Mnucleon*pow(Mnucleon/hc, 3.) << " "
 			<< av_[0]*(hc/Mnucleon)  << " "<<  av_[1]*(hc/Mnucleon)  << " "
 			<< lambdav_[0]*(hc/Mnucleon)  << " " << lambdav_[1]*(hc/Mnucleon) << " "
