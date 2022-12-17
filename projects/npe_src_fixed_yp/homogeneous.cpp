@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
   double rhoBMax=1./pow(Mnucleon/hc, 3);
 	double rhoBMin=(1e-3)/pow(Mnucleon/hc, 3);
-  int iR=200;
+  int iR=1000;
   double dRho= (rhoBMax-rhoBMin)/iR;
 
 // 	//Define thermodynamic variables
@@ -61,9 +61,9 @@ int main(int argc, char** argv)
 			electron.chemPot=electron.chemPot_eff;
 			electron.calculateProperties();
 
-			Energy= qhd.getEnergy()		 	;//+electron.energy; 		
-			Pressure= qhd.getPressure()	;//+electron.pressure;
-			Entropy= qhd.getEntropy()	 	;//+electron.entropy;
+			Energy= qhd.getEnergy()		 	+electron.energy; 		
+			Pressure= qhd.getPressure()	+electron.pressure;
+			Entropy= qhd.getEntropy()	 	+electron.entropy;
 			FreeEn= Energy -temperature*Entropy;
 			
 			rhobv.push_back(rhoB);

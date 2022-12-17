@@ -18,13 +18,16 @@ OBJS = 	$(BUILDDIR)/pasta.o \
 				$(BUILDDIR)/rmf_non_linear_walecka.o \
 				$(BUILDDIR)/interpolator.o
 
-APP = pasta
+APP= cld
+
+
+all: $(APP)
 
 $(APP) : $(BUILDDIR) \
 	$(OBJS) \
 	pasta_liquid_drop.cpp
-	$(CC) -o $(APP) pasta_liquid_drop.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(EIGEN_LIB) $(WALL) 
-
+	$(CC) -o $(APP)  pasta_liquid_drop.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(EIGEN_LIB) $(CUBA_LIB) $(WALL) 
+	
 $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)
 
@@ -32,7 +35,7 @@ $(BUILDDIR):
 $(BUILDDIR)/pasta.o : $(LIBDIR)/particles.h \
 	$(LIBDIR)/pasta.cpp \
 	$(LIBDIR)/pasta.h
-	$(CC) -c $(LIBDIR)/pasta.cpp -o $(BUILDDIR)/pasta.o $(GSL_LIB) $(CERES_LIB)  $(CUBA_LIB) $(WALL)
+	$(CC) -c $(LIBDIR)/pasta.cpp -o $(BUILDDIR)/pasta.o $(GSL_LIB) $(CERES_LIB) $(WALL)
 
 
 $(BUILDDIR)/particles.o : $(LIBDIR)/particles.h \
@@ -53,4 +56,4 @@ $(BUILDDIR)/interpolator.o : $(LIBDIR)/interpolator.h \
 	$(CC) -c $(LIBDIR)/interpolator.cpp -o $(BUILDDIR)/interpolator.o $(GSL_LIB)  $(WALL) 
 
 clean:
-	$(RM) $(OBJS) $(APP)
+	$(RM) $(OBJS) $(APP1)

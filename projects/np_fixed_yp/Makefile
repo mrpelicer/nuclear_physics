@@ -4,9 +4,9 @@ LIBDIR = ../../include
 MKDIR = mkdir -p
 BUILDDIR = ../../include/build
 
-WALL = -std=c++14 -Wall -lm -O3
+WALL = -std=c++17 -Wall -lm -O3
 GSL_LIB= -lgsl -lgslcblas
-CERES_LIB= -lglog -I/usr/include/eigen3 -lceres
+CERES_LIB= -I/usr/include/eigen3 -lceres -lglog 
 CUBA_LIB = -lcuba
 EIGEN_LIB= -I/usr/include/eigen3/unsupported
 BOOST_LIB= -I/usr/local/include/boost_1_76_0/

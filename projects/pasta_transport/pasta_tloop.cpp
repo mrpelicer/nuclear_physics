@@ -65,9 +65,9 @@ int main(){
 
 	rhoB*=pow(hc/Mnucleon, 3);
 	double tempMin=0.1/Mnucleon;
-  double tempMax=3.2/Mnucleon;
-  int itMax=31;
-  double dt=  (tempMax-tempMin)/itMax;
+  	double tempMax=5./Mnucleon;
+  	int itMax=10;
+  	double dt=  (tempMax-tempMin)/itMax;
 
 
 	for(int it=0; it<=itMax; it++){
@@ -135,10 +135,14 @@ int main(){
 		droplet.setRadius(RdM(2, minCol));
 		double rad_rods= RdM(1, minCol); 
 		double rad_slab= RdM(0, minCol);
+
+
+		double L2w= droplet.getVolume()/(M_PI*rad_rods*rad_rods);	
+		double L1w= sqrt(droplet.getVolume()/(2.*rad_slab));
 		// double Vcl= droplet.getVolume();	
 
-		double L_rod	=5.*RwM(1,minCol);
-		double L_slab	=3.*RwM(0, minCol);
+		double L_rod	=sqrt(2)*L1w;//*RwM(1,minCol);
+		double L_slab	=sqrt(2)*L1w;//3.*RwM(0, minCol);
 
 		rod.setLengths(rad_rods,L_rod);
 		slab.setLengths(L_slab, L_slab, 2.*rad_slab);
@@ -286,7 +290,7 @@ int main(){
 						<< sigma0_p*Mnucleon/MeVto_Sec << " " //s-1
 						<< sigma0_avg*Mnucleon/MeVto_Sec << " " //s-1
 						<< iDimension << " " << iPlot <<  " "
-						<< xi << " " << exp(1/(2.*eta)) << " " 
+						<< xi << " " <<eta << " "  <<pow(2, -eta) << " " 
 						<< c0v_[0]*Mnucleon*pow(Mnucleon/hc, 3.) << " " << c0v_[1]*Mnucleon*pow(Mnucleon/hc, 3.) << " "
 						<< av_[0]*(hc/Mnucleon)  << " "<<  av_[1]*(hc/Mnucleon)  << " "
 						<< lambdav_[0]*(hc/Mnucleon)  << " " << lambdav_[1]*(hc/Mnucleon) 

@@ -83,6 +83,8 @@ int main(){
 		}
 		}
 
+
+
 		//Get phase that minimizes energy and fix dimensions:
 		MatrixXd::Index minRow, minCol;
 		FreeEn= FreeEnM.minCoeff(&minRow, &minCol);
@@ -115,6 +117,9 @@ int main(){
 		double rad_rods=  RdM(1, 0); 
 		double rad_slab=  RdM(0, 0);
 
+		double L2w= droplet.getVolume()/(M_PI*rad_rods*rad_rods);	
+		double L1w= sqrt(droplet.getVolume()/(2.*rad_slab));
+
 		double q;
 		vector<double> qv, F3v2;
 		double qmin=0.;
@@ -139,8 +144,8 @@ int main(){
 		double L;
 
 		int ilmax=100;
-		double Lmin=0.05*Rw;
-		double Lmax= 80.*Rw;
+		double Lmin=Rw;
+		double Lmax= 150.*Rw;
 		double logLmin= log10(Lmin);
 		double logLmax= log10(Lmax);
 		ofstream outTransport("data/transport_Ld_T"+to_string(temperature*Mnucleon)+"_"
@@ -267,9 +272,10 @@ int main(){
 						<< coulIa << " " << coulIp << " " 
 						<< Rd*(hc/Mnucleon) << " " << rhoB*pow(Mnucleon/hc, 3.) << " " << Ze+Zg << " " 
 						<< iDimension << " " << iPlot << " "
-						<< sigma0_a*Mnucleon/MeVto_Sec << " " //s-1
-						<< sigma0_p*Mnucleon/MeVto_Sec << " " //s-1
-						<< sigma0_avg*Mnucleon/MeVto_Sec      //s-1
+						<< sigma0_a*Mnucleon/MeVto_Sec << " " 	//s-1
+						<< sigma0_p*Mnucleon/MeVto_Sec << " " 	//s-1
+						<< sigma0_avg*Mnucleon/MeVto_Sec << " " //s-1
+						<< L1w/L << " " << L2w/L
 						<< endl;
 		// outform.close();
 	}

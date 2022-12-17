@@ -37,8 +37,8 @@ int main(){
 				<< "Yp= "<< Yp << endl  
 				<< "T = " << temperature << endl;
 
-	double rhoBMax=0.15*pow(hc/Mnucleon, 3);
-	int iRhoMax=100;
+	double rhoBMax=0.07*pow(hc/Mnucleon, 3);
+	int iRhoMax=10;
 	double dRho= rhoBMax/iRhoMax;
 		
 	particle electron;

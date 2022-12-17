@@ -34,9 +34,9 @@ int main(){
 				<< "nB = " << rhoB << "fm^-3" <<  endl
 				<< "T = " << temperature << " MeV" <<  endl;
 
-	double Lratio;
-	cout << "Specify L_d/R_W: " << endl;
-	cin >> Lratio ;	
+	// double Lratio;
+	// cout << "Specify L_d/R_W: " << endl;
+	// cin >> Lratio ;	
 
 	//Declare nuclear matter: pasta and gas:
 	nlwm_class cluster(parametrization);
@@ -55,7 +55,7 @@ int main(){
 					RdM(3,2), RwM(3,2), VcM(3,2), VwM(3,2), AeM(3, 2), ZeM(3, 2); 
 					// BulkEnM(3,2), GibbsEnM(3,2),  
 	
-	double f, sigma, Ze=0.;
+	double f, sigma, Ze=0., Rw;
 	int iDimension, iPlot=0;
 	//iPlot= 1, 2, 3, 4, 5 (spheres, rods, slabs, tubes, bubbles)	
 	
@@ -103,7 +103,7 @@ int main(){
 
 		// Pressure=PressureM(minRow, minCol);
 		// Rd=RdM(minRow, minCol) ;
-		// Rw=RwM(minRow, minCol) ;
+		Rw=RwM(minRow, minCol) ;
 		// Ae= AeM(minRow, minCol);
 		Ze= ZeM(minRow, minCol);
 		iDimension=minRow+1;
@@ -129,9 +129,32 @@ int main(){
 	double rad_rods= RdM(1, minCol); 
 	double rad_slab= RdM(0, minCol);
 	// double Vcl= droplet.getVolume();	
-	
-	double L_rod	=Lratio*RwM(1, minCol); ;
-	double L_slab	=Lratio*RwM(0, minCol);;	
+			vector<double> c0v_={6.*alpha*coulEnM(0, minCol), 
+											(3./2. + 2.*pow(10., 2.1*(alpha-0.3)))*alpha*coulEnM(1, minCol)};
+			vector<double> av_= {2.*RwM(0, minCol), sqrt(2.*M_PI/sqrt(3.))*RwM(1, minCol)};
+			vector<double> q0v_={2*M_PI/av_[0], 2*M_PI/av_[1]};
+			vector<double> qcv_={4*M_PI/av_[0], 4*M_PI/av_[1]};
+			vector<double> lambdav_={sqrt((1.+2.*alpha-2.*alpha*alpha)*RwM(0, minCol)*RwM(0, minCol)/45.),
+									sqrt( 0.131*alpha*coulEnM(1, minCol)*RwM(1, minCol)*RwM(1, minCol)/c0v_[1])};
+
+			double xi= 8.*pi2*pow(lambdav_[1], 2)*c0v_[1]/(pow(q0v_[1], 2.)*pow(qcv_[1], 2.)*temperature);
+			double eta= pow(q0v_[0], 2.)*temperature/(8.*M_PI*lambdav_[0]*c0v_[0]);
+
+			double L1w= sqrt(droplet.getVolume()/(2.*rad_slab));
+			double epsilon = pow(2, -eta);
+			
+			double L_slab	=L1w/pow(epsilon, 1/(2*eta));
+			double L_rod	=L_slab;
+
+			double Lsize=0;
+
+			if(iDimension==1){Lsize=L_slab;}
+			if(iDimension==2){Lsize=L_rod;}
+			if(iDimension==3){Lsize=NAN;}
+
+			double Lratio = Lsize/Rw;
+	// double L_rod	=Lratio*RwM(1, minCol);
+	// double L_slab	=Lratio*RwM(0, minCol);	
 	// double L_rod	=	Vcl/(M_PI*pow(rad_rods, 2.));
 	// double L_slab	= sqrt(Vcl/(2.*rad_slab));
 	
@@ -152,16 +175,24 @@ int main(){
 	double qmax=2.;
 	int iqmax= 300;
 	double q;
-	ofstream outform("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_L"+to_string(Lratio)+".txt");
-	
-	ofstream outform_ani("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_ani_L"+to_string(Lratio)+".txt");
+	// ofstream outform("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_L"+to_string(Lratio)+".txt");
+	ofstream outform("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+".txt");
+	// ofstream outform_ani("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_ani_L"+to_string(Lratio)+".txt");
+	ofstream outform_ani("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_ani.txt");
 	
 	for(int it=0; it<=50; it++){
 		double theta_= M_PI*(1. - it/50.);
 		outform_ani << theta_ << " " 
+								<< rod.getStructureFunction(electron.kf/2., cos(theta_)) << " "
 								<< rod.getStructureFunction(electron.kf, cos(theta_)) << " "
+								<< rod.getStructureFunction(2.*electron.kf, cos(theta_)) << " "
+								<< slab.getStructureFunction(electron.kf/2., cos(theta_), 0.) << " "
 								<< slab.getStructureFunction(electron.kf, cos(theta_), 0.) << " "
-								<< slab.getStructureFunction(electron.kf, cos(theta_), M_PI/4.) << endl;
+								<< slab.getStructureFunction(2.*electron.kf, cos(theta_), 0.) << " "
+								<< slab.getStructureFunction(electron.kf/2., cos(theta_), M_PI/4.) << " " 
+								<< slab.getStructureFunction(electron.kf, cos(theta_), M_PI/4.) << " " 
+								<< slab.getStructureFunction(2.*electron.kf, cos(theta_), M_PI/4.)
+								<<endl;
 	}
 	outform_ani.close();
 	vector<double> qv, F3v2, Fav2, Fpv2;

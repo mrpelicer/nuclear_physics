@@ -627,9 +627,9 @@ void pasta_class::solveCLD(double rhoB_, double Yp_, double temp_,double dim_, i
 //
 	// 
 	Solver::Options optionsCLD; 							//default:	0.5 fluc	
-	optionsCLD.parameter_tolerance = 1e-8; 		//1e-8			9 			
-	optionsCLD.function_tolerance = 1e-6;			//1e-6			8	
-	optionsCLD.gradient_tolerance=1e-10;			//1e-10			12
+	optionsCLD.parameter_tolerance = 1e-9; 		//1e-8			9 			
+	optionsCLD.function_tolerance = 1e-8;			//1e-6			8	
+	optionsCLD.gradient_tolerance=1e-12;			//1e-10			12
 // 
 	optionsCLD.max_num_iterations=1e3;
 	// optionsCLD.use_nonmonotonic_steps=true;	
@@ -690,10 +690,8 @@ bool cldFunctor::operator()(const T* x, T* residuals) const{
 			interfacePrs= sign_*(Fsc+beta*Fc*PhiD/Phi)
 										-2.*beta*Fc*((1.-u)*pasta.cluster.proton.density + u*pasta.gas.proton.density)/
 											(u*(1.-u)*(pasta.cluster.proton.density - pasta.gas.proton.density));	
-	/*		
-			interfacePrs= Fc*(1. +beta*PhiD/Phi- 2.*beta*pasta.gas.proton.density/
-												(u*(1.-u)*(pasta.cluster.proton.density - pasta.gas.proton.density)));	
-		*/	
+
+      
 		}
 				// 
 		residuals[0] = pasta.cluster.proton.chemPot - pasta.gas.proton.chemPot+ interfaceMuP;						
@@ -1058,8 +1056,8 @@ double cRod::getStructureFunction(double q_, double cost_){
   double y=sqrt(1.-x*x);
   double az= q_*x*length/2.;
   double ar= q_*y*radius;
-  double Fz= (az>1e-7) ? sin(az)/az : 1.;
-  double Fp= (ar>1e-7) ? 2.*gsl_sf_bessel_J1(ar)/(ar)  : 1.;
+  double Fz= (abs(az)>1e-7) ? sin(az)/az : 1.;
+  double Fp= (abs(ar)>1e-7) ? 2.*gsl_sf_bessel_J1(ar)/(ar)  : 1.;
   return Fz*Fp;
 }
 
@@ -1159,9 +1157,9 @@ double cSlab::getStructureFunction(double q_, double cost_, double phi_){
   double ax= qx*lx/2.;
   double ay= qy*ly/2.;
   double az= qz*lz/2.;
-  double Fx= ax>1e-7 ? sin(ax)/(ax) : 1.;
-  double Fy= ay>1e-7 ? sin(ay)/(ay) : 1.;
-  double Fz= az>1e-7 ? sin(az)/(az) : 1.;
+  double Fx= abs(ax)>1e-7 ? sin(ax)/(ax) : 1.;
+  double Fy= abs(ay)>1e-7 ? sin(ay)/(ay) : 1.;
+  double Fz= abs(az)>1e-7 ? sin(az)/(az) : 1.;
   
   return Fx*Fy*Fz;
 }
