@@ -1,6 +1,6 @@
 #include "../../include/constant.h"
 #include "../../include/particles.h"
-#include "../../include/rmf_non_linear_walecka.h"
+#include "../../include/rmf_walecka.h"
 #include "../../include/bag_model.h"
 #include "../../include/interpolator.h"
 

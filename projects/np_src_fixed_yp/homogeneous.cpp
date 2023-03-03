@@ -1,7 +1,7 @@
 //Nuclear matter properties using Mean Feild Theory (NLWM) at T=0.
 #include "../../include/constant.h"
 #include "../../include/particles.h"
-#include "../../include/rmf_non_linear_walecka.h"
+#include "../../include/rmf_walecka.h"
 #include "../../include/interpolator.h"
 #include <iostream>
 #include <iterator>

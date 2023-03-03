@@ -1,7 +1,7 @@
 #include "../../include/constant.h"
 #include "../../include/particles.h"
-#include "../../include/rmf_non_linear_walecka.h"
-#include "../../include/quark_model.h"
+#include "../../include/rmf_walecka.h"
+#include "../../include/ddqm_model.h"
 #include "../../include/interpolator.h"
 
 #include <iostream>

@@ -27,3 +27,4 @@ If you find any  mistakes or have any doubts, do not hesitate in contacting me: 
 
 In case you find the code useful, consider citing my publications related to your work: see [INSPIRE](https://inspirehep.net/authors/1905850)
 
+If you find any  mistakes or have any doubts, do not hesitate in contacting me: mateusreinke@hotmail.com
