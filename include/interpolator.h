@@ -7,6 +7,8 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <boost/math/tools/roots.hpp>
+
 using namespace std;
 
 double interpolation_func(double x_, std::vector<double> yv_,	std::vector<double> xv_);

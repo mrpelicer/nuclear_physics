@@ -1,5 +1,4 @@
 // Pasta with non linear Walecka model using Mean Field Theory
-#include "../../include/constant.h"
 #include "../../include/particles.h"
 #include "../../include/rmf_non_linear_walecka.h"
 #include "../../include/pasta.h"
@@ -140,7 +139,7 @@ int main(){
 		}
 	
 
-		outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " " << Pressure << " " 
+		outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " " << electron.kf*Mnucleon/hc << " " << Pressure << " " 
 				  << FreeEn - Mnucleon << " " << GibbsEn - Mnucleon << " " 
 				  << BulkEn << " "   << Entropy*temperature*Mnucleon/rhoB << " " 
 				  << coulEn << " " << surfEn << " "

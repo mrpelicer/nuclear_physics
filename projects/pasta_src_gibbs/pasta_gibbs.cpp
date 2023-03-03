@@ -35,13 +35,12 @@ int main(){
 
 	double rhoBMax;
 	if(Yp>0.4)			rhoBMax= 0.16;
-	else if(Yp>0.3)	rhoBMax= 0.09;
-	else if(Yp>0.28)	rhoBMax= 0.075;
-	else if(Yp>0.26)	rhoBMax= 0.07;
-	else if(Yp>0.2)	rhoBMax= 0.06;
-	else if(Yp>0.19)	rhoBMax= 0.051;
-	else if(Yp>0.14)	rhoBMax= 0.041;
-	else 						rhoBMax= 0.036;
+	else if(Yp>0.3)	rhoBMax= 0.075;
+	else if(Yp>0.26)	rhoBMax= 0.06;
+	else if(Yp>0.2)	rhoBMax= 0.047;
+	else if(Yp>0.17)	rhoBMax= 0.042;
+	else if(Yp>0.14)	rhoBMax= 0.034;
+	else 						rhoBMax= 0.034;
 	rhoBMax*=pow(hc/Mnucleon, 3);
 
 	int iRhoMax=200;

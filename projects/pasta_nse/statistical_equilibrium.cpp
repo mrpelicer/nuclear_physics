@@ -23,21 +23,21 @@ int main(){
 	std::string parametrization= "iufsu";
 
 	//Declare nuclear matter: pasta and gas:
-	matter_class cluster(parametrization);
-	matter_class gas(parametrization);
-	phase_coexistence_class sna(cluster, gas);
+	nlwm_class cluster(parametrization);
+	nlwm_class gas(parametrization);
+	pasta_class sna(cluster, gas);
 		
 	double rhoB;
-	double rhoBMax=0.07*pow(hc/cluster.Mn, 3);
-	int iRhoMax=35;
+	double rhoBMax=0.06*pow(hc/Mnucleon, 3);
+	int iRhoMax=1;
 	double dRho= rhoBMax/iRhoMax;
 	double Yp=0.1;
-	double temperature=5.;
+	double temperature=3.;
 	
 	//Declare variables for SNA:
-	Eigen::VectorXd freeEn_sna(3), freeEn_gas(3), Rd_sna(3), Rw_sna(3), 
-									f_sna(3), interfaceEn_sna(3), Vn_sna(3);
-	Eigen::VectorXd nup1_sna(3), nun1_sna(3), nup2_sna(3), nun2_sna(3), Mef1_sna(3), Mef2_sna(3);
+	Eigen::VectorXd freeEn_ocp(3), freeEn_gas(3), Rd_ocp(3), Rw_ocp(3), 
+									f_ocp(3), interfaceEn_ocp(3), Vn_ocp(3), munv(3), mupv(3), rearv(3),
+									rhop_c(3),rhon_c(3), omega0v(3), rhop_g(3), rhon_g(3);
 	
 	double vn_ocp, vw_ocp, A_ocp, Z_ocp, omega0_ocp, omega_ocp;
 	
@@ -45,47 +45,21 @@ int main(){
 	
 	double dim_ocp;
 	
-	//Guess solution for equilibrium variables: Eff_chemPots and Eff_masses
-	std::vector<double> firstGuess={0.68, 0.68, 0.61, 0.98, 0.98, 0.99};
-	std::vector<double> saveSol(6);
-
-	if(Yp<=0.5 && Yp>0.4){
-		firstGuess= { 0.682733, 0.68279, 0.626632, 0.989045, 0.980986, 0.999682};
-	}else if(Yp<=0.4 && Yp>0.3){
-		firstGuess= {0.680087, 0.694151, 0.632422, 0.97523, 0.992023, 0.999128};
-		//firstGuess={0.669209, 0.70209, 0.629, 0.92, 0.97, 0.95};
-		//firstGuess={0.70, 0.73, 0.65,0.92, 0.97, 0.95};
-	}else if(Yp<=0.3){
-		firstGuess={0.686883, 0.712638, 0.648993, 0.954912, 0.991327, 0.988764};
-	}else if(Yp<=0.1){
-		firstGuess={0.726012, 0.768844, 0.710641, 0.872514, 0.9208, 0.898116};
-	}
-	
 	particle electron;
-	electron.mass= Me/cluster.Mn;
+	electron.mass= Me/Mnucleon;
 
 
-	saveSol=firstGuess;
+	// saveSol=firstGuess;
 	std::cout << "Yp, T= " << Yp << " " << temperature << std::endl;
-	std::ofstream outGlobal("../data/data_flu/flu_"+parametrization+"_yp"+std::to_string(Yp)+
+	std::ofstream outGlobal("data/flu_"+parametrization+"_yp"+std::to_string(Yp)+
 												   +"_T"+std::to_string(temperature)+".txt");
 
 	outGlobal << "#rho_b freeEn Rd Rw A Z IP" << std::endl;
 
 
-	temperature*=1./cluster.Mn;
+	temperature*=1./Mnucleon;
 	electron.temperature=temperature;
 	
-	for(int idim=0; idim<3; idim++){
-			nup1_sna(idim)= firstGuess[0];
-			nun1_sna(idim)= firstGuess[1];
-			Mef1_sna(idim)= firstGuess[2];
-			nup2_sna(idim)= firstGuess[3];
-			nun2_sna(idim)= firstGuess[4];
-			Mef2_sna(idim)= firstGuess[5];
-	}
-
-
 	for(int irho=0; irho<iRhoMax; irho++){
 		rhoB=(rhoBMax-(double)irho*dRho);
 	
@@ -98,39 +72,59 @@ int main(){
 		double freeEnEl = electron.energy - temperature*electron.entropy;
 		
 		double dim;
-		//sna.solveCPA(rhoB, Yp, temperature, saveSol);
 
 		for(int iDim=2; iDim>=0; iDim--){
 		dim = (double) (iDim)+1;
 						
-			sna.solveSNA(rhoB, Yp, temperature, dim, 0, saveSol);
-			f_sna(iDim)= sna.f;
+			sna.solveCLD(rhoB, Yp, temperature, dim, 0);
+			f_ocp(iDim)= sna.f;
 	
-			nup1_sna(iDim)=cluster.proton.chemPot_eff;
-			nun1_sna(iDim)=cluster.neutron.chemPot_eff;
-			Mef1_sna(iDim)=cluster.neutron.mass;
-			nup2_sna(iDim)=gas.proton.chemPot_eff;
-			nun2_sna(iDim)=gas.neutron.chemPot_eff;
-			Mef2_sna(iDim)=gas.neutron.mass;
-			
 			double sigma= getSurfaceTension(cluster, Yp, temperature);
-			Rd_sna(iDim)= getRadiusD(dim, f_sna(iDim), Yp, cluster, gas);
-			Rw_sna(iDim)= Rd_sna(iDim)/pow(f_sna(iDim), 1./dim);
-			Vn_sna(iDim) = 4.*M_PI*pow(getRadiusD(3., f_sna(iDim), Yp, cluster, gas), 3.)/3.;
+			Rd_ocp(iDim)= getRadiusD(dim, f_ocp(iDim), Yp, cluster, gas);
+			Rw_ocp(iDim)= Rd_ocp(iDim)/pow(f_ocp(iDim), 1./dim);
+			Vn_ocp(iDim) = 4.*M_PI*pow(getRadiusD(3., f_ocp(iDim), Yp, cluster, gas), 3.)/3.;
 			
 			freeEn_gas(iDim)= gas.getEnergy() - temperature*gas.getEntropy();
-			interfaceEn_sna(iDim)= 3.*sigma*dim/(2.*Rd_sna(iDim));
+			interfaceEn_ocp(iDim)= 3.*sigma*dim/(2.*Rd_ocp(iDim));
 			
-			double energy = f_sna(iDim)*cluster.getEnergy()  + (1.-f_sna(iDim))*gas.getEnergy()
-										+ f_sna(iDim)*interfaceEn_sna(iDim) + electron.energy;
+			double energy = f_ocp(iDim)*cluster.getEnergy()  + (1.-f_ocp(iDim))*gas.getEnergy()
+										+ f_ocp(iDim)*interfaceEn_ocp(iDim) + electron.energy;
 										
-			double entropy= f_sna(iDim)*cluster.getEntropy() +(1.-f_sna(iDim))*gas.getEntropy() 
+			double entropy= f_ocp(iDim)*cluster.getEntropy() +(1.-f_ocp(iDim))*gas.getEntropy() 
 											+ electron.entropy;
 			
-			freeEn_sna(iDim) = energy-temperature*entropy;
+			freeEn_ocp(iDim) = energy-temperature*entropy;
 			
-//						std::cout <<rhoB*pow(cluster.Mn/hc, 3.) << " " << cluster.Ye << " "
-//						<< (freeEn_sna(iDim)/rhoB - 1.)*cluster.Mn << std::endl;
+			mupv(iDim) = gas.proton.chemPot+ (f_ocp(iDim)/(1.-f_ocp(iDim)))*	
+				(-2.*interfaceEn_ocp(iDim)/(3.*(cluster.proton.density- gas.proton.density))
+				+dim*getSurfaceTensionDerivative(cluster, Yp, temperature)
+						*(1.-f_ocp(iDim))*(1.-Yp)/(rhoB*Rd_ocp(iDim))
+				);
+
+			munv(iDim) = gas.neutron.chemPot -f_ocp(iDim)/(1.-f_ocp(iDim))
+			*dim*getSurfaceTensionDerivative(cluster, Yp, temperature)*(1.-f_ocp(iDim))
+						*Yp/(rhoB*Rd_ocp(iDim));
+
+			rearv(iDim)=f_ocp(iDim)*(interfaceEn_ocp(iDim)*getPhiFuncDerivative(dim,f_ocp(iDim))
+			/(3.*getPhiFunc(dim, f_ocp(iDim)))
+			+ dim*getSurfaceTensionDerivative(cluster, Yp, temperature)*(
+				(cluster.proton.density - gas.proton.density)
+				-Yp*(cluster.rhoB - gas.rhoB))/(rhoB*Rd_ocp(iDim)))
+						/(cluster.proton.density - gas.proton.density);
+			rhop_c(iDim) = cluster.proton.density;
+			rhon_c(iDim) = cluster.neutron.density;
+			rhop_g(iDim) = gas.proton.density;
+			rhon_g(iDim) = gas.neutron.density;
+			omega0v(iDim)=Vn_ocp(iDim)*(cluster.getEnergy() -gas.getEnergy() + interfaceEn_ocp(iDim)
+										- temperature*(cluster.getEntropy() -gas.getEntropy() )
+										- mupv(iDim)*(cluster.proton.density - gas.proton.density)
+										- munv(iDim)*(cluster.neutron.density- gas.neutron.density));
+		// 			std::cout << "Test00: "
+		// << rhoB*pow(Mnucleon/hc, 3.) << " " << cluster.neutron.density*pow(Mnucleon/hc, 3.) << " " << cluster.proton.density*pow(Mnucleon/hc, 3.)
+		// << std::endl;
+		
+//						std::cout <<rhoB*pow(Mnucleon/hc, 3.) << " " << cluster.Ye << " "
+//						<< (freeEn_ocp(iDim)/rhoB - 1.)*Mnucleon << std::endl;
 						
 		}	
 		
@@ -138,86 +132,93 @@ int main(){
 	//Get phase that minimizes energy:
 		Eigen::MatrixXd::Index minRow;
 		
-		double freeEn_ocp= freeEn_sna.minCoeff(&minRow);
+		double freeEn_ocp= freeEn_ocp.minCoeff(&minRow);
 		id_ocp=minRow;
 		
-		//double freeEn_ocp= freeEn_sna(2);
+		//double freeEn_ocp= freeEn_ocp(2);
 		//id_ocp=0;
 		dim_ocp=(double)(id_ocp+1);
 					
-		saveSol[0]=nup1_sna(id_ocp);
-		saveSol[1]=nun1_sna(id_ocp);
-		saveSol[2]=Mef1_sna(id_ocp);
-		saveSol[3]=nup2_sna(id_ocp);
-		saveSol[4]=nun2_sna(id_ocp);
-		saveSol[5]=Mef2_sna(id_ocp);
+		// saveSol[0]=nup1_ocp(id_ocp);
+		// saveSol[1]=nun1_ocp(id_ocp);
+		// saveSol[2]=Mef1_ocp(id_ocp);
+		// saveSol[3]=nup2_ocp(id_ocp);
+		// saveSol[4]=nun2_ocp(id_ocp);
+		// saveSol[5]=Mef2_ocp(id_ocp);
 		
-		cluster.setEOS_coexistence(nup1_sna(id_ocp), nun1_sna(id_ocp), Mef1_sna(id_ocp));
-		gas.setEOS_coexistence(nup2_sna(id_ocp), nun2_sna(id_ocp), Mef2_sna(id_ocp));
+		// cluster.setEOS_coexistence(nup1_ocp(id_ocp), nun1_ocp(id_ocp), Mef1_ocp(id_ocp));
+		// gas.setEOS_coexistence(nup2_ocp(id_ocp), nun2_ocp(id_ocp), Mef2_ocp(id_ocp));
 		
-		vn_ocp= Vn_sna(id_ocp);
-		vw_ocp= vn_ocp/f_sna(id_ocp);
+		vn_ocp= Vn_ocp(id_ocp);
+		vw_ocp= vn_ocp/f_ocp(id_ocp);
 		
-		A_ocp= vn_ocp*(cluster.rhoB - gas.rhoB);
-		Z_ocp= vn_ocp*(cluster.proton.density- gas.proton.density);
-		
+		A_ocp= vn_ocp*(rhop_c(id_ocp) + rhon_c(id_ocp) - gas.rhoB);
+		Z_ocp= vn_ocp*(rhop_c(id_ocp) - gas.proton.density);
+				
 //---------- FLUCTUATION ---------------------:
 	
 //External fields and rearrangement:
-		double LambdaP = gas.proton.chemPot
-							+	(f_sna(id_ocp)/(1.-f_sna(id_ocp)))*
-				(-2.*interfaceEn_sna(id_ocp)/(3.*(cluster.proton.density- gas.proton.density))
-				+dim_ocp*getSurfaceTensionDerivative(cluster, Yp, temperature)
-						*(1.-f_sna(id_ocp))*(1.-Yp)/(rhoB*Rd_sna(id_ocp))
-				);
+		double LambdaP = mupv(id_ocp);
+		// gas.proton.chemPot+ (f_ocp(id_ocp)/(1.-f_ocp(id_ocp)))*
+		// 		(-2.*interfaceEn_ocp(id_ocp)/(3.*(cluster.proton.density- gas.proton.density))
+		// 		+dim_ocp*getSurfaceTensionDerivative(cluster, Yp, temperature)
+		// 				*(1.-f_ocp(id_ocp))*(1.-Yp)/(rhoB*Rd_ocp(id_ocp))
+		// 		);
 								 
-		double LambdaN = gas.neutron.chemPot
-		-f_sna(id_ocp)/(1.-f_sna(id_ocp))
-			*dim_ocp*getSurfaceTensionDerivative(cluster, Yp, temperature)*(1.-f_sna(id_ocp))
-						*Yp/(rhoB*Rd_sna(id_ocp));	
+		double LambdaN = munv(id_ocp);
+		// gas.neutron.chemPot
+		// -f_ocp(id_ocp)/(1.-f_ocp(id_ocp))
+		// 	*dim_ocp*getSurfaceTensionDerivative(cluster, Yp, temperature)*(1.-f_ocp(id_ocp))
+		// 				*Yp/(rhoB*Rd_ocp(id_ocp));	
 		
-		double rear_avg=f_sna(id_ocp)*(
-			interfaceEn_sna(id_ocp)*getPhiFuncDerivative(dim_ocp,f_sna(id_ocp))
-			/(3.*getPhiFunc(dim_ocp, f_sna(id_ocp)))
-			+ dim_ocp*getSurfaceTensionDerivative(cluster, Yp, temperature)*(
-				(cluster.proton.density - gas.proton.density)
-				-Yp*(cluster.rhoB - gas.rhoB))/(rhoB*Rd_sna(id_ocp)))
-						/(cluster.proton.density - gas.proton.density);
-					
-		
-		omega0_ocp= vn_ocp*(cluster.getEnergy() -gas.getEnergy() + interfaceEn_sna(id_ocp)
-										- temperature*(cluster.getEntropy() -gas.getEntropy() )
-										- LambdaP*(cluster.proton.density - gas.proton.density)
-										- LambdaN*(cluster.neutron.density- gas.neutron.density));
+		double rear_avg=rearv(id_ocp);
+		omega0_ocp=  omega0v(id_ocp);
 										
 		omega_ocp= omega0_ocp+rear_avg*Z_ocp;
-		
+		// cout <<dim_ocp << " " << A_ocp << " " << Z_ocp << " " << omega0_ocp << " " << omega_ocp << endl;
 		double Vtot=0.;
 		
 		if(id_ocp==0){iPlot=3;}
 		if(id_ocp==1){iPlot=2;}
 		if(id_ocp==2){iPlot=1;}
 		
-		std::cout 
-		<< rhoB*pow(cluster.Mn/hc, 3.) << " " 
+		std::cout << "Test: "
+		<< rhoB*pow(Mnucleon/hc, 3.) << " " 
 		<< A_ocp << " "  << Z_ocp << " "
-		<< dim_ocp << " " << omega_ocp << " " 
-		<< omega0_ocp
+		<< dim_ocp << " " << omega_ocp << " " << omega0_ocp << " " 
+		<< LambdaP << " " << LambdaN << " " 
+		<< rhop_c(id_ocp)*pow(Mnucleon/hc, 3.) << " " << rhon_c(id_ocp)*pow(Mnucleon/hc, 3.)
+		<< " " << rear_avg << " " << gas.proton.density*pow(Mnucleon/hc, 3.) << " "
+		 << gas.proton.density*pow(Mnucleon/hc, 3.) <<" "
+		 << rhop_g(id_ocp)*pow(Mnucleon/hc, 3.) << " " << rhon_g(id_ocp)*pow(Mnucleon/hc, 3.)
 		<< std::endl;
+		double rhob_g=  rhop_g(id_ocp)+ rhon_g(id_ocp);
+
+		if(isnan(LambdaP) ){
+			cout << "lambdap problem:";
+			return 1;
+		}
+		if(isnan(LambdaN) ){
+			cout << "lambdan problem:";
+			return 1;
+		}
+		if(isnan(rear_avg) ){
+			cout << "rear problem:";
+			return 1;
+		}
+	if( (f_ocp(id_ocp) >0.) && (f_ocp(id_ocp)<1.) ){
 		
-	if( (f_sna(id_ocp) >0.) && (f_sna(id_ocp)<1.) ){
-		
-		matter_class clusterN(parametrization);
+		nlwm_class clusterN(parametrization);
 		
 		double Yp_cell, uN, sigmaN;
 
-		double fracpP=1.35;	
-		double fracpM=0.65;
-		int const np=1;
+		double fracpP=1.2;	
+		double fracpM=0.8;
+		int const np=10;
 
-		double fracnP=1.35;
-		double fracnM=0.65;
-		int const nn=1;
+		double fracnP=1.2;
+		double fracnM=0.8;
+		int const nn=10;
 
 
 		Eigen::MatrixXd rhobNT(nn, np), rhonNT(nn, np), rhopNT(nn, np), omega_mpd(nn, np);
@@ -245,19 +246,21 @@ int main(){
 			for(int ip=np-1; ip>=0; ip--){
 			
 		
-			rhonNT(in, ip) = (fracnP + (fracnM - fracnP)*in/nn)*cluster.neutron.density;
-			rhopNT(in, ip) = (fracpP + (fracpM - fracpP)*ip/np)*cluster.proton.density;
+			rhonNT(in, ip) = (fracnP + (fracnM - fracnP)*in/nn)*rhon_c(id_ocp);
+			rhopNT(in, ip) = (fracpP + (fracpM - fracpP)*ip/np)*rhop_c(id_ocp);
+
 
 			rhobNT(in, ip) = rhonNT(in, ip) + rhopNT(in, ip);
-			
+
 			clusterN.setEOS_nucleons(rhobNT(in, ip), rhopNT(in, ip)/rhobNT(in, ip), temperature);
 			
-			uN= (Yp*rhoB - gas.proton.density)/(clusterN.proton.density - gas.proton.density);
+			uN= (Yp*rhoB -  rhop_g(id_ocp))/(clusterN.proton.density -   rhop_g(id_ocp));
 			
-			Yp_cell=  ( uN*(rhopNT(in, ip) - gas.proton.density) + gas.proton.density )
-											/( uN*(rhobNT(in, ip) - gas.rhoB) + gas.rhoB);
+			Yp_cell=  ( uN*(rhopNT(in, ip) -  rhop_g(id_ocp)) +   rhop_g(id_ocp) )
+											/( uN*(rhobNT(in, ip) - rhob_g) +rhob_g);
 			
 			sigmaN	= getSurfaceTension(clusterN, Yp_cell, temperature);
+
 
 			double dimN;	
 			for(int iDim=2; iDim>=0; iDim--){
@@ -269,8 +272,8 @@ int main(){
 				
 				VNT(in, ip, iDim)= 4.*M_PI*pow(getRadiusD(3., uN, Yp_cell, clusterN, gas), 3.)/3.;
 								
-				ANT(in, ip, iDim) = (clusterN.rhoB - 	gas.rhoB)*VNT(in, ip, iDim);
-				ZNT(in, ip, iDim) = (clusterN.proton.density -gas.proton.density)*VNT(in, ip, iDim);
+				ANT(in, ip, iDim) = (clusterN.rhoB - 	rhob_g)*VNT(in, ip, iDim);
+				ZNT(in, ip, iDim) = (clusterN.proton.density -  rhop_g(id_ocp))*VNT(in, ip, iDim);
 				
 				rearNT(in, ip, iDim) =ZNT(in, ip, iDim)*rear_avg;
 				
@@ -296,14 +299,26 @@ int main(){
 				FNT(in, ip, iDim)= F0NT(in, ip, iDim) + rearNT(in, ip, iDim);
 				
 				MuNT(in, ip, iDim) = VNT(in, ip, iDim)*
-													( LambdaP*(clusterN.proton.density - gas.proton.density)
-													+ LambdaN*(clusterN.neutron.density- gas.neutron.density));
+													( LambdaP*(clusterN.proton.density -   rhop_g(id_ocp))
+													+ LambdaN*(clusterN.neutron.density-   rhon_g(id_ocp)));
 								
 				GNT0(in, ip, iDim)= F0NT(in, ip, iDim) - MuNT(in, ip, iDim);
 				GNT(in, ip, iDim)= 	FNT(in, ip, iDim)  - MuNT(in, ip, iDim);
 
+
 				double Cdist0= omega0_ocp/temperature;
 				double Cdist= omega_ocp/temperature;
+								cout << "i---" << endl;
+
+				cout << rhobNT(in, ip)*pow(Mnucleon/hc, 3.) << " " <<  rhonNT(in, ip)*pow(Mnucleon/hc, 3.) << " " 
+					<<  rhopNT(in, ip)*pow(Mnucleon/hc, 3.) << " " << Yp_cell << " " <<  MuNT(in, ip, iDim) << " " <<F0NT(in, ip, iDim)
+					<< endl;
+					cout << VNT(in, ip, iDim) << " " <<  clusterN.getEnergy()  <<  " " 
+						<<  temperature*clusterN.getEntropy() << " "
+						<< interface << " " <<  freeEn_gas(id_ocp)  << endl;
+				cout << exp(- GNT0(in, ip, iDim)/temperature + Cdist0) << " " <<  GNT0(in, ip, iDim)  << " " << Cdist0 << endl;
+				cout << exp(- GNT(in, ip, iDim)/temperature + Cdist) << " " <<  GNT(in, ip, iDim)  << " "	<< Cdist << endl;
+				cout << "f---" << endl;
 				if(uN>0 && uN<=1. ){
 					N0N(in, ip, iDim)= exp(- GNT0(in, ip, iDim)/temperature + Cdist0)  ;
 					NN(in, ip, iDim) = exp(- GNT(in, ip, iDim)/temperature  + Cdist)  ;
@@ -341,9 +356,9 @@ int main(){
 		pN(in,ip,iDim)=NN(in,ip,iDim)/norma;
 		nN(in,ip,iDim)=pN(in,ip,iDim)/vw_ocp;
 		
-		rhobbar += (rhobNT(in,ip) - gas.rhoB)*VNT(in, ip, iDim)*nN(in, ip, iDim);
+		rhobbar += (rhobNT(in,ip) - rhob_g)*VNT(in, ip, iDim)*nN(in, ip, iDim);
 		
-		rhopbar += (rhopNT(in, ip) - gas.proton.density)*VNT(in, ip, iDim)*nN(in, ip, iDim);
+		rhopbar += (rhopNT(in, ip) -   rhop_g(id_ocp))*VNT(in, ip, iDim)*nN(in, ip, iDim);
 				
 		Fbar+=nN(in, ip, iDim)*F0NT(in, ip, iDim);
 		Rdbar+=pN(in, ip, iDim)*RdNT(in, ip, iDim);
@@ -370,8 +385,8 @@ int main(){
 		double Z_mp= ZNT(imp_n, imp_p, id_ocp);
 	
 		
-		rhobbar+=gas.rhoB;
-		rhopbar+=gas.proton.density;
+		rhobbar+=rhob_g;
+		rhopbar+=  rhop_g(id_ocp);
 		Fbar+=freeEn_gas(id_ocp)+freeEnEl;
 	
 		Eigen::VectorXd pastaProb(3);
@@ -413,7 +428,7 @@ int main(){
 		
 				
 		std::cout << "(rho, maxP, A_mp, Z_mp)= "
-							<< rhobbar*pow(cluster.Mn/hc, 3.) << " " << maxProb << " "
+							<< rhobbar*pow(Mnucleon/hc, 3.) << " " << maxProb << " "
 							<< A_mp << " "  << Z_mp 
 		<< std::endl;
 					
@@ -429,20 +444,20 @@ int main(){
 		
 		for(int iDim=2; iDim>=0; iDim--){
 	
-			std::ofstream outdim("../data/data_flu_rho/tmp_"+std::to_string(iDim+1)+"d_"+parametrization+"_yp"+std::to_string(Yp)+
-																				 +"_T"+std::to_string(temperature*cluster.Mn)+"_"
+			std::ofstream outdim("data/"+std::to_string(iDim+1)+"d_"+parametrization+"_yp"+std::to_string(Yp)+
+																				 +"_T"+std::to_string(temperature*Mnucleon)+"_"
 																				 +std::to_string(irho)+".txt");
 			outdim << "#rhonN rhopN rhobN GN PN RdN VNT An Zn uN"<< std::endl;
 
 				for(int in=0; in<nn; in++){
 				for(int ip=0; ip<np; ip++){
 
-				outdim << rhonNT(in, ip)/cluster.neutron.density << " " 
-							 << rhopNT(in, ip)/cluster.proton.density << " "
-							 << rhobNT(in, ip)/cluster.rhoB << " "
-							 << GNT(in, ip, iDim)*cluster.Mn << " "	<< pN(in, ip, iDim) << " " 
-							 << GNT0(in, ip, iDim)*cluster.Mn << " "	<< p0N(in,ip,iDim) << " "
-							 << RdNT(in, ip, iDim)*(hc/cluster.Mn) << " " << VNT(in, ip, iDim) <<  " "
+				outdim << rhonNT(in, ip)/rhon_c(id_ocp) << " " 
+							 << rhopNT(in, ip)/rhop_c(id_ocp) << " "
+							 << rhobNT(in, ip)/(rhon_c(id_ocp)+rhop_c(id_ocp)) << " "
+							 << GNT(in, ip, iDim)*Mnucleon << " "	<< pN(in, ip, iDim) << " " 
+							 << GNT0(in, ip, iDim)*Mnucleon << " "	<< p0N(in,ip,iDim) << " "
+							 << RdNT(in, ip, iDim)*(hc/Mnucleon) << " " << VNT(in, ip, iDim) <<  " "
 							 << ANT(in, ip, iDim) << " " << ZNT(in, ip, iDim) << " " << uNT(in, ip, iDim) << " "
 							 << nN(in, ip, iDim)
 							 << std::endl;
@@ -456,19 +471,19 @@ int main(){
 		std::cout << "Probs: "	<< p1 << " & " << p2 << " & " << p3 <<  std::endl;
 		std::cout << "Probs0: "	<< distDimN0(0)/norma0 << " & " << distDimN0(1)/norma0 << " & " << distDimN0(2)/norma0 <<  std::endl;
 	
-		outGlobal << rhoB*pow(cluster.Mn/hc, 3.) << " "
-			  << (freeEn_ocp/rhoB - 1.)*cluster.Mn << " "
-			  << Rd_sna(id_ocp)*(hc/cluster.Mn) << " " 
-				<< Rw_sna(id_ocp)*(hc/cluster.Mn) << " "
+		outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " "
+			  << (freeEn_ocp/rhoB - 1.)*Mnucleon << " "
+			  << Rd_ocp(id_ocp)*(hc/Mnucleon) << " " 
+				<< Rw_ocp(id_ocp)*(hc/Mnucleon) << " "
 				<< A_ocp << " " << Z_ocp << " " << iPlot << " "
 				<< p1  << "  " << p2  << "  " << p3 << " "
-				<< rhobbar*pow(cluster.Mn/hc, 3.) << " "  //col 11
-				<< (Fbar/rhobbar - 1.)*cluster.Mn << " "
-				<< Rdbar*(hc/cluster.Mn) << " " 
-				<< Rwbar*(hc/cluster.Mn) << " "
+				<< rhobbar*pow(Mnucleon/hc, 3.) << " "  //col 11
+				<< (Fbar/rhobbar - 1.)*Mnucleon << " "
+				<< Rdbar*(hc/Mnucleon) << " " 
+				<< Rwbar*(hc/Mnucleon) << " "
 				<< Abar << " " << Zbar << " " //15, 16
 				<< Acell << " " 
-				<< gas.proton.density*pow(cluster.Mn/hc, 3.) << " " << gas.neutron.density*pow(cluster.Mn/hc, 3.)<< " "
+				<<   rhop_g(id_ocp)*pow(Mnucleon/hc, 3.) << " " <<   rhon_g(id_ocp)*pow(Mnucleon/hc, 3.)<< " "
 				<< LambdaP << " " << LambdaN << " " 
 				<< A_mp << " " << Z_mp << " " //22, 23
 				<< gas.proton.chemPot << " " << gas.neutron.chemPot << " " 

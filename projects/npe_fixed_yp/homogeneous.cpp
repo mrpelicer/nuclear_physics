@@ -4,7 +4,9 @@
 #include "../../include/rmf_non_linear_walecka.h"
 #include "../../include/interpolator.h"
 #include <iostream>
+#include <iterator>
 #include <iomanip>
+#include <algorithm>
 #include <fstream>
 #include <vector>
 
@@ -38,7 +40,7 @@ int main(int argc, char** argv)
 
 	double rhoBMax=1./pow(Mnucleon/hc, 3);
 	double rhoBMin=(1e-3)/pow(Mnucleon/hc, 3);
-	int iR=200;
+	int iR=1000;
 	double dRho= (rhoBMax-rhoBMin)/iR;
 
 // 	//Define thermodynamic variables
@@ -48,7 +50,7 @@ int main(int argc, char** argv)
 	if(temperature>0.)	temperature*=1./Mnucleon;
 		
 		//=== Loop over barionic density
-		for(int irho=0; irho<iR; irho++){
+		for(int irho=0; irho<=iR; irho++){
 			rhoB=(rhoBMax- (double)irho*dRho);
 
 			qhd.setEOS_nucleons(rhoB, Yp, temperature);

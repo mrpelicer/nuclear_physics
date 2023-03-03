@@ -35,7 +35,7 @@ $(BUILDDIR):
 $(BUILDDIR)/pasta.o : $(LIBDIR)/particles.h \
 	$(LIBDIR)/pasta.cpp \
 	$(LIBDIR)/pasta.h
-	$(CC) -c $(LIBDIR)/pasta.cpp -o $(BUILDDIR)/pasta.o $(GSL_LIB) $(CERES_LIB) $(WALL)
+	$(CC) -c $(LIBDIR)/pasta.cpp -o $(BUILDDIR)/pasta.o $(GSL_LIB) $(EIGEN_LIB)  $(CERES_LIB) $(WALL)
 
 
 $(BUILDDIR)/particles.o : $(LIBDIR)/particles.h \

@@ -1,5 +1,5 @@
 {
-  "C_Cpp.errorSquiggles": "Enabled",
+  "C_Cpp.errorSquiggles": "disabled",
   "git.ignoreLimitWarning": true,
   "files.associations": {
     "cmath": "cpp",
@@ -58,6 +58,19 @@
     "streambuf": "cpp",
     "thread": "cpp",
     "cinttypes": "cpp",
-    "typeinfo": "cpp"
+    "typeinfo": "cpp",
+    "unordered_set": "cpp",
+    "bit": "cpp",
+    "cfenv": "cpp",
+    "compare": "cpp",
+    "concepts": "cpp",
+    "numbers": "cpp",
+    "semaphore": "cpp",
+    "source_location": "cpp",
+    "stop_token": "cpp",
+    "strstream": "cpp",
+    "typeindex": "cpp",
+    "variant": "cpp",
+    "tensor": "cpp"
   }
 }

@@ -145,23 +145,23 @@ int main(){
 			double e0, em1, em2, ep1, ep2;
 			double ed0, edm1, edm2, edp1, edp2;
 
-			qhd.setEOS_nucleons(rhoB, Yle, temperature);
+			qhd.setEOS_src_nucleons(rhoB, Yle, temperature);
 			e0= qhd.getEnergy()/rhoB;
 			ed0= qhd.getEnergy();
 
-			qhd.setEOS_nucleons(rhoB, Yle-h, temperature);
+			qhd.setEOS_src_nucleons(rhoB, Yle-h, temperature);
 			em1= qhd.getEnergy()/rhoB;
 			edm1=qhd.getEnergy();
 
-			qhd.setEOS_nucleons(rhoB, Yle-2.*h, temperature);
+			qhd.setEOS_src_nucleons(rhoB, Yle-2.*h, temperature);
 			em2= qhd.getEnergy()/rhoB;
 			edm2=qhd.getEnergy();
 
-			qhd.setEOS_nucleons(rhoB, Yle+h, temperature);
+			qhd.setEOS_src_nucleons(rhoB, Yle+h, temperature);
 			ep1= qhd.getEnergy()/rhoB;
 			edp1=qhd.getEnergy();
 
-			qhd.setEOS_nucleons(rhoB, Yle+2.*h, temperature);
+			qhd.setEOS_src_nucleons(rhoB, Yle+2.*h, temperature);
 			ep2= qhd.getEnergy()/rhoB;
 			edp2=qhd.getEnergy();
 

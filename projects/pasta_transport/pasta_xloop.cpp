@@ -143,7 +143,7 @@ int main(){
 			double L1w= sqrt(droplet.getVolume()/(2.*rad_slab));
 			double epsilon = pow(2, -eta);
 			
-			double L_slab	=L1w/pow(epsilon, 1/(2*eta));
+			double L_slab	=100.*L1w; ///pow(epsilon, 1/(2*eta));
 			double L_rod	=L_slab;
 
 			double Lsize=0;
@@ -176,9 +176,9 @@ int main(){
 	int iqmax= 300;
 	double q;
 	// ofstream outform("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_L"+to_string(Lratio)+".txt");
-	ofstream outform("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+".txt");
+	ofstream outform("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_3.txt");
 	// ofstream outform_ani("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_ani_L"+to_string(Lratio)+".txt");
-	ofstream outform_ani("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_ani.txt");
+	ofstream outform_ani("data/form_factor"+to_string(rhoB*pow(Mnucleon/hc, 3.) )+"_ani_3.txt");
 	
 	for(int it=0; it<=50; it++){
 		double theta_= M_PI*(1. - it/50.);
@@ -226,7 +226,7 @@ int main(){
 			outform << q/electron.kf << " " << fa_ << " " << fp_ << " " << fa_ +2.*fp_ 
 						<< " " << f3_<< endl;
 		}
-   	reverse(Fav2.begin() , Fav2.end());
+   		reverse(Fav2.begin() , Fav2.end());
 		reverse(Fpv2.begin() , Fpv2.end());
 		rod.setMomentumVec(qv);
 		rod.setFormFactor2Vec(Fav2);

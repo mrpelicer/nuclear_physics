@@ -22,6 +22,8 @@ public:
 	double xbl=0., xbs=0., xbx=0., xbd=0.;
 	double xtl=0., xts=0., xtx=0.;
 
+	
+
 //density dependent coupling parameters:
 	double as=0., bs=0., cs=0., ds=0.;
 	double av=0., bv=0., cv=0., dv=0.;
@@ -67,8 +69,8 @@ public:
 	void setEOS_neutrons(double rhoB_, double temp_, particle &electron_, particle &muon_);
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_, particle &muon_);
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_);
-	void setEOS_fixedYl(double rhoB_, double temp_, double Yle_, double Ylm_, 
-							particle &electron_, particle &muon_, particle &ne_, particle &nm_);
+	void setEOS_fixedYl(double rhoB_, double temp_, double Yle_,  
+							particle &electron_, particle &ne_);
 
 //Set EOS for the pasta solver: input effective chemical potentials and mass.
 	void setEOS_coexistence(double nup_, double nun_, double mef_);	
@@ -276,11 +278,8 @@ struct YlFunctor2{
 
 struct YlFunctorDD{
 	public:
-	YlFunctorDD(nlwm_class &baryons_, particle &electron_, particle &muon_,
-																		particle &ne_, 			 particle &nm_,
-																		double Yle_, double Ylm_):
-													baryons(baryons_), electron(electron_), muon(muon_),
-																						ne(ne_), nm(nm_), Yle(Yle_), Ylm(Ylm_)
+	YlFunctorDD(nlwm_class &baryons_, particle &electron_,  particle &ne_, 	double Yle_, double s_nb_):
+													baryons(baryons_), electron(electron_), ne(ne_), Yle(Yle_), s_nb(s_nb_)
 	{}
 
   template <typename T>
@@ -289,10 +288,8 @@ struct YlFunctorDD{
   private:
 		nlwm_class 	&baryons;
 		particle 		&electron;
-		particle 		&muon;
 		particle 		&ne;
-		particle 		&nm;
-		double Yle, Ylm;
+		double Yle, s_nb;
 };
 
 
