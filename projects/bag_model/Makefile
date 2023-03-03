@@ -10,6 +10,7 @@ all: build sym beta phase_transition phase_diagram
 
 build:
 	cd ../../.; $(MAKE)
+	$(MKDIR) data/
 sym:
 	$(CC) -o sym symmetricMatter.cpp  $(DEPS) $(GSL_LIB) $(CERES_LIB) $(WALL) 
 

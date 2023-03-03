@@ -10,6 +10,7 @@ all: build densloop sizeloop xloop tloop
 
 build:
 	cd ../../.; $(MAKE)
+	$(MKDIR) data/
 
 densloop:
 	$(CC) -o densloop pasta_densloop.cpp $(DEPS) $(GSL_LIB) $(CERES_LIB) $(CUBA_LIB) $(WALL)
