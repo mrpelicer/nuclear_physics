@@ -1,11 +1,13 @@
 **/data
 **/*.gp
 **/plt
+**/plt/**
 **/*.pdf
+**/*.tex
+**/*.log
 **/.png
 **/*.sh
 **/*.txt
-**/build
 .vscode
 **/otp.txt
 **/input/**
