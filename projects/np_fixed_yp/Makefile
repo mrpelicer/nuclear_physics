@@ -9,6 +9,8 @@ all: build run
 
 build:
 	cd ../../.; $(MAKE)
+	$(MKDIR) data/
+	
 run:
 	$(CC) -o hmg homogeneous.cpp  $(DEPS) $(GSL_LIB) $(CERES_LIB) $(WALL) 
 

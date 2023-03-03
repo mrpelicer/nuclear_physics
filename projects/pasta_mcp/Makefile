@@ -10,6 +10,7 @@ all: build mcp
 
 build:
 	cd ../../.; $(MAKE)
+	$(MKDIR) data/
 
 mcp:
 	$(CC) -o mcp mcp.cpp $(DEPS) $(GSL_LIB) $(CERES_LIB) $(CUBA_LIB) $(WALL)

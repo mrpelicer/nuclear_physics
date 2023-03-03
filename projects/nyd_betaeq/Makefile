@@ -9,6 +9,7 @@ all: build densloop bloop
 
 build:
 	cd ../../.; $(MAKE)
+	$(MKDIR) data/
 
 densloop:
 	$(CC) -o densloop hmg_betaEq.cpp  $(DEPS) $(GSL_LIB) $(CERES_LIB) $(WALL) 
