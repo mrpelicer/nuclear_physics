@@ -8,3 +8,4 @@
 **/build
 .vscode
 **/otp.txt
+**/input/**
