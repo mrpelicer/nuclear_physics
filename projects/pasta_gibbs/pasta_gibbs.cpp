@@ -1,9 +1,9 @@
 // Pasta with non linear Walecka model using Mean Field Theory
-#include "../../include/constant.h"
-#include "../../include/particles.h"
+
 #include "../../include/rmf_non_linear_walecka.h"
 #include "../../include/pasta.h"
 #include "../../include/interpolator.h"
+#include "../../include/constant.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -34,11 +34,12 @@ int main(){
 
 	double rhoBMax;
 
-	if(Yp>0.3)			rhoBMax= 0.16;
-	else if(Yp>0.2)	rhoBMax= 0.14;
-	else if(Yp>0.15)	rhoBMax= 0.12;
-	else if(Yp>0.1)	rhoBMax= 0.12;
-	else 						rhoBMax= 0.12;
+	// if(Yp>0.3)			rhoBMax= 0.16;
+	// else if(Yp>0.2)	rhoBMax= 0.14;
+	// else if(Yp>0.15)	rhoBMax= 0.1;
+	// else if(Yp>0.1)	rhoBMax= 0.08;
+	// else 						rhoBMax= 0.1;
+	rhoBMax=0.15;
 	rhoBMax*=pow(hc/Mnucleon, 3);
 
 	int iRhoMax=200;
@@ -170,22 +171,24 @@ int main(){
 				  << BulkEn << " "   << Entropy*temperature*Mnucleon/rhoB << " " 
 				  << coulEn << " " << surfEn << " "
 				  << f << " " << Rd << " " << Rw << " " << iPlot << " " 
-					<< Ae << " " << Ze << " " << (FreeEn_hmg -1.)*Mnucleon 
+					<< Ae << " " << Ze << " " << (FreeEn_hmg -1.)*Mnucleon  << " " 
+				<< cluster.neutron.chemPot*Mnucleon << " "<< cluster.proton.chemPot*Mnucleon << " "
+				  << gas.neutron.chemPot*Mnucleon << " "<< gas.proton.chemPot*Mnucleon
 				  << std::endl;
 
 		outFree << rhoB*pow(Mnucleon/hc, 3.) << " " 
-				<< FreeEn - Mnucleon 			<< " " << (FreeEnM(2, 0)-1.)*Mnucleon << " " 
-				<< (FreeEnM(1, 0)-1.)*Mnucleon << " " << (FreeEnM(0, 0)-1.)*Mnucleon << " " 
-				<< (FreeEnM(1, 1)-1.)*Mnucleon << " " << (FreeEnM(2, 1)-1.)*Mnucleon 
+				<< FreeEn - FreeEn_hmg*Mnucleon 			<< " " << (FreeEnM(2, 0)-FreeEn_hmg)*Mnucleon << " " 
+				<< (FreeEnM(1, 0)-FreeEn_hmg)*Mnucleon << " " << (FreeEnM(0, 0)-FreeEn_hmg)*Mnucleon << " " 
+				<< (FreeEnM(1, 1)-FreeEn_hmg)*Mnucleon << " " << (FreeEnM(2, 1)-FreeEn_hmg)*Mnucleon 
 			  	<< std::endl;
 
 		outSol  << rhoB*pow(Mnucleon/hc, 3.) << " " << cluster.Yp << " " << gas.Yp << " " 
-				<< cluster.proton.chemPot_eff << " " << cluster.neutron.chemPot_eff << " "
-				<< cluster.proton.mass_eff << " "
-				<< gas.proton.chemPot_eff << " " << gas.neutron.chemPot_eff << " " 
-				<< gas.proton.mass_eff  << " "
-				<< cluster.proton.chemPot << " " << cluster.neutron.chemPot << " "
-				<< gas.proton.chemPot << " " << gas.neutron.chemPot << " "
+				<< cluster.proton.chemPot_eff*Mnucleon << " " << cluster.neutron.chemPot_eff*Mnucleon << " "
+				<< cluster.proton.mass_eff*Mnucleon << " "
+				<< gas.proton.chemPot_eff*Mnucleon << " " << gas.neutron.chemPot_eff*Mnucleon << " " 
+				<< gas.proton.mass_eff*Mnucleon  << " "
+				<< cluster.proton.chemPot*Mnucleon << " " << cluster.neutron.chemPot*Mnucleon << " "
+				<< gas.proton.chemPot*Mnucleon << " " << gas.neutron.chemPot*Mnucleon << " "
 				<< cluster.proton.density*pow(Mnucleon/hc, 3.) << " " 
 				<< cluster.neutron.density*pow(Mnucleon/hc, 3.) << " " 
 				<< gas.proton.density*pow(Mnucleon/hc, 3.) << " " 
@@ -196,7 +199,13 @@ int main(){
 		else{
 			std::cout << "no pasta: " << rhoB*pow(Mnucleon/hc, 3.) << " " << f << std::endl;
 			//setInitialGibbs(nup1, nun1, Mef1, nup2, nun2, Mef2);
-
+			outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " " << 1./0. << " " 
+				  << 1./0.<< " " << 1./0. << " " 
+				  << 1./0. << " "   << 1./0. << " " 
+				  << 1./0. << " " << 1./0. << " "
+				  << 1./0 << " " << 1./0. << " " << 1./0. << " " << 1./0. << " " 
+					<< 1./0. << " " << 1./0. << " " << (FreeEn_hmg -1.)*Mnucleon 
+				  << std::endl;
 		}
 	}
 

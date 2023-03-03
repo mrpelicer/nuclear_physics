@@ -6,7 +6,7 @@ BUILDDIR = ../../include/build
 
 WALL = -std=c++17 -Wall -lm
 GSL_LIB= -lgsl -lgslcblas
-CERES_LIB=  -I/usr/include/eigen3 -I/home/pelicer/Downloads/ceres-solver/ceres-bin/include -L/home/pelicer/Downloads/ceres-solver/ceres-bin/lib -lgomp -lglog -lcholmod -lpthread 
+CERES_LIB= -I/usr/include/eigen3 -lceres -lglog 
 CUBA_LIB = -lcuba
 EIGEN_LIB= -I/usr/include/eigen3/unsupported
 BOOST_LIB= -I/usr/local/include/boost_1_76_0/

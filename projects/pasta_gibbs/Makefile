@@ -27,8 +27,8 @@ $(APP) : $(BUILDDIR) \
 	$(OBJS) \
 	pasta_gibbs.cpp \
 	pasta_betaeq.cpp
-	$(CC) -o $(OUT1) pasta_gibbs.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB)  $(CUBA_LIB) $(WALL) 
-	$(CC) -o $(OUT2) pasta_betaeq.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB)  $(CUBA_LIB) $(WALL) 
+	$(CC) -o $(OUT1) pasta_gibbs.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(EIGEN_LIB) $(CUBA_LIB) $(WALL) 
+	$(CC) -o $(OUT2) pasta_betaeq.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(EIGEN_LIB)  $(CUBA_LIB) $(WALL) 
 
 $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)
@@ -37,7 +37,7 @@ $(BUILDDIR):
 $(BUILDDIR)/pasta.o : $(LIBDIR)/particles.h \
 	$(LIBDIR)/pasta.cpp \
 	$(LIBDIR)/pasta.h
-	$(CC) -c $(LIBDIR)/pasta.cpp -o $(BUILDDIR)/pasta.o $(GSL_LIB) $(CERES_LIB) $(CUBA_LIB) $(WALL)
+	$(CC) -c $(LIBDIR)/pasta.cpp -o $(BUILDDIR)/pasta.o $(GSL_LIB) $(CERES_LIB) $(EIGEN_LIB) $(CUBA_LIB) $(WALL)
 
 
 $(BUILDDIR)/particles.o : $(LIBDIR)/particles.h \

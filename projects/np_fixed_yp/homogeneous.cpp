@@ -25,9 +25,9 @@ int main(){
 	qhd.printParameters();
 //Set system variables
 	double rhoB,Yle=0.5, temperature=0.;
-  double rhoBMax=1./pow(Mnucleon/hc, 3);
-  int iR=200;
-  double dRho= rhoBMax/iR;
+  	double rhoBMax=1./pow(Mnucleon/hc, 3);
+  	int iR=200;
+  	double dRho= rhoBMax/iR;
 
 // 	//Define thermodynamic variables
 	double Energy, FreeEn, Pressure, Entropy;

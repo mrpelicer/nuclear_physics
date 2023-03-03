@@ -8,7 +8,7 @@ double interpolation_func(double x_, std::vector<double> yv_,	std::vector<double
 
     if(x_<xv_.front() || x_>xv_.back()){
       res=NAN;
-      // cout << "INTERPOLATOR ERROR:  " << x_ << " " << xv_.back() << " " << xv_.front() << endl;
+      cout << "INTERPOLATOR ERROR:  " << x_ << " " << xv_.back() << " " << xv_.front() << endl;
     }else{
       gsl_interp_accel *acc =  gsl_interp_accel_alloc();
       gsl_interp *interpolation = gsl_interp_alloc(gsl_interp_cspline,	xv_.size());
@@ -58,3 +58,5 @@ double deriv2_func(double x_, std::vector<double> yv_,	std::vector<double> xv_)
 
     return res;
 }
+
+

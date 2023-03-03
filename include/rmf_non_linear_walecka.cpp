@@ -442,8 +442,18 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 		xbl=0.; xbs=1.; xbx=1.;
 		xtl=-sqrt(2.)/3.; xts=-sqrt(2.)/3.; xtx=-2.*sqrt(2.)/3.;
 	}
+	else if(parhyp=="su3lk"){
+		double av_=0.5;
+		xsl= 0.650; 		xss= 0.735; 			xsx=0.476;
+		xvl= 0.714; 		xvs=1.;					xvx=0.571;
+		xbl=0.; xbs=1.; xbx=0.;
+		xtl=-0.808; xts=-0.404; xtx=-1.010;
+		//xvl=(4.+2.*av_)/(5+4.*av_);					 xvs=(8.-2.*av_)/(5+4.*av_); 		xvx=(5.-2.*av_)/(5+4.*av_);
+		//xbl=0.;											 			 xbs=2.*av_;		xbx=-(1.-2.*av_);
+		//xtl=sqrt(2.)*(2.*av_-5.)/(5+4.*av_); xts=-sqrt(2.)*(2.*av_+1.)/(5+4.*av_); 	xtx=-sqrt(2.)*(2.*av_+4.)/(5+4.*av_);
 
-	else if(parhyp=="fsu2h"){//Tolos et al. 1708.08681 -- canonical set
+	}
+		else if(parhyp=="fsu2h"){//Tolos et al. 1708.08681 -- canonical set
 		xsl= 0.611; xss= 0.467; xsx= 0.316;
 		xvl=2./3.; xvs=2./3.; xvx=1./3.;
 		xbl=0.; xbs=1.; xbx=1.;
@@ -468,7 +478,7 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 		xsl= (10.+6.*as_)/(13.+12.*as_); 		 xss= (22.-6.*as_)/(13.+12.*as_); 			xsx=(13.-6.*as_)/(13.+12.*as_);
 		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
 		xvl=(4.+2.*av_)/(5+4.*av_);					 xvs=(8.-2.*av_)/(5+4.*av_); 						xvx=(5.-2.*av_)/(5+4.*av_);
-		xbl=0.;											 			 xbs=2.*av_; 													xbx=-(1.-2.*av_);
+		xbl=0.;											 			 xbs=av_; 													xbx=-(1.-2.*av_);
 		xtl=sqrt(2.)*(2.*av_-5.)/(5+4.*av_); xts=-sqrt(2.)*(2.*av_+1.)/(5+4.*av_); 	xtx=-sqrt(2.)*(2.*av_+4.)/(5+4.*av_);
 	}
 	else if(parhyp=="l3wr2"){
@@ -477,7 +487,7 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 		xsl= (10.+6.*as_)/(13.+12.*as_); 		 xss= (22.-6.*as_)/(13.+12.*as_); 			xsx=(13.-6.*as_)/(13.+12.*as_);
 		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
 		xvl=(4.+2.*av_)/(5+4.*av_);					 xvs=(8.-2.*av_)/(5+4.*av_); 						xvx=(5.-2.*av_)/(5+4.*av_);
-		xbl=0.;											 			 xbs=2.*av_; 													xbx=-(1.-2.*av_);
+		xbl=0.;											 			 xbs=av_; 													xbx=-(1.-2.*av_);
 		xtl=sqrt(2.)*(2.*av_-5.)/(5+4.*av_); xts=-sqrt(2.)*(2.*av_+1.)/(5+4.*av_); 	xtx=-sqrt(2.)*(2.*av_+4.)/(5+4.*av_);
 	}
 	else if(parhyp=="l3wr3"){
@@ -486,7 +496,7 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 		xsl= (10.+6.*as_)/(13.+12.*as_); 		 xss= (22.-6.*as_)/(13.+12.*as_); 			xsx=(13.-6.*as_)/(13.+12.*as_);
 		//xvl=2./3.; xvs=2./3.; xvx=1./3.;
 		xvl=(4.+2.*av_)/(5+4.*av_);					 xvs=(8.-2.*av_)/(5+4.*av_); 						xvx=(5.-2.*av_)/(5+4.*av_);
-		xbl=0.;											 			 xbs=2.*av_; 													xbx=-(1.-2.*av_);
+		xbl=0.;											 			 xbs=av_; 													xbx=-(1.-2.*av_);
 		xtl=sqrt(2.)*(2.*av_-5.)/(5+4.*av_); xts=-sqrt(2.)*(2.*av_+1.)/(5+4.*av_); 	xtx=-sqrt(2.)*(2.*av_+4.)/(5+4.*av_);
 	}
 	else if(parametrization=="iufsu" && parhyp=="fw"){
@@ -505,7 +515,7 @@ void nlwm_class::includeHyperons(bool do_, std::string parameters_){
 		double av_=0.5;
 		xsl= 0.651; 		 xss= 0.730; 			xsx=0.473; // 0.428 in the paper! wrong potential here
 		xvl=(4.+2.*av_)/(5+4.*av_);					 xvs=(8.-2.*av_)/(5+4.*av_); 						xvx=(5.-2.*av_)/(5+4.*av_);
-		xbl=0.;											 			 xbs=2.*av_; 													xbx=-(1.-2.*av_);
+		xbl=0.;											 			 xbs=av_; 													xbx=-(1.-2.*av_);
 		xtl=sqrt(2.)*(2.*av_-5.)/(5+4.*av_); xts=-sqrt(2.)*(2.*av_+1.)/(5+4.*av_); 	xtx=-sqrt(2.)*(2.*av_+4.)/(5+4.*av_);
 	}
 
@@ -529,8 +539,8 @@ void nlwm_class::includeDeltas(bool do_, std::string parameters_){
 	delta0.mass	=mdl;
 	deltam.mass	=mdl;
 
-	deltapp.spin	= 3./2.;	deltapp.I3	= 3./2.;		deltapp.Q		= 2.;  deltapp.gamma=4.;
-	deltap.spin		= 3./2.;	deltap.I3		=	1./2.;		deltap.Q		= 1.;  deltap.gamma =4.;
+	deltapp.spin	= 3./2.;	deltapp.I3		= 3./2.;		deltapp.Q		= 2.;  deltapp.gamma=4.;
+	deltap.spin		= 3./2.;	deltap.I3		= 1./2.;		deltap.Q		= 1.;  deltap.gamma =4.;
 	delta0.spin		= 3./2.;	delta0.I3		=-1./2.;		delta0.Q		= 0.;  delta0.gamma =4.;
 	deltam.spin		= 3./2.;	deltam.I3		=-3./2.;		deltam.Q		=-1.;  deltam.gamma =4.;
 	
@@ -539,17 +549,23 @@ void nlwm_class::includeDeltas(bool do_, std::string parameters_){
 	pardelta= parameters_;
 	if(pardelta=="su6"){ //SU(6) symmetry
 		xsd=1.2; xvd=1.2; xbd=1.;
+	}else if(pardelta=="su3lk"){
+		double av_=0.5;
+		xsd=1.283;
+		xvd=9./(5.+4.*av_);  
+		//xvd=1.285;
+		xbd=1.;
 	}
-	if(pardelta=="prd89_1"){ //PRD89, 043014
+	else if(pardelta=="prd89_1"){ //PRD89, 043014
 		xsd=1.25; xvd=1.; xbd=1.;
 	}
-	if(pardelta=="prd89_2"){ //PRD89, 043014
+	else if(pardelta=="prd89_2"){ //PRD89, 043014
 		xsd=1.15; xvd=0.9; xbd=1.;
 	}
-	if(pardelta=="mplA_1"){ //Modern Physics Letters A, Vol. 15, No. 24 (2000) 1529–1537
+	else if(pardelta=="mplA_1"){ //Modern Physics Letters A, Vol. 15, No. 24 (2000) 1529–1537
 		xsd=1.1; xvd=1.; xbd=1.;
 	}
-	if(pardelta	=="mplA_2"){ //Modern Physics Letters A, Vol. 15, No. 24 (2000) 1529–1537
+	else if(pardelta	=="mplA_2"){ //Modern Physics Letters A, Vol. 15, No. 24 (2000) 1529–1537
 		xsd=1.2; xvd=1.; xbd=1.;
 	}
 }
@@ -1237,33 +1253,6 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		optionsBetaEq.gradient_tolerance=1e-12;
 		optionsBetaEq.max_num_iterations=1e6;	
 
-		if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-4) ){
-			// optionsBetaEq.parameter_tolerance = 1e-22;
-			// optionsBetaEq.function_tolerance = 1e-22;
-			// optionsBetaEq.gradient_tolerance=1e-25;
-			optionsBetaEq.parameter_tolerance = 1e-20;
-			optionsBetaEq.function_tolerance = 1e-20;
-			optionsBetaEq.gradient_tolerance=1e-23;
-			optionsBetaEq.max_num_iterations=1e7;	
-
-		}	
-			if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-7) ){
-			// optionsBetaEq.parameter_tolerance = 1e-22;
-			// optionsBetaEq.function_tolerance = 1e-22;
-			// optionsBetaEq.gradient_tolerance=1e-25;
-			optionsBetaEq.parameter_tolerance = 1e-35;
-			optionsBetaEq.function_tolerance = 1e-35;
-			optionsBetaEq.gradient_tolerance=1e-35;
-			optionsBetaEq.max_num_iterations=1e8;	
-
-		}	
-	
-	//}
-		// optionsBetaEq.line_search_direction_type= ceres::STEEPEST_DESCENT;
-		// optionsBetaEq.line_search_type=ceres::ARMIJO;
-
-		// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
-		// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
 		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
 		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
 		// optionsBetaEq.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT;
@@ -1465,46 +1454,70 @@ bool BetaEqFunctor3::operator()(const T* x, T* residuals) const{
 }
 
 //=============== Functor beta-equilibrium w/ only electrons for Ceres (3 mesons only): ===============
-void nlwm_class::setEOS_fixedYl(double rhoB_, double temp_, double Yle_, double Ylm_,	
-										particle &electron_, particle &muon_, particle &ne_, particle &nm_){
+void nlwm_class::setEOS_fixedYl(double rhoB_, double s_nb_, double Yle_,	
+										particle &electron_, particle &ne_){
 	rhoB=rhoB_;
-	setTemperature(temp_);
+	// setTemperature(temp_);
+	// Entropy= s_;
   
-	double mub_;
-	double mue_;
-	double munue_;
-	double munum_;
-	double phi0_ ;
-	double v0_ ;       
-	double b0_;
+	double mub_=0.;
+	double mue_=0.;
+	double munue_=0.;
+	double temp_=0.;
+	double phi0_ =0.;
+	double v0_ =0.;       
+	double b0_=0.;
 	double theta0_=0.;
 	double rear_=0.;
 
 	if(dogRhob){ 
 		if(firstRun){
-			if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
-			else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);
-			munue_=mue_/100.;
-			munum_= munue_;
-			theta0_= -0.028034;
-			rear_= 	-0.0129762;
+			//  setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+			// mue_=0.3;
+			mub_=2.3094;
+			mue_= 0.224848;
+			phi0_= 0.0887614;
+			v0_= 0.153005; 
+			b0_=-0.00126938; 
+			theta0_=0; 
+			rear_=-0.0224595;
+			// munue_=0.2;
+			temp_=90./Mnucleon;
+
+			// phi0_=19./Mnucleon;
+			// v0_=75./Mnucleon;
+			// b0_=- 0.8/Mnucleon;
+			// rear_=0.02;
+			// mub_= 1781./Mnucleon;
+			// mue_=358./Mnucleon;
+			// munue_=184./Mnucleon;
+			// temp_=95./Mnucleon;
+
+			// theta0_= -0.028034;
+			// rear_= 	-0.0129762;
+
 		}else{
 			mub_	= muB;
+			mue_=electron_.chemPot;
+			munue_= ne_.chemPot;
+			temp_=temperature;
 			phi0_=phi0 ;
 			v0_	=V0;       
 			b0_	= b0;
-			if(xtl!=0. || xts!=0. || xtx!=0.) theta0_=theta0;
+			theta0_=theta0;
 			rear_=getRearrangementEnergy();
+			temp_=temperature;
 		}
 
 
-		double x[]={mub_, mue_, munue_, munum_, phi0_,  v0_, b0_, theta0_, rear_};
+		double x[]={mub_, mue_, munue_, temp_,  phi0_,  v0_, b0_, theta0_, rear_};
 		Problem pYl;
 		
 		CostFunction* costYl= 
 								new NumericDiffCostFunction<YlFunctorDD,ceres::CENTRAL, 9, 9>
-								(new  YlFunctorDD(*this, electron_, muon_, ne_, nm_, Yle_, Ylm_));
+								(new  YlFunctorDD(*this, electron_, ne_, Yle_, s_nb_));
 		pYl.AddResidualBlock(costYl, NULL, x);
+		pYl.SetParameterLowerBound(x, 3, 0.);
 		pYl.SetParameterLowerBound(x, 8, -0.35);
 		pYl.SetParameterUpperBound(x, 8, 0.35);
 
@@ -1517,12 +1530,12 @@ void nlwm_class::setEOS_fixedYl(double rhoB_, double temp_, double Yle_, double 
 
 		optionsYl.linear_solver_type= ceres::DENSE_QR;
 		optionsYl.dense_linear_algebra_library_type=ceres::LAPACK;
-		optionsYl.trust_region_strategy_type = ceres::DOGLEG;
-		optionsYl.dogleg_type = ceres::SUBSPACE_DOGLEG;
+		// optionsYl.trust_region_strategy_type = ceres::DOGLEG;
+		// optionsYl.dogleg_type = ceres::SUBSPACE_DOGLEG;
 		optionsYl.use_nonmonotonic_steps= true;
 		optionsYl.update_state_every_iteration = true;
 		
-		optionsYl.minimizer_progress_to_stdout = false;
+		optionsYl.minimizer_progress_to_stdout = true;
 		Solver::Summary summaryYl;
 		optionsYl.max_num_iterations=1e5;	
 
@@ -1532,7 +1545,7 @@ void nlwm_class::setEOS_fixedYl(double rhoB_, double temp_, double Yle_, double 
 		//Print if convergence was achieved.
 		std::cout << summaryYl.BriefReport() << "\n";
 		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
-		std::cout << mub_ << " " << mue_ << " " <<  munue_ << " " <<  munum_ << " " 
+		std::cout << mub_ << " " << mue_ << " " <<  munue_ << " " << temp_ << " " 
 							<< phi0_ << " " << v0_  << " " << b0_ <<  " " << theta0_ << " " << rear_ <<
 		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]  << " " 
 					<< x[5] << " "<< x[6] << " " << x[7] << " " << x[8]
@@ -1541,7 +1554,7 @@ void nlwm_class::setEOS_fixedYl(double rhoB_, double temp_, double Yle_, double 
 		mub_	 =x[0];
 		mue_	 =x[1];
 		munue_ =x[2];
-		munum_ =x[3];
+		setTemperature(x[3]);
 		phi0_	 =x[4];
 		v0_		 =x[5];
 		b0_		 =x[6];
@@ -1552,225 +1565,244 @@ void nlwm_class::setEOS_fixedYl(double rhoB_, double temp_, double Yle_, double 
 		setDensitiesDD(mub_, muq_,  phi0_,  v0_, b0_, theta0_, rear_);
 		setThermodynamics();
 
-		double mum_= x[3]- muq_;
-
+		electron_.temperature =temperature;
+		ne_.temperature=temperature;
 		electron_.setLepton(mue_);
 		ne_.setLepton(munue_);
-		muon_.setLepton(mum_);
-		nm_.setLepton(munum_);
+
 
 		electron_.calculateProperties();
-		muon_.calculateProperties();
 		ne_.calculateProperties();
-		nm_.calculateProperties();
-
-	}else if( xtl!=0. || xts!=0. || xtx!=0.){ 
-		if(firstRun){
-			if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
-			else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
-			if(xtl!=0. || xts!=0. || xtx!=0.) theta0_ = -0.0118828;
-			if(parametrization=="fsu2h")theta0_ = -0.0252404;
-			if(parametrization=="ddme2")theta0_= -0.028034;
-		}else{
-			mub_	= muB;
-			mue_= electron_.chemPot;
-			phi0_=phi0 ;
-			v0_	=V0;       
-			b0_	= b0;
-			if(xtl!=0. || xts!=0. || xtx!=0.) theta0_=theta0;
-		}
-
-		//must solve 4 meson equations + charge and mass equilibrium
-		double x[]={mub_, mue_, phi0_, v0_, b0_, theta0_};
-
-		Problem pBetaEq;
-		
-		CostFunction* costBetaEq= 
-								new NumericDiffCostFunction<BetaEqFunctor2,ceres::CENTRAL, 6, 6>
-								(new  BetaEqFunctor2(*this, electron_, muon_));
-		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
-
-		// if(temperature<Tmin_integration){
-		//  	pBetaEq.SetParameterLowerBound(x, 0, 0.);
-		// 	pBetaEq.SetParameterLowerBound(x, 1, electron_.mass_eff);
-		//  	pBetaEq.SetParameterLowerBound(x, 2, 0.);
-		//pBetaEq.SetParameterLowerBound(x, 3, 0.);
-		// }
-		// Set solver
-		Solver::Options optionsBetaEq;
-	//if(parametrization!="iufsu"){
-		// if(Bfield==0){
-		optionsBetaEq.parameter_tolerance = 1e-10;
-		optionsBetaEq.function_tolerance = 1e-10;
-		optionsBetaEq.gradient_tolerance=1e-12;
-		
-		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
-		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
-		optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
-		optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
-		optionsBetaEq.use_nonmonotonic_steps= true;
-		optionsBetaEq.update_state_every_iteration = true;
-		
-		optionsBetaEq.minimizer_progress_to_stdout = false;
-		Solver::Summary summaryBetaEq;
-		optionsBetaEq.max_num_iterations=1e5;	
-
-		//Run
-		Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
-
-		//Print if convergence was achieved.
-		std::cout << summaryBetaEq.BriefReport() << "\n";
-		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
-		std::cout << mub_ << " " << mue_ << " " 
-							<< phi0_ << " " << v0_  << " " << b0_ <<  " " << theta0_ << 
-		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]  << " " << x[5]
-		<< std::endl << std::endl;
-				
-		mub_	 =x[0];
-		mue_	 =x[1];
-		phi0_	 =x[2];
-		v0_		 =x[3];
-		b0_		 =x[4];
-		theta0_=x[5];
-
-		setDensities(mub_, -mue_,  phi0_,  v0_, b0_, theta0_);
-		setThermodynamics();
-		electron_.setLepton(mue_);
-		electron_.calculateProperties();
-		muon_.setLepton(mue_);
-		muon_.calculateProperties();
-
-	}else{
-		if(firstRun){
-			if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
-			else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
-		}else{
-			mub_	= muB;
-			mue_= electron_.chemPot;
-			phi0_=phi0 ;
-			v0_	=V0;       
-			b0_	= b0;
-		}
-
-		double x[]={mub_, mue_, phi0_, v0_, b0_};
-
-		Problem pBetaEq;
-		CostFunction* costBetaEq= 
-								new NumericDiffCostFunction<BetaEqFunctor,ceres::CENTRAL, 5, 5>
-								(new  BetaEqFunctor(*this, electron_, muon_));
-
-		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
-
-		// if(temperature<Tmin_integration){
-		// 	pBetaEq.SetParameterLowerBound(x, 0, 0.);
-		//	pBetaEq.SetParameterLowerBound(x, 1, electron_.mass_eff);
-		// 	pBetaEq.SetParameterLowerBound(x, 2, 0.);
-		// 	pBetaEq.SetParameterLowerBound(x, 3, 0.);
-		// }
-		// Set solver
-		Solver::Options optionsBetaEq;
-	//if(parametrization!="iufsu"){
-		optionsBetaEq.parameter_tolerance = 1e-10;
-		optionsBetaEq.function_tolerance = 1e-10;
-		optionsBetaEq.gradient_tolerance=1e-12;
-		optionsBetaEq.max_num_iterations=1e6;	
-
-		if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-4) ){
-			// optionsBetaEq.parameter_tolerance = 1e-22;
-			// optionsBetaEq.function_tolerance = 1e-22;
-			// optionsBetaEq.gradient_tolerance=1e-25;
-			optionsBetaEq.parameter_tolerance = 1e-20;
-			optionsBetaEq.function_tolerance = 1e-20;
-			optionsBetaEq.gradient_tolerance=1e-23;
-			optionsBetaEq.max_num_iterations=1e7;	
-
-		}	
-			if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-7) ){
-			// optionsBetaEq.parameter_tolerance = 1e-22;
-			// optionsBetaEq.function_tolerance = 1e-22;
-			// optionsBetaEq.gradient_tolerance=1e-25;
-			optionsBetaEq.parameter_tolerance = 1e-35;
-			optionsBetaEq.function_tolerance = 1e-35;
-			optionsBetaEq.gradient_tolerance=1e-35;
-			optionsBetaEq.max_num_iterations=1e8;	
-
-		}	
-	
-	//}
-		// optionsBetaEq.line_search_direction_type= ceres::STEEPEST_DESCENT;
-		// optionsBetaEq.line_search_type=ceres::ARMIJO;
-
-		// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
-		// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
-		optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
-		optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
-		// optionsBetaEq.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT;
-		
-		optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
-		optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
-		
-		optionsBetaEq.use_nonmonotonic_steps= true;
-		optionsBetaEq.update_state_every_iteration = true;
-		// optionsBetaEq.use_explicit_schur_complement= true;
-		
-
-		optionsBetaEq.minimizer_progress_to_stdout = false;
-		Solver::Summary summaryBetaEq;
-
-		//Run
-		Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
-
-		//Print if convergence was achieved.
-		std::cout << summaryBetaEq.BriefReport() << "\n";
-		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
-		std::cout << mub_ << " " << mue_ << " " << phi0_ << " " << v0_  << " " << b0_ << 
-			"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4] 
-		<< std::endl <<  std::endl;
-				
-		mub_	=x[0];
-		mue_	=x[1];
-		phi0_	=x[2];
-		v0_		=x[3];
-		b0_		=x[4];
-
-		setDensities(mub_, -mue_,  phi0_,  v0_, b0_);
-		
-		setThermodynamics();
-		electron_.setLepton(mue_);
-		electron_.calculateProperties();
-		muon_.setLepton(mue_);
-		muon_.calculateProperties();
-
 	}
+
+	// }else if( xtl!=0. || xts!=0. || xtx!=0.){ 
+	// 	if(firstRun){
+	// 		if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+	// 		else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+	// 		if(xtl!=0. || xts!=0. || xtx!=0.) theta0_ = -0.0118828;
+	// 		if(parametrization=="fsu2h")theta0_ = -0.0252404;
+	// 		if(parametrization=="ddme2")theta0_= -0.028034;
+	// 	}else{
+	// 		mub_	= muB;
+	// 		mue_= electron_.chemPot;
+	// 		phi0_=phi0 ;
+	// 		v0_	=V0;       
+	// 		b0_	= b0;
+	// 		if(xtl!=0. || xts!=0. || xtx!=0.) theta0_=theta0;
+	// 	}
+
+	// 	//must solve 4 meson equations + charge and mass equilibrium
+	// 	double x[]={mub_, mue_, phi0_, v0_, b0_, theta0_};
+
+	// 	Problem pBetaEq;
+		
+	// 	CostFunction* costBetaEq= 
+	// 							new NumericDiffCostFunction<BetaEqFunctor2,ceres::CENTRAL, 6, 6>
+	// 							(new  BetaEqFunctor2(*this, electron_, muon_));
+	// 	pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
+
+	// 	// if(temperature<Tmin_integration){
+	// 	//  	pBetaEq.SetParameterLowerBound(x, 0, 0.);
+	// 	// 	pBetaEq.SetParameterLowerBound(x, 1, electron_.mass_eff);
+	// 	//  	pBetaEq.SetParameterLowerBound(x, 2, 0.);
+	// 	//pBetaEq.SetParameterLowerBound(x, 3, 0.);
+	// 	// }
+	// 	// Set solver
+	// 	Solver::Options optionsBetaEq;
+	// //if(parametrization!="iufsu"){
+	// 	// if(Bfield==0){
+	// 	optionsBetaEq.parameter_tolerance = 1e-10;
+	// 	optionsBetaEq.function_tolerance = 1e-10;
+	// 	optionsBetaEq.gradient_tolerance=1e-12;
+		
+	// 	optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
+	// 	optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
+	// 	optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
+	// 	optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
+	// 	optionsBetaEq.use_nonmonotonic_steps= true;
+	// 	optionsBetaEq.update_state_every_iteration = true;
+		
+	// 	optionsBetaEq.minimizer_progress_to_stdout = false;
+	// 	Solver::Summary summaryBetaEq;
+	// 	optionsBetaEq.max_num_iterations=1e5;	
+
+	// 	//Run
+	// 	Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
+
+	// 	//Print if convergence was achieved.
+	// 	std::cout << summaryBetaEq.BriefReport() << "\n";
+	// 	std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
+	// 	std::cout << mub_ << " " << mue_ << " " 
+	// 						<< phi0_ << " " << v0_  << " " << b0_ <<  " " << theta0_ << 
+	// 	"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]  << " " << x[5]
+	// 	<< std::endl << std::endl;
+				
+	// 	mub_	 =x[0];
+	// 	mue_	 =x[1];
+	// 	phi0_	 =x[2];
+	// 	v0_		 =x[3];
+	// 	b0_		 =x[4];
+	// 	theta0_=x[5];
+
+	// 	setDensities(mub_, -mue_,  phi0_,  v0_, b0_, theta0_);
+	// 	setThermodynamics();
+	// 	electron_.setLepton(mue_);
+	// 	electron_.calculateProperties();
+	// 	muon_.setLepton(mue_);
+	// 	muon_.calculateProperties();
+
+	// }else{
+	// 	if(firstRun){
+	// 		if(Bfield==0) setInitial_hd(mub_, mue_, phi0_, v0_, b0_);
+	// 		else					setInitial_hdb(mub_, mue_, phi0_, v0_, b0_);		
+	// 	}else{
+	// 		mub_	= muB;
+	// 		mue_= electron_.chemPot;
+	// 		phi0_=phi0 ;
+	// 		v0_	=V0;       
+	// 		b0_	= b0;
+	// 	}
+
+	// 	double x[]={mub_, mue_, phi0_, v0_, b0_};
+
+	// 	Problem pBetaEq;
+	// 	CostFunction* costBetaEq= 
+	// 							new NumericDiffCostFunction<BetaEqFunctor,ceres::CENTRAL, 5, 5>
+	// 							(new  BetaEqFunctor(*this, electron_, muon_));
+
+	// 	pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
+
+	// 	// if(temperature<Tmin_integration){
+	// 	// 	pBetaEq.SetParameterLowerBound(x, 0, 0.);
+	// 	//	pBetaEq.SetParameterLowerBound(x, 1, electron_.mass_eff);
+	// 	// 	pBetaEq.SetParameterLowerBound(x, 2, 0.);
+	// 	// 	pBetaEq.SetParameterLowerBound(x, 3, 0.);
+	// 	// }
+	// 	// Set solver
+	// 	Solver::Options optionsBetaEq;
+	// //if(parametrization!="iufsu"){
+	// 	optionsBetaEq.parameter_tolerance = 1e-10;
+	// 	optionsBetaEq.function_tolerance = 1e-10;
+	// 	optionsBetaEq.gradient_tolerance=1e-12;
+	// 	optionsBetaEq.max_num_iterations=1e6;	
+
+	// 	if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-4) ){
+	// 		// optionsBetaEq.parameter_tolerance = 1e-22;
+	// 		// optionsBetaEq.function_tolerance = 1e-22;
+	// 		// optionsBetaEq.gradient_tolerance=1e-25;
+	// 		optionsBetaEq.parameter_tolerance = 1e-20;
+	// 		optionsBetaEq.function_tolerance = 1e-20;
+	// 		optionsBetaEq.gradient_tolerance=1e-23;
+	// 		optionsBetaEq.max_num_iterations=1e7;	
+
+	// 	}	
+	// 		if(rhoB*pow(Mnucleon/hc, 3.) < (5.e-7) ){
+	// 		// optionsBetaEq.parameter_tolerance = 1e-22;
+	// 		// optionsBetaEq.function_tolerance = 1e-22;
+	// 		// optionsBetaEq.gradient_tolerance=1e-25;
+	// 		optionsBetaEq.parameter_tolerance = 1e-35;
+	// 		optionsBetaEq.function_tolerance = 1e-35;
+	// 		optionsBetaEq.gradient_tolerance=1e-35;
+	// 		optionsBetaEq.max_num_iterations=1e8;	
+
+	// 	}	
+	
+	// //}
+	// 	// optionsBetaEq.line_search_direction_type= ceres::STEEPEST_DESCENT;
+	// 	// optionsBetaEq.line_search_type=ceres::ARMIJO;
+
+	// 	// optionsBetaEq.sparse_linear_algebra_library_type=ceres::SUITE_SPARSE;
+	// 	// optionsBetaEq.linear_solver_type=ceres::SPARSE_NORMAL_CHOLESKY;
+	// 	optionsBetaEq.linear_solver_type= ceres::DENSE_QR;
+	// 	optionsBetaEq.dense_linear_algebra_library_type=ceres::LAPACK;
+	// 	// optionsBetaEq.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT;
+		
+	// 	optionsBetaEq.trust_region_strategy_type = ceres::DOGLEG;
+	// 	optionsBetaEq.dogleg_type = ceres::SUBSPACE_DOGLEG;
+		
+	// 	optionsBetaEq.use_nonmonotonic_steps= true;
+	// 	optionsBetaEq.update_state_every_iteration = true;
+	// 	// optionsBetaEq.use_explicit_schur_complement= true;
+		
+
+	// 	optionsBetaEq.minimizer_progress_to_stdout = false;
+	// 	Solver::Summary summaryBetaEq;
+
+	// 	//Run
+	// 	Solve(optionsBetaEq, &pBetaEq, &summaryBetaEq);
+
+	// 	//Print if convergence was achieved.
+	// 	std::cout << summaryBetaEq.BriefReport() << "\n";
+	// 	std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
+	// 	std::cout << mub_ << " " << mue_ << " " << phi0_ << " " << v0_  << " " << b0_ << 
+	// 		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4] 
+	// 	<< std::endl <<  std::endl;
+				
+	// 	mub_	=x[0];
+	// 	mue_	=x[1];
+	// 	phi0_	=x[2];
+	// 	v0_		=x[3];
+	// 	b0_		=x[4];
+
+	// 	setDensities(mub_, -mue_,  phi0_,  v0_, b0_);
+		
+	// 	setThermodynamics();
+	// 	electron_.setLepton(mue_);
+	// 	electron_.calculateProperties();
+	// 	muon_.setLepton(mue_);
+	// 	muon_.calculateProperties();
+
+	// }
 	
  	firstRun=false;
-
-}
+	// assert(1<0);
+	}
 
 
 template <typename T>
 bool YlFunctorDD::operator()(const T* x, T* residuals) const{
-//mub_, mue_, munue_, munum_, phi0_,  v0_, b0_, theta0_, rear_
-	double muq_= x[2] - x[1];
-	double mum_= x[3]- muq_;
+	// double muq_= x[2] - x[1];
+	double muq_= - x[1];
+	electron.temperature=x[3];	
+	ne.temperature= x[3];
+	baryons.setTemperature(x[3]);
 
 	electron.setLepton(x[1]);
-	ne.setLepton(x[2]);
-	muon.setLepton(mum_);
-	nm.setLepton(x[3]);
+	// ne.setLepton(x[2]);
 
 	baryons.setDensitiesDD(x[0], muq_, x[4], x[5], x[6], x[7], x[8]);
-											//mub, muq, phi0,  v0,    b0, theta0
+						//mub, muq, phi0,  v0,    b0, theta0, rear
 
+	baryons.setThermodynamics();
+	electron.calculateProperties();
+	// ne.calculateProperties();
+
+	// cout << baryons.getPressure() << " " << electron.pressure << " " <<  ne.pressure << " " 
+	// << baryons.getEnergy() << " "<<  electron.energy << " " <<  ne.energy << " "
+									// <<  baryons.proton.chemPot*baryons.proton.density << " "
+									// <<  baryons.neutron.chemPot*baryons.neutron.density << " "
+									// << electron.chemPot*electron.density << " " 
+									// << ne.chemPot*ne.density << endl;
 	residuals[0] = baryons.rhoB - baryons.getBaryonDens();
-	residuals[1] = baryons.getChargeDens() +	electron.Qdens + muon.Qdens;
+	residuals[1] = baryons.getChargeDens() +	electron.Qdens;
 	residuals[2] = baryons.sigmaMeson_eom_residue(	baryons.getSigmaEffDens());
 	residuals[3] = baryons.omegaMeson_eom_residue(	baryons.getOmegaEffDens());
 	residuals[4] = baryons.rhoMeson_eom_residue(		baryons.getIsoEffDens());
 	residuals[5] = baryons.thetaMeson_eom_residue(	baryons.getThetaEffDens()) ;
 	residuals[6] = baryons.getRearrangementEnergy() - x[8];
-	residuals[7] = Yle*baryons.getBaryonDens() - electron.density 	- ne.density;
-	residuals[8] = Ylm*baryons.getBaryonDens() - muon.density 			- nm.density;
+	residuals[7] = Yle*baryons.getBaryonDens() - electron.density; //	- ne.density;
+	residuals[8] =  s_nb*baryons.rhoB- baryons.getEntropy() -electron.entropy;
+								// (-(baryons.getPressure() +electron.pressure)
+								// -( baryons.getEnergy() + electron.energy )
+								// + baryons.proton.chemPot*baryons.proton.density + baryons.neutron.chemPot*baryons.neutron.density
+								// + electron.chemPot*electron.density);
+								
+									// residuals[8] = s_nb>0. ? s_nb*x[3]*baryons.getBaryonDens() - 
+									// (-(baryons.getPressure() +electron.pressure+ ne.pressure)
+									// -( baryons.getEnergy() + electron.energy + ne.energy)
+									// + baryons.proton.chemPot*baryons.proton.density + baryons.neutron.chemPot*baryons.neutron.density
+									// + electron.chemPot*electron.density+ ne.chemPot*ne.density)
+							// : x[3]-0.;
  	return true;
 }
 
@@ -2523,31 +2555,31 @@ double nlwm_class::getEnergy(void){
 //=============== Calculate total baryonic pressure: ===============
 double nlwm_class::getPressure(void){
  
-  // double press= proton.pressure+ neutron.pressure ;
-	// if(dogRhob) press+=getRearrangementEnergy()*rhoB;
+  double press= proton.pressure+ neutron.pressure ;
+	if(dogRhob) press+=getRearrangementEnergy()*rhoB;
 
-	// press+=
-							// -pow(Ms*phi0, 2)/2. - gs3*pow(phi0, 3)/6.- gs4*pow(phi0, 4)/24.
-          		// +pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24. + pow(Mt*theta0, 2)/2.
-          		// +pow(Mb*b0, 2)/2. 	+ Lv*pow(gv*gb*V0*b0, 2);
+	press+=
+							-pow(Ms*phi0, 2)/2. - gs3*pow(phi0, 3)/6.- gs4*pow(phi0, 4)/24.
+          		+pow(Mv*V0, 2)/2.   + xsi*pow(gv*V0, 4)/24. + pow(Mt*theta0, 2)/2.
+          		+pow(Mb*b0, 2)/2. 	+ Lv*pow(gv*gb*V0*b0, 2);
 
-	double press= proton.chemPot*proton.density+ neutron.chemPot*neutron.density 
- 					- getEnergy();
-	if(temperature>Tmin_integration){press+=temperature*getEntropy();}
+	// double press= proton.chemPot*proton.density+ neutron.chemPot*neutron.density 
+ 	// 				- getEnergy();
+	// if(temperature>Tmin_integration){press+=temperature*getEntropy();}
 	
 	if(doHyperons){
-		press+= lambda0.chemPot*lambda0.density + sigmap.chemPot*sigmap.density 
-					+ sigma0.chemPot*sigma0.density + sigmam.chemPot*sigmam.density 
-					+ xi0.chemPot*xi0.density+ xim.chemPot*xim.density;
-		// press+= lambda0.pressure + sigmap.pressure 
-					// + sigma0.pressure + sigmam.pressure 
-					// + xi0.pressure+ xim.pressure;
+	// 	press+= lambda0.chemPot*lambda0.density + sigmap.chemPot*sigmap.density 
+	// 				+ sigma0.chemPot*sigma0.density + sigmam.chemPot*sigmam.density 
+	// 				+ xi0.chemPot*xi0.density+ xim.chemPot*xim.density;
+		press+= lambda0.pressure + sigmap.pressure 
+					+ sigma0.pressure + sigmam.pressure 
+					+ xi0.pressure+ xim.pressure;
 		}
 	if(doDeltas){
-		press+= deltapp.chemPot*deltapp.density + deltap.chemPot*deltap.density 
-					+ delta0.chemPot*delta0.density + deltam.chemPot*deltam.density;
-		// press+= deltapp.pressure + deltap.pressure 
-					// + delta0.pressure + deltam.pressure;
+		// press+= deltapp.chemPot*deltapp.density + deltap.chemPot*deltap.density 
+		// 			+ delta0.chemPot*delta0.density + deltam.chemPot*deltam.density;
+		press+= deltapp.pressure + deltap.pressure 
+					+ delta0.pressure + deltam.pressure;
 
 	}
 	return press;

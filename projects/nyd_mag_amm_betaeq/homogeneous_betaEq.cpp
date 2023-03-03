@@ -13,25 +13,26 @@
 
 int main(){
 //Choose pararametrization
-	std::string parametrization= "ddme2";
+	std::string parametrization= "iufsu";
 	nlwm_class hmg_matter(parametrization);
 
-	bool doHyperons	=	false;
-	bool doDeltas		=	false;
+	bool doHyperons		= false;
+	bool doDeltas		= false;
 	bool doBfield		= false;
 	bool doamm 			= false;
 
-	std::string hyperon_params ="ddme2-a"; 
+	std::string hyperon_params ="l3wr3"; 
 	std::string delta_params 	 ="su6";  //su6(1.), mplA_1(beta=1.1), mplA_2, prd89_1, prd89_1
-	double rhoB, temperature, Bfield;
-	temperature=3.;
+	double rhoB;
+	
+
+	double temperature=0.;
 	double Bg=3.e18; // Gauss
-	
-	
+
 	double rhoBMin=5e-3/pow(Mnucleon/hc, 3);
-  double rhoBMax=1./pow(Mnucleon/hc, 3);///7.5*hmg_matter.rho0;
+  double rhoBMax=1.3/pow(Mnucleon/hc, 3);///7.5*hmg_matter.rho0;
 	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
-  int iR=20;
+  int iR=200;
   double dRho=  (rhoBMax-rhoBMin)/iR;
 
 	//Construct a gas of p,n,e matter
@@ -46,8 +47,10 @@ int main(){
 	muon.Q=-1.;
 	electron.gamma=2.;
 	muon.gamma=2.;
+	
 	double Bc=pow(electron.mass_eff, 2.)/eHL;  
-	Bfield=Bg*Bc/4.41e13;
+	double Bfield=Bg*Bc/4.41e13;
+	
 	//Bfield *= 1.95e-14/pow(Mnucleon, 2.);  // Conversion factor Gauss to MeV^2 to adim
 	//Define thermodynamic variables
 	double Energy, FreeEn, Pressure, PressureP, PressureT, Entropy, Magnetization;
@@ -133,7 +136,9 @@ int main(){
 			//  rhoB=rhoBMax+ (double)irho*dRho;
 			
 			//Solve self-consistently:
-			hmg_matter.setEOS_betaEq(rhoB, temperature, electron, muon);
+			hmg_matter.setEOS_betaEq(rhoB, temperature, electron, muon);	
+			cout << "Ye: " << (electron.density + muon.density)/rhoB;
+			// hmg_matter.setEOS_betaEq(rhoB, temperature, electron);
 			// cout << "test: " << hmg_matter.proton.chemPot_eff + hmg_matter.getRearrangementEnergy()  << " " << hmg_matter.neutron.chemPot_eff + hmg_matter.getRearrangementEnergy() << " " 
 			// 									<< hmg_matter.getRearrangementEnergy() << " " << hmg_matter.getDerivativeCoupling_sigma(rhoB) << " "
 			// 									 << hmg_matter.getDerivativeCoupling_omega(rhoB) << " " << hmg_matter.getDerivativeCoupling_rho(rhoB) 
@@ -167,10 +172,10 @@ int main(){
 		  					<< hmg_matter.b0*Mnucleon << " " << hmg_matter.getRearrangementEnergy()*Mnucleon << endl;
 		  					
 		  					
-			outFile << rhoB*pow(Mnucleon/hc, 3) << " "
+			outFile << rhoB*pow(Mnucleon/hc, 3) << " " 
 					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " " 
 					<< (FreeEn/rhoB - 1.)*Mnucleon  << " " 
-					<< Entropy << " "
+					<< Entropy*pow(Mnucleon/hc, 3) << " "
 					<< Energy*Mnucleon*pow(Mnucleon/hc, 3)  << " " <<  hmg_matter.neutron.mass_eff*Mnucleon << " "
 					<< hmg_matter.neutron.chemPot*Mnucleon 			<< " " << electron.chemPot*Mnucleon << " " 
 					<< yN << " " << yH << " " << yD  << " "
@@ -240,61 +245,70 @@ int main(){
 					// << Pressure*Mnucleon*pow(Mnucleon/hc, 3)*MeVdivfm3_to_dyndivcm2
 					// << std::endl;
 
-				outEos << rhoB*pow(Mnucleon/hc, 3) << " "
-					<< (Energy+Bfield*Bfield/2.)*Mnucleon*pow(Mnucleon/hc, 3) << " "  
-					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " "
-					<< (PressureP-Bfield*Bfield/2.)*Mnucleon*pow(Mnucleon/hc, 3) << " "
-					<< (PressureT+Bfield*Bfield/2.)*Mnucleon*pow(Mnucleon/hc, 3)
-				<< std::endl;
+				outEos <<rhoB*pow(Mnucleon/hc, 3) 	<< " " 
+					<< FreeEn*Mnucleon*pow(Mnucleon/hc, 3)   << " "
+					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << endl;
+				// outEos << rhoB*pow(Mnucleon/hc, 3) << " "
+				// 	<< (Energy+Bfield*Bfield/2.)*Mnucleon*pow(Mnucleon/hc, 3) << " "  
+				// 	<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " "
+				// 	<< (PressureP-Bfield*Bfield/2.)*Mnucleon*pow(Mnucleon/hc, 3) << " "
+				// 	<< (PressureT+Bfield*Bfield/2.)*Mnucleon*pow(Mnucleon/hc, 3)
+				// << std::endl;
 				
 		}
 		
 	outFile.close();
 	outSpin.close();
 	outDens.close();
-
+	outSolution.close();
+	outEos.close();
 	//  double rhoBMaxLog= log10(rhoB);
 	//  std::cout << rhoB*pow(Mnucleon/hc, 3) << std::endl;
-	//  double rhoBMinLog= log10( (1e-14)/pow(Mnucleon/hc, 3) );
+	//  double rhoBMinLog= log10( (1e-6)/pow(Mnucleon/hc, 3) );
 	//  double dlogR= (rhoBMaxLog-rhoBMinLog)/iRLog;
 	//  for(int irl=1; irl<iRLog; irl++){
 	// 		//rhoB=rhoBMax- (double)irho*dRho;
-	 		// rhoB= pow(10., rhoBMaxLog- irl*dlogR);
-	 			// hmg_matter.setAMM(false);
-	 			// electron.setAMM(false, 0.);
-	 			// muon.setAMM(false, 0.);
-	 		//  if(rhoB*pow(Mnucleon/hc, 3) < 1e-4){
-	  			// hmg_matter.setBfield(	false, Bfield);
-	 			// electron.setBfield(		false, Bfield);
-	  			// muon.setBfield(				false, Bfield);
-	// 
-	 		//  }
-	// 		Solve self-consistently:
-	 		// hmg_matter.setEOS_betaEq(rhoB, temperature, electron, muon);
- 		//std::cout << hmg_matter.proton.mass_eff << " " << hmg_matter.delta0.mass_eff << " " << hmg_matter.deltap.mass_eff << " " <<  hmg_matter.delta0.chemPot << std::endl;
-	 	//	electron.pressure	=electron.chemPot*electron.density 	- electron.energy;
-	 	//	muon.pressure			=muon.chemPot*muon.density 					- muon.energy;
-	 	//	Set variables:
-	 		// Energy= hmg_matter.getEnergy() 		+ electron.energy+ muon.energy;
-	 		// Pressure= hmg_matter.getPressure()+ electron.pressure+ muon.pressure;
-	 		// Entropy= hmg_matter.getEntropy() 	+ electron.entropy + muon.entropy;
-	 		// FreeEn= Energy -temperature*Entropy;
-		 		// outEos << iRLog-irl << " " << rhoB*pow(Mnucleon/hc, 3) << " "
-	 				// << Energy*Mnucleon*pow(Mnucleon/hc, 3)*MeVdivfm3_to_gdivcm3  << " "  
-	 				// << Pressure*Mnucleon*pow(Mnucleon/hc, 3)*MeVdivfm3_to_dyndivcm2
-	 				// << std::endl;
+	//  		rhoB= pow(10., rhoBMaxLog- irl*dlogR);
+	//  			hmg_matter.setAMM(false);
+	//  			electron.setAMM(false, 0.);
+	//  			muon.setAMM(false, 0.);
+	//  		 if(rhoB*pow(Mnucleon/hc, 3) < 1e-4){
+	//   			hmg_matter.setBfield(	false, Bfield);
+	//  			electron.setBfield(		false, Bfield);
+	//   			muon.setBfield(				false, Bfield);
+	
+	//  		 }
+	// 		// // Solve self-consistently:
+	//  		hmg_matter.setEOS_betaEq(rhoB, temperature, electron, muon);
+ 	// 	std::cout << hmg_matter.proton.mass_eff << " " << hmg_matter.delta0.mass_eff << " " << hmg_matter.deltap.mass_eff << " " <<  hmg_matter.delta0.chemPot << std::endl;
+	//  		electron.pressure	=electron.chemPot*electron.density 	- electron.energy;
+	//  		muon.pressure			=muon.chemPot*muon.density 					- muon.energy;
+	//  		// //Set variables:
+	//  		Energy= hmg_matter.getEnergy() 		+ electron.energy+ muon.energy;
+	//  		Pressure= hmg_matter.getPressure()+ electron.pressure+ muon.pressure;
+	//  		Entropy= hmg_matter.getEntropy() 	+ electron.entropy + muon.entropy;
+	//  		FreeEn= Energy -temperature*Entropy;
+
+	// 		outEos 
+	// 				<< (FreeEn)*Mnucleon*pow(Mnucleon/hc, 3)   << " "
+	// 				<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << endl;
+	// 	 		// outEos << iRLog-irl << " " << rhoB*pow(Mnucleon/hc, 3) << " "
+	//  			// 	<< Energy*Mnucleon*pow(Mnucleon/hc, 3)*MeVdivfm3_to_gdivcm3  << " "  
+	//  			// 	<< Pressure*Mnucleon*pow(Mnucleon/hc, 3)*MeVdivfm3_to_dyndivcm2
+	//  			// 	<< std::endl;
+	 
 	//  }
 	
-	outEos.close();
-	outSolution.close();
-	// }
-
-  std::reverse(rhobv.begin(), rhobv.end());
-	std::reverse(enerv.begin(), enerv.end());
-	std::reverse(enerdensv.begin(), enerdensv.end());
-	std::reverse(pressv.begin(), pressv.end());
-	std::reverse(pressPv.begin(), pressPv.end());
-	std::reverse(pressTv.begin(), pressTv.end());
+	// outEos.close();
+	// outSolution.close();
+	
+	//}
+//   std::reverse(rhobv.begin(), rhobv.end());
+// 	std::reverse(enerv.begin(), enerv.end());
+// 	std::reverse(enerdensv.begin(), enerdensv.end());
+// 	std::reverse(pressv.begin(), pressv.end());
+// 	std::reverse(pressPv.begin(), pressPv.end());
+// 	std::reverse(pressTv.begin(), pressTv.end());
 	
 
 	// std::vector<double> enerd1v, enerd2v, enerd3v; 

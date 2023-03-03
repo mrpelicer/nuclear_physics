@@ -17,19 +17,19 @@ int main(){
 	nlwm_class hmg_matter(parametrization);
 
 	bool doHyperons	=	false;
-	bool doDeltas		=	false;
+	bool doDeltas	=	false;
 	// bool doBfield		= false;
 	// bool doamm 			= false;
+	// double Bg=3.e18; // Ga;uss
 
 	std::string hyperon_params ="ddme2-a"; 
 	std::string delta_params 	 ="su6";  //su6(1.), mplA_1(yl=1.1), mplA_2, prd89_1, prd89_1
 	double rhoB, temperature; //, Bfield;
 	temperature=0.;
-	double Bg=3.e18; // Ga;uss
 	
 	
-	double rhoBMin=5e-3/pow(Mnucleon/hc, 3);
-  double rhoBMax=1./pow(Mnucleon/hc, 3);///7.5*hmg_matter.rho0;
+	double rhoBMin=1e-2/pow(Mnucleon/hc, 3);
+  double rhoBMax=.3/pow(Mnucleon/hc, 3);///7.5*hmg_matter.rho0;
 	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
   int iR=240;
   double dRho=  (rhoBMax-rhoBMin)/iR;
@@ -38,32 +38,31 @@ int main(){
 	// nlwm_class derivative(parametrization);
 
 
+	double s_nb=0.;
+	cout << "Set entropy per density (S/nb):" << endl;
+	cin >> s_nb ;
 
-	double Yle=0., Ylm=0.;
-	cout << "Set fraction of electron and muon family (Y= Y_lepton+ Y_neutrino):" << endl;
-	cin >> Yle >> Ylm;
-	assert(Yle+Ylm<=0.5);
+	double Yle=0.;
+	cout << "Set fraction of e-leptons (Y_le):" << endl;
+	cin >> Yle ;
+	assert(Yle<=0.5);
 
-	particle electron, muon, neut_e, neut_m;
+	particle electron, neut_e;
 
 	neut_e.gamma=1.;
-	neut_m.gamma=1.;
 
 	electron.mass	= Me/Mnucleon;	
-  muon.mass			=	Mm/Mnucleon; 
 	neut_e.mass=0.;
-	neut_m.mass=0.;
 	
 	electron.mass_eff= electron.mass;
-	muon.mass_eff= muon.mass;	
 	neut_e.mass_eff=0.;
-	neut_m.mass_eff=0.;
 
 	electron.Q=-1.;
-	muon.Q=-1.;
+	neut_e.Q=0.;
 	electron.gamma=2.;
-	muon.gamma=2.;
-	double Bc=pow(electron.mass_eff, 2.)/eHL;  
+	neut_e.gamma=1.;
+
+	// double Bc=pow(electron.mass_eff, 2.)/eHL;  
 
 	//Define thermodynamic variables
 	double Energy, FreeEn, Pressure, PressureP, PressureT, Entropy, Magnetization;
@@ -79,39 +78,23 @@ int main(){
 		hmg_matter.includeDeltas(		doDeltas, 	delta_params);
 	}
 	hmg_matter.printParameters();
-
-
-
-
-		std::cout << "T= " << temperature << std::endl;
 		
-		std::string filename1, filename2, filename3, filename4;
+	std::string filename1, filename2, filename3, filename4;
+	
+	filename1="data/dens_yl_" +parametrization+"_noB.txt";
+	filename2="data/press_" 	+parametrization+".txt";
+	filename3="data/eos_"				+parametrization+"_noB.txt";
+	
+	std::ofstream outDens(filename1);
+	std::ofstream outFile(filename2);
+	std::ofstream outEos(filename3);
+
+	//=== Loop over barionic density
+	for(int irho=0; irho<iR; irho++){
+		rhoB=rhoBMax- (double)irho*dRho;
 		
-		filename1="data/dens_yl_" +parametrization+"_noB.txt";
-		filename2="data/press_" 	+parametrization+"_T"+to_string(temperature)+".txt";
-		filename3="data/eos_"				+parametrization+"_noB.txt";
-		
-		std::ofstream outDens(filename1);
-		std::ofstream outFile(filename2);
-		std::ofstream outEos(filename3);
-
-		//Adimensional temperature;
-		temperature*=1./Mnucleon;
-		electron.temperature=temperature;
-		muon.temperature=temperature;
-		neut_e.temperature=temperature;
-		neut_m.temperature=temperature;
-
-		//=== Loop over barionic density
-		for(int irho=0; irho<iR; irho++){
-			rhoB=rhoBMax- (double)irho*dRho;
-			//  rhoB=rhoBMax+ (double)irho*dRho;
-			
-			//Solve self-consistently:
-
 				// hmg_matter.setEOS_betaEq(rhoB, temperature, electron, muon);
-			hmg_matter.setEOS_fixedYl(rhoB, temperature, Yle, Ylm,	
-										electron, muon, neut_e, neut_m);
+			hmg_matter.setEOS_fixedYl(rhoB, s_nb, Yle, 	electron, neut_e);
 
 			// cout << "test: " << hmg_matter.proton.chemPot_eff + hmg_matter.getRearrangementEnergy()  << " " << hmg_matter.neutron.chemPot_eff + hmg_matter.getRearrangementEnergy() << " " 
 			// 									<< hmg_matter.getRearrangementEnergy() << " " << hmg_matter.getDerivativeCoupling_sigma(rhoB) << " "
@@ -119,16 +102,16 @@ int main(){
 			// 									 << endl;
 			// std::cout << hmg_matter.proton.mass_eff << " " << hmg_matter.delta0.mass_eff << " " << hmg_matter.deltap.mass_eff << " " <<  hmg_matter.delta0.chemPot << std::endl;
 			electron.pressure	=electron.chemPot*electron.density 	- electron.energy + temperature*electron.entropy;
-			muon.pressure			=muon.chemPot*muon.density 					- muon.energy			+ temperature*muon.entropy;
+			// muon.pressure			=muon.chemPot*muon.density 					- muon.energy			+ temperature*muon.entropy;
 			//Set variables:
-			Energy		= hmg_matter.getEnergy() 		+ electron.energy	 + muon.energy;
-			Entropy		= hmg_matter.getEntropy() 	+ electron.entropy + muon.entropy;
+			Energy		= hmg_matter.getEnergy() 		+ electron.energy	  ;// + muon.energy;
+			Entropy		= hmg_matter.getEntropy() 	+ electron.entropy  ;// + muon.entropy;
 			FreeEn		= Energy -temperature*Entropy;
 			Pressure	= -Energy + temperature*Entropy + hmg_matter.neutron.chemPot*rhoB;
 			//hmg_matter.getPressure()	+ electron.pressure+ muon.pressure;
-			PressureP	= hmg_matter.getPressureParallel()+ electron.pressureParallel+ muon.pressureParallel;
-			PressureT	= hmg_matter.getPressureTransverse()+ electron.pressureTransverse+ muon.pressureTransverse;
-			Magnetization= hmg_matter.getMagnetization() + electron.magnetization+muon.magnetization;
+			PressureP	= hmg_matter.getPressureParallel()+ electron.pressureParallel ;// + muon.pressureParallel;
+			PressureT	= hmg_matter.getPressureTransverse()+ electron.pressureTransverse ;// + muon.pressureTransverse;
+			Magnetization= hmg_matter.getMagnetization() + electron.magnetization ;// +muon.magnetization;
 
 			rhobv.push_back(rhoB);
 			enerv.push_back(Energy/rhoB);
@@ -142,7 +125,7 @@ int main(){
 						+ hmg_matter.xi0.density+ hmg_matter.xim.density)/rhoB;
 			yD= (hmg_matter.deltapp.density + hmg_matter.deltap.density+ hmg_matter.delta0.density+ hmg_matter.deltam.density)/rhoB;
 		  
-			outFile << rhoB*pow(Mnucleon/hc, 3) << " "
+			outFile << rhoB*pow(Mnucleon/hc, 3) << " " << hmg_matter.temperature*Mnucleon << " " 
 					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " " 
 					<< (FreeEn/rhoB - 1.)*Mnucleon  << " " 
 					<< Energy*Mnucleon*pow(Mnucleon/hc, 3)  << " " <<  hmg_matter.neutron.mass_eff*Mnucleon << " "
@@ -154,22 +137,21 @@ int main(){
 					<<std::endl;
 
 			outDens << rhoB*pow(Mnucleon/hc, 3) 									<< " " // /hmg_matter.rho0 			 << " " // *pow(Mnucleon/hc, 3) << " " 
-				<< hmg_matter.proton.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.neutron.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< electron.density						*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< muon.density								*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.lambda0.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.sigmap.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.sigma0.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.sigmam.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB	 << " "
-				<< hmg_matter.xi0.density			*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.xim.density			*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.deltapp.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.deltap.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.delta0.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< hmg_matter.deltam.density	*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< neut_e.density						*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
-				<< neut_m.density								*pow(Mnucleon/hc, 3) << " "  // /rhoB  << " "
+				<< hmg_matter.proton.density	 /rhoB  << " " // *pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.neutron.density	 /rhoB  << " " // *pow(Mnucleon/hc, 3) << " "
+				<< electron.density				 /rhoB  << " " // 		*pow(Mnucleon/hc, 3) << " "
+				<< 0.							 /rhoB  << " " // 	*pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.lambda0.density	 /rhoB  << " " // *pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.sigmap.density	 /rhoB  << " " // *pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.sigma0.density	 /rhoB  << " " // *pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.sigmam.density	 /rhoB	 << " " // *pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.xi0.density		 /rhoB  << " " // 	*pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.xim.density		 /rhoB  << " " // 	*pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.deltapp.density	 /rhoB  << " " // *pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.deltap.density	 /rhoB  << " " // *pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.delta0.density	 /rhoB  << " " // *pow(Mnucleon/hc, 3) << " "
+				<< hmg_matter.deltam.density	 /rhoB  << " " // *pow(Mnucleon/hc, 3) << " "
+				<< neut_e.density				 /rhoB  << " " // 		*pow(Mnucleon/hc, 3) << " "
 				<< std::endl;
 
 			// outEos << rhoB*pow(Mnucleon/hc, 3) << " "

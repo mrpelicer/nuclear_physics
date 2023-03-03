@@ -10,12 +10,12 @@ void pasta_class::setInitialCPA(double &nup1_, double &nun1_, double &mef1_,
 
 	if(cluster.parametrization=="iufsu"){
     if(YpG>0.3){
-      nup1_ = 0.669306;
-      nun1_ = 0.669306;
-      mef1_ = 0.609329;
-      nup2_ = 0.982546; 
-      nun2_ = 0.982546;
-      mef2_ = 0.999;
+      nup1_ = 0.692292;
+      nun1_ = 0.692297;
+      mef1_ = 0.638415;
+      nup2_ = 0.990316;
+      nun2_ = 0.980245;
+      mef2_ = 0.99999;
     }else if(YpG>0.1){
       nup1_ =0.677603;     
       nun1_ =0.705576;
@@ -93,19 +93,19 @@ void pasta_class::setInitialCPA(double &nup1_, double &nun1_, double &mef1_,
       nun2_= 0.868157;
       mef2_  = 0.831097;
     }else if(YpG>0.15){
-      nup1_ = 0.729249;
-      nun1_ = 0.760442;
-      mef1_ = 0.705812;
-      nup2_ = 0.845653; 
-      nun2_= 0.881817;
-      mef2_  = 0.848119;
+      nup1_= 0.732902;
+      nun1_= 0.764741;
+      mef1_= 0.710621;
+      nup2_= 0.841728;
+      nun2_= 0.878206;
+      mef2_= 0.843625;
     }else {
-      nup1_ = 0.74609;
-      nun1_ = 0.78048;
-      mef1_ = 0.728145;
-      nup2_ = 0.827205; 
-      nun2_= 0.865034;
-      mef2_  = 0.827197;
+      nup1_= 0.742868;
+      nun1_= 0.776718;
+      mef1_= 0.723924;
+      nup2_= 0.830057;
+      nun2_= 0.867572;
+      mef2_= 0.830367;
     }
   }else{
     nup1_ = 0.669306;
@@ -244,12 +244,13 @@ void pasta_class::setInitialCPA_src(double &nup1_, double &nun1_, double &mef1_,
       nun2_ =0.982678;
       mef2_ =1.;
     }else if(YpG>0.1){
-      nup1_ = 0.662231;
-      nun1_ = 0.690429;
-      mef1_ = 0.623059;
-      nup2_ = 0.948231;
-      nun2_ = 0.995136;
-      mef2_ = 0.991232;
+      nup1_= 0.651476;
+      nun1_= 0.672183;
+      mef1_= 0.604333;
+      yp1_= 0.361075;
+      nup2_= 0.921524;
+      nun2_= 0.941924;
+      mef2_= 0.923858;
     }else{
       nup1_ = 0.680758;
       nun1_ = 0.719669;
@@ -257,6 +258,59 @@ void pasta_class::setInitialCPA_src(double &nup1_, double &nun1_, double &mef1_,
       nup2_ = 0.907799;
       nun2_ = 0.959066;
       mef2_ = 0.944864;
+    }
+  }else if(cluster.parametrization=="nl3-src"){
+    if(YpG>0.3){
+      // nup1_= 0.6641;
+      // nun1_= 0.680539;
+      // mef1_= 0.617273;
+      // yp1_= 0.384508;
+      // nup2_= 0.930642;
+      // nun2_= 0.952089;
+      // mef2_= 0.935788;
+      nup1_= 0.664171;
+      nun1_= 0.681322;
+      mef1_= 0.61784;
+      yp1_= 0.379337;
+      nup2_= 0.923574;
+      nun2_= 0.942152;
+      mef2_= 0.923484;
+    }else if(YpG>0.25){
+      nup1_= 0.664235;
+      nun1_= 0.681448;
+      mef1_= 0.617962;
+      yp1_= 0.378863;
+      nup2_= 0.921541;
+      nun2_= 0.940157;
+      mef2_= 0.921072;
+    }else if(YpG>0.2){
+      nup1_= 0.664486;
+      nun1_= 0.681697;
+      mef1_= 0.618269;
+      yp1_= 0.378757;
+      nup2_= 0.917753;
+      nun2_= 0.936356;
+      mef2_= 0.916554;
+
+    }else if(YpG>0.15){
+      nup1_= 0.664152;
+      nun1_= 0.680858;
+      mef1_= 0.617517;
+      yp1_= 0.382561;
+      nup2_= 0.927993;
+      nun2_= 0.948242;
+      mef2_= 0.931017;
+
+    }else {
+      nup1_= 0.664171;
+      nun1_= 0.681173;
+      mef1_= 0.61774;
+      yp1_= 0.380413;
+      nup2_= 0.92518;
+      nun2_= 0.944208;
+      mef2_= 0.926022;
+
+
     }
 	}else{
     nup1_ = 0.669306;
@@ -299,9 +353,9 @@ void pasta_class::solveCPA(double rhoB_, double Yp_, double temp_){
 	Solver::Options optionsCPA; 		
 	optionsCPA.dense_linear_algebra_library_type=ceres::LAPACK;
 	// 
-	optionsCPA.parameter_tolerance = 1e-8;	 		//1e-8					
+	optionsCPA.parameter_tolerance = 1e-10;	 		//1e-8					
 	optionsCPA.function_tolerance = 1e-8;			//1e-6				
-	optionsCPA.gradient_tolerance=1e-10;			//1e-10			
+	optionsCPA.gradient_tolerance=1e-12;			//1e-10			
 	optionsCPA.max_num_iterations=1e3;	
 	// 
 	optionsCPA.use_nonmonotonic_steps=true;	
@@ -595,20 +649,23 @@ void pasta_class::solveCLD(double rhoB_, double Yp_, double temp_,double dim_, i
 	YpG=Yp_;
 	temperature=temp_;
 	dim=dim_;
+  int iDim= (int) dim_ -1;
 	iType=itype_;
 	cluster.setTemperature(temperature);
 	gas.setTemperature(temperature);
 
   double nup1, nun1, mef1, nup2, nun2, mef2;
-  if(firstRun) setInitialCPA(nup1, nun1, mef1, nup2, nun2, mef2);
-  else{ nup1 = cluster.proton.chemPot_eff;
-        nun1 = cluster.neutron.chemPot_eff;
-        mef1 = cluster.proton.mass_eff;
-        nup2 = gas.proton.chemPot_eff;
-        nun2 = gas.neutron.chemPot_eff;
-        mef2 = gas.proton.mass_eff;
-  }
 
+  if(firstRun) set_initialCLD();
+
+  nup1 = nup1M(iDim, itype_);
+  nun1 = nun1M(iDim, itype_);
+  mef1 = mef1M(iDim, itype_);
+  nup2 = nup2M(iDim, itype_);
+  nun2 = nun2M(iDim, itype_);
+  mef2 = mef2M(iDim, itype_);
+
+  // setInitialCPA(nup1, nun1, mef1, nup2, nun2, mef2);
 	double x[]={nup1, nun1, mef1, nup2, nun2, mef2};
   
 	Problem pCLD;
@@ -627,8 +684,8 @@ void pasta_class::solveCLD(double rhoB_, double Yp_, double temp_,double dim_, i
 //
 	// 
 	Solver::Options optionsCLD; 							//default:	0.5 fluc	
-	optionsCLD.parameter_tolerance = 1e-9; 		//1e-8			9 			
-	optionsCLD.function_tolerance = 1e-8;			//1e-6			8	
+	optionsCLD.parameter_tolerance = 1e-10; 		//1e-8			9 			
+	optionsCLD.function_tolerance = 1e-10;			//1e-6			8	
 	optionsCLD.gradient_tolerance=1e-12;			//1e-10			12
 // 
 	optionsCLD.max_num_iterations=1e3;
@@ -654,6 +711,12 @@ void pasta_class::solveCLD(double rhoB_, double Yp_, double temp_,double dim_, i
 	cluster.setEOS_coexistence(x[0], x[1], x[2]);
 	gas.setEOS_coexistence(x[3], x[4], x[5]);
 	f= (rhoB- gas.rhoB)/(cluster.rhoB-gas.rhoB);
+  nup1M(iDim, itype_) = x[0];
+  nun1M(iDim, itype_) = x[1];
+  mef1M(iDim, itype_) = x[2];
+  nup2M(iDim, itype_) = x[3];
+  nun2M(iDim, itype_) = x[4];
+  mef2M(iDim, itype_) = x[5];
 	// 
 // 
 	firstRun=false;
@@ -721,7 +784,8 @@ double getSurfaceTension(nlwm_class &cluster_, double Yp_, double T){
   double sigma_=0.;
 
   if(cluster_.parametrization=="iufsu" || cluster_.parametrization=="iufsu-src" 
-    || cluster_.parametrization=="nl3" || cluster_.parametrization=="nl3wr"  ){
+    || cluster_.parametrization=="nl3" || cluster_.parametrization=="nl3-src" 
+    || cluster_.parametrization=="nl3wr"  ){
 
 	  double x=pow(1.-2.*Yp_, 2.);
 	  sigma_= sigma0*exp(-sigma1*pow(x, 1.5))
@@ -831,6 +895,154 @@ double getRadiusD(double dim_, double u_, double Yp_, nlwm_class &cluster_,
 }
 // 
 // 
+void pasta_class::set_initialCLD(){
+ if(cluster.parametrization=="iufsu"){
+    if(YpG>0.3){
+      //slabs
+      nup1M(0,0)=  0.684448;
+      nun1M(0,0)=  0.684453;
+      mef1M(0,0)=  0.628566;
+      nup2M(0,0)=  0.993189; 
+      nun2M(0,0)=  0.98094;
+      mef2M(0,0)=  0.99999;
+      //slabs
+      nup1M(0,1)= 0.684448;
+      nun1M(0,1)= 0.684453;
+      mef1M(0,1)= 0.628566;
+      nup2M(0,1)= 0.993189; 
+      nun2M(0,1)= 0.98094 ;
+      mef2M(0,1)= 0.999;
+    //rods
+      nup1M(1,0)= 0.682245;
+      nun1M(1,0)= 0.682251;
+      mef1M(1,0)= 0.625786;
+      nup2M(1,0)= 0.99455;
+      nun2M(1,0)= 0.981152;
+      mef2M(1,0)= 0.99999;
+     
+//tubes
+      nup1M(1,1)= 0.692292;
+      nun1M(1,1)= 0.692297;
+      mef1M(1,1)= 0.638415;
+      nup2M(1,1)= 0.990316;
+      nun2M(1,1)= 0.980245;
+      mef2M(1,1)= 0.99999;
+
+//droplets
+      nup1M(2,0)= 0.681251;
+      nun1M(2,0)= 0.681258;
+      mef1M(2,0)= 0.624531;
+      nup2M(2,0)= 0.995225;
+      nun2M(2,0)= 0.98125;
+      mef2M(2,0)= 0.99999;
+//bubbles
+      nup1M(2,1)= 0.695708;
+      nun1M(2,1)= 0.695713;
+      mef1M(2,1)= 0.642682;
+      nup2M(2,1)= 0.989672;
+      nun2M(2,1)= 0.97997;
+      mef2M(2,1)= 0.99999;
+
+
+
+    }else if(YpG>0.1){
+            //slabs 
+      nup1M(0,0)=  0.711315;
+      nun1M(0,0)=  0.735641;
+      mef1M(0,0)=  0.677942;
+      nup2M(0,0)=  0.963017; 
+      nun2M(0,0)=  0.999621;
+      mef2M(0,0)=  0.999999;
+      //slabs
+    
+      nup1M(0,1)=0.711315;
+      nun1M(0,1)=0.735641;
+      mef1M(0,1)=0.677942;
+      nup2M(0,1)=0.963017; 
+      nun2M(0,1)=0.999621;
+      mef2M(0,1)=0.999999;
+    //rods
+    
+      nup1M(1,0)= 0.709385;
+      nun1M(1,0)= 0.733912;
+      mef1M(1,0)= 0.675718;
+      nup2M(1,0)= 0.964121;
+      nun2M(1,0)= 0.999791;
+      mef2M(1,0)= 0.999999;
+     
+//tubes
+      nup1M(1,1)= 0.718601;
+      nun1M(1,1)= 0.742176;
+      mef1M(1,1)= 0.686314;
+      nup2M(1,1)= 0.960911;
+      nun2M(1,1)= 0.999014;
+      mef2M(1,1)= 0.999999;
+
+//droplets
+      nup1M(2,0)= 0.708514;
+      nun1M(2,0)= 0.733132;
+      mef1M(2,0)= 0.674714;
+      nup2M(2,0)= 0.964675;
+      nun2M(2,0)= 0.999869;
+      mef2M(2,0)= 0.999999;
+//bubble
+      nup1M(2,1)= 0.72172;
+      nun1M(2,1)= 0.744978;
+      mef1M(2,1)= 0.689889;
+      nup2M(2,1)= 0.960584;
+      nun2M(2,1)= 0.998773;
+      mef2M(2,1)= 0.99999;
+    }else{
+      //slabs 
+      nup1M(0,0)=  0.724892;
+      nun1M(0,0)=  0.769319;
+      mef1M(0,0)=  0.709554;
+      nup2M(0,0)=  0.86376; 
+      nun2M(0,0)=  0.912378;
+      mef2M(0,0)=  0.88633;
+      //slabs
+    
+      nup1M(0,1)= 0.724892;
+      nun1M(0,1)= 0.769319;
+      mef1M(0,1)= 0.709554;
+      nup2M(0,1)= 0.86376; 
+      nun2M(0,1)= 0.912378;
+      mef2M(0,1)= 0.88633;
+    //rods
+      nup1M(1,0)= 0.725403;
+      nun1M(1,0)= 0.769762;
+      mef1M(1,0)= 0.710123;
+      nup2M(1,0)= 0.86447;
+      nun2M(1,0)= 0.912844;
+      mef2M(1,0)= 0.886906;
+     
+//tubes
+      nup1M(1,1)= 0.726573;
+      nun1M(1,1)= 0.770774;
+      mef1M(1,1)= 0.711423;
+      nup2M(1,1)= 0.864671;
+      nun2M(1,1)= 0.913893;
+      mef2M(1,1)= 0.888205;
+
+//droplet
+      nup1M(2,0)= 0.725785;
+      nun1M(2,0)= 0.770093;
+      mef1M(2,0)= 0.710547;
+      nup2M(2,0)= 0.864924;
+      nun2M(2,0)= 0.913189;
+      mef2M(2,0)= 0.887333;
+//bubble
+      nup1M(2,1)= 0.727185;
+      nun1M(2,1)= 0.771303;
+      mef1M(2,1)= 0.712101;
+      nup2M(2,1)= 0.865074;
+      nun2M(2,1)= 0.914433;
+      mef2M(2,1)= 0.888873;
+    }
+ }
+}
+
+
 void setSurfaceParameters(nlwm_class &cluster_, double &sigma0, double &sigma1, 
 			double &sa1, double &sa2, double &sa3, double &sa4, double &sa5, double &sa6,
   		double &aa0, double &aa1, double &aa2, double &aa3, double &aa4, double &aa5,
