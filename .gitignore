@@ -1,7 +1,10 @@
 **/data
 **/*.gp
+**/plt
 **/*.pdf
 **/.png
 **/*.sh
 **/*.txt
 **/build
+.vscode
+**/otp.txt

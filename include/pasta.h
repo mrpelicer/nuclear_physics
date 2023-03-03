@@ -1,7 +1,7 @@
 #ifndef pasta_h
 #define pasta_h
 
-#include "rmf_non_linear_walecka.h"
+#include "rmf_walecka.h"
 #include "particles.h"
 #include "interpolator.h"
 #include <iostream>

@@ -1,7 +1,7 @@
 // Pasta with non linear Walecka model using Mean Field Theory
 #include "../../include/constant.h"
 #include "../../include/particles.h"
-#include "../../include/rmf_non_linear_walecka.h"
+#include "../../include/rmf_walecka.h"
 #include "../../include/pasta.h"
 #include "../../include/interpolator.h"
 #include <iostream>
