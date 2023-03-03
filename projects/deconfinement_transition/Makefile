@@ -7,6 +7,7 @@ all: build pt
 
 build:
 	cd ../../.; $(MAKE)
+	$(MKDIR) data/
 	
 pt:
 	$(CC) -o pt phase_transition.cpp  $(DEPS) $(GSL_LIB) $(CERES_LIB) $(BOOST_LIB) $(WALL) 

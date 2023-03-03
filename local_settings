@@ -20,4 +20,3 @@ CUBA_LIB = -lcuba
 PYTHON_LIB= -I/usr/include/python3.6/ -lpython3.6m
 
 LIBS= $(WALL) $(GSL_LIB) $(CERES_LIB) $(CUBA_LIB) $(BOOST_LIB) $(CUBA_LIB) $(PYTHON_LIB)
-MY_FILES= $(BUILDDIR)/*.o

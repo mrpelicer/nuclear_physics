@@ -10,6 +10,7 @@ all: build gibbs_yp gibbs_beta cld_yp
 
 build:
 	cd ../../.; $(MAKE)
+	$(MKDIR) data/
 
 gibbs_yp:
 	$(CC) -o gibbs_yp gibbs_yp.cpp $(DEPS) $(GSL_LIB) $(CERES_LIB) $(CUBA_LIB) $(WALL)

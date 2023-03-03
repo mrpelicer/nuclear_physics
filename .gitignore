@@ -1,11 +1,16 @@
 **/data
 **/*.gp
 **/plt
+**/plt/**
 **/*.pdf
+**/*.tex
+**/*.log
+**/*.o
 **/.png
 **/*.sh
 **/*.txt
-**/build
 .vscode
 **/otp.txt
 **/input/**
+**/luiz
+**/.vscode
