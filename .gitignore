@@ -1,15 +1,10 @@
 **/data
-**/*.gp
 **/plt
-**/plt/**
-**/*.pdf
-**/*.tex
 **/*.log
 **/*.o
 **/.png
 **/*.sh
 **/*.txt
-.vscode
 **/otp.txt
 **/input/**
 **/luiz
