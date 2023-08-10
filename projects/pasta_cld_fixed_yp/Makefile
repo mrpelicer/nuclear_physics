@@ -32,7 +32,7 @@ $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)
 
 
-$(BUILDDIR)/pasta.o : $(LIBDIR)/particles.h \
+$(BUILDDIR)/pasta.o : $(LIBDIR)/pasta.h \
 	$(LIBDIR)/pasta.cpp \
 	$(LIBDIR)/pasta.h
 	$(CC) -c $(LIBDIR)/pasta.cpp -o $(BUILDDIR)/pasta.o $(GSL_LIB) $(CERES_LIB) $(WALL)
@@ -56,4 +56,4 @@ $(BUILDDIR)/interpolator.o : $(LIBDIR)/interpolator.h \
 	$(CC) -c $(LIBDIR)/interpolator.cpp -o $(BUILDDIR)/interpolator.o $(GSL_LIB)  $(WALL) 
 
 clean:
-	$(RM) $(OBJS) $(APP1)
+	$(RM) $(OBJS) $(APP)

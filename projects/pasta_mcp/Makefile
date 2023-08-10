@@ -13,26 +13,28 @@ BOOST_LIB= -I/usr/local/include/boost_1_76_0/
 CUBA_LIB = -lcuba
 PYTHON_LIB= -I/usr/include/python3.6/ -lpython3.6m
 
-OBJS = 	$(BUILDDIR)/particles.o \
+OBJS = 	$(BUILDDIR)/pasta.o \
+				$(BUILDDIR)/particles.o \
 				$(BUILDDIR)/rmf_non_linear_walecka.o \
 				$(BUILDDIR)/interpolator.o
-#  $(BUILDDIR)/core.o \
-#  $(BUILDDIR)/crust.o \
-#  $(BUILDDIR)/lepton.o \
-#  $(BUILDDIR)/nuclear_en.o \
-#  $(BUILDDIR)/coulomb.o \
-#  $(BUILDDIR)/nuclear_surface_en.o \
-#  $(BUILDDIR)/nuclear_matter.o \
-#  $(BUILDDIR)/empirical.o 
-APP = hmg
+
+APP= mcp
+
+all: $(APP)
 
 $(APP) : $(BUILDDIR) \
 	$(OBJS) \
-	trapped.cpp
-	$(CC) -o $(APP) trapped.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(WALL) 
-
+	mcp.cpp
+	$(CC) -o $(APP)  mcp.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(EIGEN_LIB) $(CUBA_LIB) $(WALL) 
+	
 $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)
+
+
+$(BUILDDIR)/pasta.o : $(LIBDIR)/pasta.h \
+	$(LIBDIR)/pasta.cpp \
+	$(LIBDIR)/pasta.h
+	$(CC) -c $(LIBDIR)/pasta.cpp -o $(BUILDDIR)/pasta.o $(GSL_LIB) $(CERES_LIB) $(WALL)
 
 
 $(BUILDDIR)/particles.o : $(LIBDIR)/particles.h \
@@ -40,9 +42,10 @@ $(BUILDDIR)/particles.o : $(LIBDIR)/particles.h \
 	$(LIBDIR)/particles.h
 	$(CC) -c $(LIBDIR)/particles.cpp -o $(BUILDDIR)/particles.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
 
+
 $(BUILDDIR)/rmf_non_linear_walecka.o : $(LIBDIR)/rmf_non_linear_walecka.h \
 	$(LIBDIR)/rmf_non_linear_walecka.cpp \
-	$(LIBDIR)/rmf_non_linear_walecka.h
+	$(LIBDIR)/particles.h
 	$(CC) -c $(LIBDIR)/rmf_non_linear_walecka.cpp -o $(BUILDDIR)/rmf_non_linear_walecka.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
 
 
