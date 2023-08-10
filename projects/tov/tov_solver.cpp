@@ -31,7 +31,9 @@ void skip(istream & in, size_t n , char delim)
 
 
 int main(){
-    string eos_file = "eos_iufsu_noB.txt";
+
+    //Read file with Density, energy, pressure in fm-3, mev fm-3, mev fm-3
+    string eos_file = "eos_n_ddme2_snb1.000000_yle0.400000.txt";
     // string eos_file = "eos_iufsu_noB.txt"; 
     ifstream eos_data("input/"+eos_file);
     ofstream eos_test("data/eos.txt");
@@ -65,14 +67,18 @@ int main(){
     //  std::for_each(enerv.begin(), enerv.end(), [](double &el){el *= hc; });
     ofstream outMR("data/mr_"+eos_file);
 
-
-    //check the EOS:
-
-
+    
+    //define tov object and give energy and pressure as vectors
     tov_class tov(enerv, presv);
+
+    //reasonable step in cm
     double dr=1e2;
 
+    //do bps crust
     tov.do_crust();
+    
+    //check EoS? uncomment lines below
+
     // int iener= 1000;
     // int iener=tov.e_eosv.size();
     // double en_max= tov.e_eosv.back();
@@ -118,6 +124,9 @@ int main(){
 
     // eos_test.close();
 
+//tov solver: 
+
+//define central energy step:
     int iener= 100;
     double en_max= enerv.back();
     double en_min= enerv.front();
@@ -128,6 +137,7 @@ int main(){
 
     vector<double> massv, radiusv;
     //cout << en_max << " " << en_min << endl;
+
     for(int ie=0; ie<iener; ie++){
 
         double e_center= en_max-ie*de;
@@ -140,11 +150,12 @@ int main(){
         // double  y= tov.gety();
         // double  beta= tov.getBeta();
         // double  h= tov.getH();
-        // double Lambda= tov.getLambda();
-        cout << radius << " " << mass << " " << e_center  << " " <<endl; 
-        //<< Lambda << " "            << compactness <<  " " << y << " " << beta << " " << h 
-
-        outMR << radius << " " << mass << " " << e_center << " " << endl; 
+        double Lambda= tov.getLambda();
+        cout << radius << " " << mass << " " << e_center << endl;
+        // << Lambda << " "            << compactness <<  " " << y << " " << beta << " " << h 
+        // << endl;
+        outMR << radius << " " << mass << " " << e_center << endl;
+        // << Lambda << " "            << compactness <<  " " << y << " " << beta << " " << h << endl;
         massv.push_back(mass);
         radiusv.push_back(radius);
         //<< Lambda << " "            << compactness << " " <<  y << " " << beta << " " << h << endl;
@@ -157,39 +168,6 @@ int main(){
     cout << "R( Mmax) : " << radiusv[ir-massv.begin()] << endl;
     outMR.close();
 
-    // ofstream outMR2("data/mr_diag2.txt");
 
-    // tov_class_rk4 tovrk4(enerv, presv);
-
-    
-    //    for(int ie=0; ie<iener; ie++){
-
-    //     double e_center= en_max-ie*de;
-    //     double p_center=interpolation_func(e_center, presv, enerv);
-
-    //     double mass=0., radius=0., nu=0.;
-    //     double dr=1e2; //fm
-    //     state_type x = { mass, p_center }; // initial conditions
-
-        
-    //     runge_kutta4< state_type > stepper;
-    //     radius=dr;
-    //      do{
-            
-    //         stepper.do_step( tovrk4 , x , radius , dr );
-    //         radius+=dr;
-    //     }while(x[1]> presv[0]   );
-
-    //     mass=x[0];
-
-    //     double compactness= mass/radius;
-
-    //     radius*= fm_to_cm*1e-5; //fm to km
-
-    //     mass*= hc*1.73e-30; // 1/fm to MeV and MeV to kg
-
-    //     outMR2 << radius << " " << mass/Msun << " " << e_center << " " << p_center  << " " << compactness << endl;
-    // }
-    // outMR2.close();
     return 0;
 }

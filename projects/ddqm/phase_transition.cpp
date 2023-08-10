@@ -1,7 +1,7 @@
 #include "../../include/constant.h"
 #include "../../include/particles.h"
-#include "../../include/rmf_walecka.h"
-#include "../../include/ddqm_model.h"
+#include "../../include/rmf_non_linear_walecka.h"
+#include "../../include/quark_model.h"
 #include "../../include/interpolator.h"
 
 #include <iostream>
@@ -33,15 +33,43 @@ private:
 
 int main(){
 //Choose pararametrization
-	string parametrization= "nl3wr*";
-	string hyperon_params =	"nl3wr*"; 
+	string parametrization= "fsu2h";
+	string hyperon_params =	"fsu2h"; 
+	string delta_params =	"su6"; 
 
 	nlwm_class hadrons(parametrization);
 	quarks_class quarks;
 
-	bool doHyperons	=	true;
+	bool doHyperons	=	false;
+	bool doDeltas= false;
+	bool doBfield		= false;
+
+
+	particle electron;
+	electron.mass= Me/Mnucleon;
+	electron.mass_eff=Me/Mnucleon;
+	electron.Q=-1.;
+	electron.gamma=2.;
+
+	particle muon;
+	muon.mass= Mm/Mnucleon;
+	muon.mass_eff=Mm/Mnucleon;
+	muon.Q=-1.;
+	muon.gamma=2.;
+	double Bg=3.e18; // Gauss
+	double Bc=pow(Me, 2.)/eHL;  
+	double Bfield=Bg*Bc/4.41e13;
+
 
 	if(doHyperons) hadrons.includeHyperons(doHyperons, hyperon_params);
+	if(doDeltas) hadrons.includeDeltas(doDeltas, delta_params);
+
+	if(doBfield){
+		hadrons.setBfield(	doBfield, Bfield);
+		quarks.setBfield(doBfield, Bfield);
+		electron.setBfield(		doBfield, Bfield);
+	 	muon.setBfield(				doBfield, Bfield);
+	}
 	int iflavor= (doHyperons== true) ? 3 : 2;
 	quarks.setFlavorNumber(iflavor);
 
@@ -60,28 +88,17 @@ int main(){
 	quarks.setParameters(C, D, tcrit);
 
 
-	particle electron;
-	electron.mass= Me/Mnucleon;
-	electron.mass_eff=Me/Mnucleon;
-	electron.Q=-1.;
-	electron.gamma=2.;
-
-	particle muon;
-	muon.mass= Mm/Mnucleon;
-	muon.mass_eff=Mm/Mnucleon;
-	muon.Q=-1.;
-	muon.gamma=2.;
 //Set system variables
 	// double temperature;
 	double tempMin=0./Mnucleon;
   double tempMax=170./Mnucleon;
-  int itMax=85;
+  int itMax=1;
   double dt=  (tempMax-tempMin)/itMax;
 
 	double rhoB;
 	double rhoBMin=0.003/pow(Mnucleon/hc, 3);
   double rhoBMax=1./pow(Mnucleon/hc, 3);///7.5*hadrons.rho0;
-	//0.62/pow(Mnucleon/hc, 3); fsu2h c amm ou b
+
   int iR=110;
   double dRho=  (rhoBMax-rhoBMin)/iR;
 	double Yu, Yd, Ys, Ye, Ym;
@@ -145,9 +162,11 @@ int main(){
 					+		2.*hadrons.xim.density)/(3.*hadrons.getBaryonDens()); 							
 			Ye=electron.density/rhoB;
 			Ym=muon.density/rhoB;
-
-			quarks.setEoSFlavor_muBFixed(hadrons.muB, temperature, electron, muon,
-														Yu, Yd, Ys);			
+			
+			
+			quarks.setEOS_betaEq(rhoB, temperature, electron, muon);
+			// quarks.setEoSFlavor_muBFixed(hadrons.muB, temperature, electron, muon,
+														// Yu, Yd, Ys);			
 			
 			
 			// quarks.setEoSFlavor_muBFixed2(hadrons.muB, temperature, electron, muon,
@@ -159,8 +178,7 @@ int main(){
 			double EnergyQ	= quarks.getEnergy()+electron.energy+muon.energy;
 			double PressureQ= quarks.getPressure()+electron.pressure+muon.pressure;
 			
-			quarks.muB= (EnergyQ+ PressureQ
-      -temperature*(quarks.getEntropy()+electron.entropy + muon.entropy)
+			quarks.muB= (EnergyQ+ PressureQ -temperature*(quarks.getEntropy()+electron.entropy + muon.entropy)
       )/quarks.getBaryonDens();
 
 				outHadron << hadrons.muB*Mnucleon << " " 
@@ -175,8 +193,9 @@ int main(){
 								 << quarks.rhoB*pow(Mnucleon/hc, 3)
 								 <<endl;
 
-			if(PressureH>=0. && 
-						(irho==0 || (hadrons.rhoB < rhobHv.back() && quarks.rhoB < rhobQv.back()))){
+				// std::cout <<"TEst: " <<  quarks.muB << " " <<  quarks.rhoB << " " << EnergyQ << " " << PressureQ << " " << quarks.getEntropy() << endl;
+
+			if(PressureH>=0. && !isinf(quarks.muB) && (irho==0 || (hadrons.rhoB < rhobHv.back() && quarks.rhoB < rhobQv.back()))){
 				mubHv.push_back(hadrons.muB);
 				mubQv.push_back(quarks.muB);
 				pressHv.push_back(PressureH);
@@ -185,12 +204,16 @@ int main(){
 				rhobQv.push_back(quarks.rhoB);
 				enerHv.push_back(EnergyH);
 				enerQv.push_back(EnergyQ);
+				
+				std::cout <<"TEst2: " <<  quarks.muB << " " <<  quarks.rhoB << " " << EnergyQ << " " << PressureQ << " " << quarks.getEntropy() << endl;
 
 			}
 			// ip++;
 		// }while((hadrons.getBaryonDens()*pow(Mnucleon/hc, 3))>0.05);
 		}
 		// }
+
+
 		hadrons.firstRun=true;
 		quarks.firstRun=true;
 		reverse(mubHv.begin(), mubHv.end());
@@ -206,11 +229,23 @@ int main(){
 		if(mubHv[0] == mubHv[mubHv.size()-1]){
 			break;
 		}else{
+
+	for(int irho=0; irho<=iR; irho++){
+			rhoB=rhoBMax- (double)irho*dRho;
+		
+			std::cout << "transition: T= " << temperature*Mnucleon << " "  
+			  << rhoB*pow(Mnucleon/hc, 3.)  << " " << rhoB*pow(Mnucleon/hc, 3.)  << " " 
+				<< interpolation_func(rhoB, pressHv, rhobHv)*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
+				<< interpolation_func(rhoB, pressQv, rhobQv)*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
+				<< interpolation_func(rhoB, mubHv, rhobHv)*Mnucleon  << " " 
+				<< interpolation_func(rhoB, mubQv, rhobQv)*Mnucleon  << " "
+				 << endl;
+	}
 		vector<double> trans_point= findTransition(mubHv, mubQv, pressHv, pressQv, rhobHv, rhobQv);
 		double rhoht= trans_point[0];
 		double rhoqt= trans_point[1];
 
-		cout << "transition: T= " << temperature*Mnucleon << " "  
+		std::cout << "transition: T= " << temperature*Mnucleon << " "  
 			  << rhoht*pow(Mnucleon/hc, 3.)  << " " << rhoqt*pow(Mnucleon/hc, 3.)  << " " 
 				<< interpolation_func(rhoht, pressHv, rhobHv)*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
 				<< interpolation_func(rhoqt, pressQv, rhobQv)*Mnucleon*pow(Mnucleon/hc, 3.)  << " " 
@@ -257,8 +292,8 @@ vector<double> findTransition(vector<double> mubHv_, vector<double> mubQv_,
 							vector<double> pressHv_, vector<double> pressQv_, 
 							vector<double> rhobHv_, vector<double> rhobQv_){
 
-	double rhobh_=rhobHv_[rhobHv_.size() -50];
-	double rhobq_=rhobQv_[rhobQv_.size() -50];
+	double rhobh_=rhobHv_[rhobHv_.size() -10];
+	double rhobq_=rhobQv_[rhobQv_.size() -10];
 	double x[]={rhobh_, rhobq_};
 	 
 	Problem p;
@@ -268,8 +303,8 @@ vector<double> findTransition(vector<double> mubHv_, vector<double> mubQv_,
 	p.AddResidualBlock(cost, NULL, x);
 	//  cout<< rhobHv_.front()*pow(Mnucleon/hc, 3) << " " << rhobHv_.back()*pow(Mnucleon/hc, 3) << " " 
 	//  			<< rhobQv_.front()*pow(Mnucleon/hc, 3) << " " << rhobQv_.back()*pow(Mnucleon/hc, 3) << endl;
-  p.SetParameterLowerBound(x, 0, rhobHv_.front());
-  p.SetParameterUpperBound(x, 0, rhobHv_.back());
+  	p.SetParameterLowerBound(x, 0, rhobHv_.front());
+  	p.SetParameterUpperBound(x, 0, rhobHv_.back());
 	p.SetParameterLowerBound(x, 1, rhobQv_.front());
 	p.SetParameterUpperBound(x, 1, rhobQv_.back());
 	Solver::Options options;
@@ -317,10 +352,10 @@ bool TransitionFunctor::operator()(const T* x, T* residuals) const{
 
 	double mubh_, mubq_, pressh_, pressq_;
 	
-	 mubh_= interpolation_func(x[0], pressHv, rhobHv);
-	 mubq_= interpolation_func(x[1], pressQv, rhobQv);
-	 pressh_= interpolation_func(x[0], mubHv, rhobHv);
-	 pressq_= interpolation_func(x[1], mubQv, rhobQv);
+	 mubh_= interpolation_func(x[0], mubHv, rhobHv);
+	 mubq_= interpolation_func(x[1], mubQv, rhobQv);
+	 pressh_= interpolation_func(x[0], pressHv, rhobHv);
+	 pressq_= interpolation_func(x[1], pressQv, rhobQv);
 
   residuals[0] = mubh_ - mubq_;
   residuals[1] = pressh_ - pressq_;

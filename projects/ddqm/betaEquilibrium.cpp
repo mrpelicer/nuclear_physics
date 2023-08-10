@@ -1,7 +1,7 @@
 //Nuclear matter properties using Mean Feild Theory (NLWM) at T=0.
 #include "../../include/constant.h"
 #include "../../include/particles.h"
-#include "../../include/ddqm_model.h"
+#include "../../include/quark_model.h"
 #include "../../include/interpolator.h"
 
 
@@ -11,8 +11,8 @@
 #include <algorithm>
 #include <functional> 
 #include <fstream>
-// #include <gsl/gsl_interp.h>	
-// #include <gsl/gsl_spline.h>
+#include <gsl/gsl_interp.h>	
+#include <gsl/gsl_spline.h>
 
 using namespace std;
 int main(){

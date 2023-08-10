@@ -7,7 +7,6 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
-#include <boost/math/tools/roots.hpp>
 
 using namespace std;
 
@@ -16,4 +15,7 @@ double interpolation_func(double x_, std::vector<double> yv_,	std::vector<double
 double deriv_func(double x_, std::vector<double> yv_,	std::vector<double> xv_);
 
 double deriv2_func(double x_, std::vector<double> yv_,	std::vector<double> xv_);
+
+double interpolate(double x_, const std::vector<double> &yv_, const std::vector<double> &xv_);
+
 #endif

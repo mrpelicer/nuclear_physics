@@ -15,7 +15,8 @@ void tov_class::solve_tov_euler(double e_center, double dr){
         vector<double> presv_=p_eosv;
         vector<double> enerv_=e_eosv;
 
-        double p_center=interpolation_func(e_center, presv_, enerv_);
+        // double p_center=interpolation_func(e_center, presv_, enerv_);
+        double p_center=interpolate(e_center, presv_, enerv_);
 
         double mass_=0.;
         double radius_ =dr;
@@ -33,15 +34,16 @@ void tov_class::solve_tov_euler(double e_center, double dr){
 
 
             
-            // massv.push_back(mass_);
-            // radiusv.push_back(radius_);
-            // pv.push_back(pres_);
-            // ev.push_back(ener_);
+            massv.push_back(mass_);
+            radiusv.push_back(radius_);
+            pv.push_back(pres_);
+            ev.push_back(ener_);
 
             mass_+=dm;
             radius_+=dr;
             pres_+=dp;
-            if(pres_> presv_[0] && pres_>0.) ener_= interpolation_func(pres_, enerv_, presv_);
+            if(pres_> presv_[0] && pres_>0.) ener_= interpolate(pres_, enerv_, presv_);
+            // ener_= interpolation_func(pres_, enerv_, presv_);
 
     
             
@@ -95,7 +97,6 @@ void tov_class::solve_tov_euler_pcentral(double p_center, double dr){
 
             pres_+=dp;
             if(doqh_trans) set_eos_phase(pres_);
-
             presv_=p_eosv;
             enerv_=e_eosv;
             if(pres_> presv_[0] && pres_>0.) ener_= interpolation_func(pres_, enerv_, presv_);
@@ -105,73 +106,6 @@ void tov_class::solve_tov_euler_pcentral(double p_center, double dr){
     mass= mass_;
     radius=radius_;
         
-}
-
-
-void tov_class::solve_tidal_euler(double e_center, double dr){
-    double dbeta, dH;
-    // solve_tov_euler(e_center, dr);
-
-    double radius_=dr;        
-
-    double beta_=2.*radius_;
-    double H_ =pow(radius_, 2.);
-
-    // set_stop_condition();
-    // cout << "sizes: " << radiusv.size() << " " << ev.size() << " " << massv.size() << " " << pv.size() << endl;
-    do{
-    cout<< "er interp" << endl;
-    double eR= interpolation_func(radius_ , ev, radiusv);
-    cout<< "mr interp" << endl;
-    double mR= interpolation_func(radius_, massv, radiusv );
-    cout<< "pr interp" << endl;
-    double pR= interpolation_func(radius_, pv, radiusv);
-    cout<< "dedp interp" << endl;
-    double de_dp= dedp(radius_);
-
-    dbeta = dr*H_*(-2.*M_PI *G_cte/pow(c_vel, 2.)*(
-        5.*eR + 9.*pR /pow(c_vel, 2.) + de_dp * pow(c_vel, 2.)* (eR + pR /pow( c_vel, 2.) )) \
-                   + 3. / pow(radius_, 2.)
-                   + 2./(1. - 2.*mR/radius_ * km_to_mSun)*pow(
-                       mR /pow(radius_, 2.)* km_to_mSun + G_cte /pow(c_vel, 4.)* 4.*M_PI *radius_*pR , 2.))
-              + beta_/radius_* (
-                  -1. + mR /radius_ *km_to_mSun + 2.*M_PI *pow(radius_, 2.)*G_cte/pow(c_vel, 2.)*(eR - pR/pow(c_vel, 2.)))
-                  /(2.*(1. - 2.*mR/radius_*km_to_mSun));
-
-    dH= dr*beta_;
-    
-    radius_+=dr;
-    H_+=dH;
-    beta_+=dbeta;
-       
-    }while(radius_>radiusv[0]);
-
-    H= H_;
-    beta=beta_;
-
-}
-
-double tov_class::dedp(double r_){
-    cout << "dedp?" << endl;
-    // cout << "p(r)" << endl;
-    //double de= 
-    // double pres_= interpolation_func(r_, pv, radiusv);
-    // double ener_= interpolation_func(r_, ev, radiusv);
-    double dp_= deriv_func(r_,  pv, radiusv);
-    double de_= deriv_func(r_,  ev, radiusv);
-    double de_dp_=dp_/de_;
-    cout << "end?" << endl;
-//    double dp= pres_*5e-3;
-//    // cout << "e(p)?" << endl;
-//    double el_3 = interpolation_func(pres_ - 3. * dp, ev, pv);
-//    double el_2 = interpolation_func(pres_ - 2. * dp, ev, pv);
-//    double el_1 = interpolation_func(pres_ - 1. * dp, ev, pv);
-//    double er_3 = interpolation_func(pres_ + 3. * dp, ev, pv);
-//    double er_2 = interpolation_func(pres_ + 2. * dp, ev, pv);
-//    double er_1 = interpolation_func(pres_ + 1. * dp, ev, pv);
-//
-//    double de_dp_ = (-1./60. * el_3 + 3. / 20. * el_2 - 3. / 4. * el_1 + 3. / 4. * er_1 - 3. / 20. * er_2 + 1. / 60. * er_3) / dp;
-    return de_dp_;
 }
 
 
@@ -193,39 +127,6 @@ double tov_class::getMass(){
 
 double tov_class::getRadius(){
     return radius/1e5;// get in km
-}
-
-
-double tov_class::gety(){
-    return radius*beta/H;
-
-}
-double tov_class::getCompactness(){
-    return mass/radius*km_to_mSun;
-}
-
-double tov_class::getBeta(){
-    return beta;
-
-}
-double tov_class::getH(){
-    return H;
-}
-
-double tov_class::getLambda(){
-
-return 2.*getk2()/(3.*getCompactness());
-}
-
-
-double tov_class::getk2(){
-    double y=gety();
-    double C=getCompactness();
-    return 8./5.*pow(C, 5.)* pow(1. - 2.*C, 2.)*(2. + 2.*C*(y - 1.)-y)/(
-          2.*C*(6. - 3. * y + 3. * C * (5. * y - 8.)) + 4. * pow(C, 3)* (
-            13. - 11. * y + C * (3. * y - 2.) + 2. * pow(C, 2)* (1 + y)) + 3. * pow(1. - 2. * C, 2.) * 
-            (2. - y + 2. * C * (y - 1.)) * (
-            log(1. - 2. * C)));
 }
 
 

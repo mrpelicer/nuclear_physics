@@ -59,4 +59,30 @@ double deriv2_func(double x_, std::vector<double> yv_,	std::vector<double> xv_)
     return res;
 }
 
+double interpolate(double x_, const std::vector<double> &yv_, const std::vector<double> &xv_)
+{
+  //Local variables
+  double y_;
+  int k,l;
+
+//Find the index of the element of xv_ that is nearest-above to x
+auto i = lower_bound(xv_.begin(), xv_.end(), x_); 
+//If the vector values are in decreasing order use:
+//auto i = lower_bound(xv_.rbegin(), xv_.rend(), x);
+k = i - xv_.begin(); //Nearest index
+if (i == xv_.end())
+  --k;  // extrapolating above
+else if (*i == x_)
+  return yv_[k];
+
+l = k? k - 1: 1; //nearest-below index, except when extrapolating downward
+
+//Interpolation:
+  if(xv_[k]<xv_[l]) 
+      y_ = yv_[k]+(x_-xv_[k])*(yv_[l]-yv_[k])/(xv_[l]-xv_[k]);
+  else 
+      y_ = yv_[l]+(x_-xv_[l])*(yv_[k]-yv_[l])/(xv_[k]-xv_[l]);
+
+  return y_;
+}
 

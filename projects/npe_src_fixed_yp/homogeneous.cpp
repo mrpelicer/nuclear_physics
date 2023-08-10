@@ -1,7 +1,7 @@
 //Nuclear matter properties using Mean Feild Theory (NLWM) at T=0.
 #include "../../include/constant.h"
 #include "../../include/particles.h"
-#include "../../include/rmf_walecka.h"
+#include "../../include/rmf_non_linear_walecka.h"
 #include "../../include/interpolator.h"
 #include <iostream>
 #include <iomanip>
@@ -61,9 +61,9 @@ int main(int argc, char** argv)
 			electron.chemPot=electron.chemPot_eff;
 			electron.calculateProperties();
 
-			Energy= qhd.getEnergy()		 	+electron.energy; 		
-			Pressure= qhd.getPressure()	+electron.pressure;
-			Entropy= qhd.getEntropy()	 	+electron.entropy;
+			Energy= qhd.getEnergy()		 	; //+electron.energy; 		
+			Pressure= qhd.getPressure()	; //+electron.pressure;
+			Entropy= qhd.getEntropy()	 	; //+electron.entropy;
 			FreeEn= Energy -temperature*Entropy;
 			
 			rhobv.push_back(rhoB);

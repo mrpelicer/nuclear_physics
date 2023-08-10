@@ -4,6 +4,7 @@
 #include "constant.h"
 #include "interpolator.h"
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -40,17 +41,9 @@ class tov_class{
         void solve_tov_euler(double e_center, double dr);
         void solve_tov_euler_pcentral(double pe_center, double dr);
 
-        void solve_tidal_euler(double e_center, double dr);
-
         double getMass();
         double getRadius();
-        double gety();
-        double getCompactness();
-        double getBeta();
-        double getH();
-        double getk2();
-        double getLambda();
-
+       
         void do_crust();
         vector<double> e_eosv, p_eosv;
     private:

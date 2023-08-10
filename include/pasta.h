@@ -1,8 +1,8 @@
 #ifndef pasta_h
 #define pasta_h
 
-#include "rmf_walecka.h"
 #include "particles.h"
+#include "rmf_non_linear_walecka.h"
 #include "interpolator.h"
 #include <iostream>
 #include <vector>
@@ -15,9 +15,6 @@
 #include <gsl/gsl_sf_bessel.h>
 #include <gsl/gsl_interp.h>	
 #include <gsl/gsl_spline.h>
-#include <Eigen/Dense>
-#include <Eigen/CXX11/Tensor>
-
 
 //define cuba integration
 // #define NDIM 1
@@ -73,8 +70,6 @@ public:
 	void solveCPA_betaEq(double rhoB_, double temp_, particle &electron_);
 
 	void solveCLD(double rhoB_, double Yp_, double temp_, double dim_, int it_);
-  Eigen::MatrixXd nup1M{3,2}, nun1M{3,2}, mef1M{3,2}, nup2M{3,2}, nun2M{3,2}, mef2M{3,2};
-  void set_initialCLD();
 		
 };
 

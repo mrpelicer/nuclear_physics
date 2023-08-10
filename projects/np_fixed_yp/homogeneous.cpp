@@ -1,7 +1,7 @@
 //Nuclear matter properties using Mean Feild Theory (NLWM) at T=0.
 #include "../../include/constant.h"
 #include "../../include/particles.h"
-#include "../../include/rmf_walecka.h"
+#include "../../include/rmf_non_linear_walecka.h"
 #include "../../include/interpolator.h"
 #include <iostream>
 #include <iterator>
@@ -25,9 +25,9 @@ int main(){
 	qhd.printParameters();
 //Set system variables
 	double rhoB,Yle=0.5, temperature=0.;
-  	double rhoBMax=1./pow(Mnucleon/hc, 3);
-  	int iR=200;
-  	double dRho= rhoBMax/iR;
+  double rhoBMax=1./pow(Mnucleon/hc, 3);
+  int iR=200;
+  double dRho= rhoBMax/iR;
 
 // 	//Define thermodynamic variables
 	double Energy, FreeEn, Pressure, Entropy;
@@ -200,6 +200,7 @@ int main(){
 				<< fabs(interpolation_func(rhoB, cs2v, rhobv)) << " "
 				<< interpolation_func(rhoB, esymv, rhobv)*Mnucleon << " "
 				<< interpolation_func(rhoB, lsymv, rhobv)*Mnucleon << " "
+				<< interpolation_func(rhoB, ksymv, rhobv)*Mnucleon << " "
 				<< endl;
 
 		outUpar << rhoB*pow(Mnucleon/hc, 3) << " " 
@@ -232,10 +233,10 @@ int main(){
 	double Us0= 	interpolation_func(rho0, Us0v, rhobv);
 	double Ux0= 	interpolation_func(rho0, Ux0v, rhobv);
 	double Ud0= 	interpolation_func(rho0, Ud0v, rhobv);
-
+   	double Ksym0= interpolation_func(rho0, ksymv, rhobv)*Mnucleon ;
 	
 	cout << " rho_0" << setw(25)<< "B/A (MeV)" << setw(25) <<"K_0 (MeV)" 
-					  <<setw(25) << "J(MeV)" << setw(25) <<  "L(MeV)" << setw(25) <<"m*/m" << setw(25) << "cs2"
+					  <<setw(25) << "J(MeV)" << setw(25) <<  "L(MeV)" << setw(25) <<"m*/m" << setw(25) << "cs2" << " " << "ksym"
 		  			<< endl;	
 
 	cout <<rho0*pow(Mnucleon/hc, 3) << setw(25)
@@ -245,6 +246,7 @@ int main(){
 			 << Lsym*Mnucleon << setw(25)
  			 << qhd.proton.mass_eff << setw(25) 
 			 << fabs(cs2) << setw(25) 
+			 << Ksym0 << setw(25) 
 			 << endl;
 
 	cout 	<< "Un"								<< setw(25)
