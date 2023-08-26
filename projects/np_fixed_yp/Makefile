@@ -1,55 +1,54 @@
 CC = g++
 RM = rm -r
 LIBDIR = ../../include
+SOLVERDIR = ../../include/solvers
 MKDIR = mkdir -p
 BUILDDIR = ../../include/build
 
 WALL = -std=c++17 -Wall -lm -O3
 GSL_LIB= -lgsl -lgslcblas
 CERES_LIB= -I/usr/include/eigen3 -lceres -lglog 
-CUBA_LIB = -lcuba
 EIGEN_LIB= -I/usr/include/eigen3/unsupported
-BOOST_LIB= -I/usr/local/include/boost_1_76_0/
-CUBA_LIB = -lcuba
-PYTHON_LIB= -I/usr/include/python3.6/ -lpython3.6m
+
+CFLAGS = $(WALL) $(GSL_LIB) $(CERES_LIB) $(EIGEN_LIB) $(WALL)
+
 
 OBJS = 	$(BUILDDIR)/particles.o \
-				$(BUILDDIR)/rmf_non_linear_walecka.o \
-				$(BUILDDIR)/interpolator.o
-#  $(BUILDDIR)/core.o \
-#  $(BUILDDIR)/crust.o \
-#  $(BUILDDIR)/lepton.o \
-#  $(BUILDDIR)/nuclear_en.o \
-#  $(BUILDDIR)/coulomb.o \
-#  $(BUILDDIR)/nuclear_surface_en.o \
-#  $(BUILDDIR)/nuclear_matter.o \
-#  $(BUILDDIR)/empirical.o 
+				$(BUILDDIR)/rmf_walecka.o \
+				$(BUILDDIR)/interpolator.o \
+				
 APP = hmg
 
 $(APP) : $(BUILDDIR) \
 	$(OBJS) \
 	homogeneous.cpp
-	$(CC) -o $(APP) homogeneous.cpp $(OBJS) $(GSL_LIB) $(CERES_LIB) $(WALL) 
+	$(CC) -o $(APP) homogeneous.cpp $(OBJS) $(CFLAGS)
 
 $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)
 
 
-$(BUILDDIR)/particles.o : $(LIBDIR)/particles.h \
+$(BUILDDIR)/particles.o : $(LIBDIR)/particles.hpp \
 	$(LIBDIR)/particles.cpp \
-	$(LIBDIR)/particles.h
-	$(CC) -c $(LIBDIR)/particles.cpp -o $(BUILDDIR)/particles.o $(GSL_LIB) $(CERES_LIB) 
+	$(LIBDIR)/particles.hpp
+	$(CC) -c $(LIBDIR)/particles.cpp -o $(BUILDDIR)/particles.o $(CFLAGS)
 
-$(BUILDDIR)/rmf_non_linear_walecka.o : $(LIBDIR)/rmf_non_linear_walecka.h \
-	$(LIBDIR)/rmf_non_linear_walecka.cpp \
-	$(LIBDIR)/rmf_non_linear_walecka.h
-	$(CC) -c $(LIBDIR)/rmf_non_linear_walecka.cpp -o $(BUILDDIR)/rmf_non_linear_walecka.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
+$(BUILDDIR)/rmf_walecka.o : $(LIBDIR)/rmf_walecka.hpp \
+	$(LIBDIR)/rmf_walecka.cpp \
+	$(LIBDIR)/rmf_walecka.hpp
+	$(CC) -c $(LIBDIR)/rmf_walecka.cpp -o $(BUILDDIR)/rmf_walecka.o $(CFLAGS)
 
 
-$(BUILDDIR)/interpolator.o : $(LIBDIR)/interpolator.h \
+$(BUILDDIR)/interpolator.o : $(LIBDIR)/interpolator.hpp \
 	$(LIBDIR)/interpolator.cpp \
-	$(LIBDIR)/interpolator.h
-	$(CC) -c $(LIBDIR)/interpolator.cpp -o $(BUILDDIR)/interpolator.o $(GSL_LIB)  $(WALL) 
+	$(LIBDIR)/interpolator.hpp
+	$(CC) -c $(LIBDIR)/interpolator.cpp -o $(BUILDDIR)/interpolator.o $(CFLAGS)
+
+
+$(BUILDDIR)/MesonFieldSolver.o : $(SOLVERDIR)/MesonFieldSolver.hpp \
+	$(SOLVERDIR)/MesonFieldSolver.cpp \
+	$(SOLVERDIR)/MesonFieldSolver.hpp
+	$(CC) -c $(SOLVERDIR)/MesonFieldSolver.cpp -o $(BUILDDIR)/MesonFieldSolver.o $(CFLAGS)
 
 clean:
 	$(RM) $(OBJS) $(APP)

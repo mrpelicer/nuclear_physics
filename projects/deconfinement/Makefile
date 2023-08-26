@@ -28,14 +28,14 @@ $(APP) : $(BUILDDIR) \
 $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)
 
-$(BUILDDIR)/interpolator.o : $(LIBDIR)/interpolator.h \
+$(BUILDDIR)/interpolator.o : $(LIBDIR)/interpolator.hpp \
 	$(LIBDIR)/interpolator.cpp \
-	$(LIBDIR)/interpolator.h
+	$(LIBDIR)/interpolator.hpp
 	$(CC) -c $(LIBDIR)/interpolator.cpp -o $(BUILDDIR)/interpolator.o $(GSL_LIB)  $(WALL) 
 
-$(BUILDDIR)/tov_solver.o : $(LIBDIR)/tov_solver.h \
+$(BUILDDIR)/tov_solver.o : $(LIBDIR)/tov_solver.hpp \
 	$(LIBDIR)/tov_solver.cpp \
-	$(LIBDIR)/tov_solver.h
+	$(LIBDIR)/tov_solver.hpp
 	$(CC) -c $(LIBDIR)/tov_solver.cpp -o $(BUILDDIR)/tov_solver.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
 
 clean:

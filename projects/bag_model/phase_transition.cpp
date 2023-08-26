@@ -1,8 +1,8 @@
-#include "../../include/constant.h"
-#include "../../include/particles.h"
-#include "../../include/rmf_non_linear_walecka.h"
-#include "../../include/bag_model.h"
-#include "../../include/interpolator.h"
+#include "../../include/constant.hpp"
+#include "../../include/particles.hpp"
+#include "../../include/rmf_walecka.hpp"
+#include "../../include/bag_model.hpp"
+#include "../../include/interpolator.hpp"
 
 #include <iostream>
 #include <iterator>

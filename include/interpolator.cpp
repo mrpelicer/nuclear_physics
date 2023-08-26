@@ -1,4 +1,4 @@
-#include "interpolator.h"
+#include "interpolator.hpp"
 
 
 double interpolation_func(double x_, std::vector<double> yv_,	std::vector<double> xv_)

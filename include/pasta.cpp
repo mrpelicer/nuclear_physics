@@ -1,4 +1,4 @@
-#include "pasta.h"
+#include "pasta.hpp"
 
 pasta_class::pasta_class(nlwm_class &cluster_, nlwm_class &gas_):cluster(cluster_), gas(gas_){
 

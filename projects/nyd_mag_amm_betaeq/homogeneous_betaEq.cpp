@@ -1,8 +1,8 @@
 //Nuclear matter properties using Mean Feild Theory (NLWM) at T=0.
-#include "../../include/constant.h"
-#include "../../include/particles.h"
-#include "../../include/rmf_non_linear_walecka.h"
-#include "../../include/interpolator.h"
+#include "../../include/constant.hpp"
+#include "../../include/particles.hpp"
+#include "../../include/rmf_walecka.hpp"
+#include "../../include/interpolator.hpp"
 #include <iostream>
 #include <iterator>
 #include <iomanip>
@@ -16,8 +16,8 @@ int main(){
 	std::string parametrization= "ddme2";
 	nlwm_class hmg_matter(parametrization);
 
-	bool doHyperons	=	false;
-	bool doDeltas		=	false;
+	bool doHyperons		=true;
+	bool doDeltas		=false;
 	bool doBfield		= false;
 	bool doamm 			= false;
 
@@ -163,8 +163,9 @@ int main(){
 						+ hmg_matter.xi0.density+ hmg_matter.xim.density)/rhoB;
 			yD= (hmg_matter.deltapp.density + hmg_matter.deltap.density+ hmg_matter.delta0.density+ hmg_matter.deltam.density)/rhoB;
 		  
-		  outSolution <<rhoB*pow(Mnucleon/hc, 3) << " " <<  hmg_matter.muB*Mnucleon << " " << hmg_matter.proton.chemPot*Mnucleon << " " << hmg_matter.phi0*Mnucleon << " "<< hmg_matter.V0*Mnucleon << " " 
-		  					<< hmg_matter.b0*Mnucleon << " " << hmg_matter.getRearrangementEnergy()*Mnucleon << endl;
+		  outSolution <<rhoB*pow(Mnucleon/hc, 3) << " " <<  hmg_matter.muB*Mnucleon << " " << hmg_matter.proton.chemPot*Mnucleon << " " 
+		  << hmg_matter.sigma_meson*Mnucleon << " "<< hmg_matter.omega_meson*Mnucleon << " " 
+		  					<< hmg_matter.rho_meson*Mnucleon << " " << hmg_matter.getRearrangementEnergy()*Mnucleon << endl;
 		  					
 		  					
 			outFile << rhoB*pow(Mnucleon/hc, 3) << " "

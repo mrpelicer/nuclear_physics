@@ -1,8 +1,7 @@
-#ifndef tov_h
-#define tov_h
+#pragma once
 
-#include "constant.h"
-#include "interpolator.h"
+#include "constant.hpp"
+#include "interpolator.hpp"
 #include <vector>
 #include <algorithm>
 
@@ -73,4 +72,3 @@ class tov_class{
         double dedp(double r_);
 };
 
-#endif

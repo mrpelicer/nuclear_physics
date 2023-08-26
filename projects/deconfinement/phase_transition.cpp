@@ -9,9 +9,9 @@
 #include <vector> 
 #include <fstream>
 
-#include "../../include/constant.h"
-#include "../../include/interpolator.h"
-#include "../../include/tov_solver.h"
+#include "../../include/constant.hpp"
+#include "../../include/interpolator.hpp"
+#include "../../include/tov_solver.hpp"
 
 #include "ceres/ceres.h"
 #include "glog/logging.h"

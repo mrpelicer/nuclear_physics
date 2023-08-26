@@ -1,9 +1,8 @@
-#ifndef pasta_h
-#define pasta_h
+#pragma once
 
-#include "particles.h"
-#include "rmf_non_linear_walecka.h"
-#include "interpolator.h"
+#include "particles.hpp"
+#include "rmf_walecka.hpp"
+#include "interpolator.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -257,4 +256,3 @@ extern int Integral_Coulomb(const int *ndim, const cubareal xx[],const int *ncom
 double integrate_coulomb(double (func)(double, void *), void *parametersPointer);
 
 double coulomb_gsl(double x, void *p);
-#endif

@@ -1,7 +1,6 @@
-#ifndef quark_model_h
-#define quark_model_h
+#pragma once
 
-#include "particles.h"
+#include "particles.hpp"
 
 class quarks_class{
 	public:
@@ -138,4 +137,4 @@ private:
 };
 
 
-#endif
+

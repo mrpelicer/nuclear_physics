@@ -1,4 +1,4 @@
-#include "bag_model.h"
+#include "bag_model.hpp"
 
 bag_model_class::bag_model_class(){
 	qu.mass= 4./Mnucleon; 	qu.spin	= 1./2.;	qu.gamma = 6.;    qu.Q=  2./3.; qu.type="Q";   

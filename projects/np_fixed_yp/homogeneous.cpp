@@ -1,8 +1,8 @@
 //Nuclear matter properties using Mean Feild Theory (NLWM) at T=0.
-#include "../../include/constant.h"
-#include "../../include/particles.h"
-#include "../../include/rmf_non_linear_walecka.h"
-#include "../../include/interpolator.h"
+#include "../../include/constant.hpp"
+#include "../../include/particles.hpp"
+#include "../../include/rmf_walecka.hpp"
+#include "../../include/interpolator.hpp"
 #include <iostream>
 #include <iterator>
 #include <iomanip>
@@ -100,9 +100,9 @@ int main(){
 					<< qhd.neutron.chemPot << " " 
 					<< qhd.proton.mass_eff << " " 
 					<< qhd.neutron.mass_eff << " " 
-					<< qhd.phi0 << " " 
-					<< qhd.V0 << " " 
-					<< qhd.b0 << " " 
+					<< qhd.sigma_meson << " " 
+					<< qhd.omega_meson << " " 
+					<< qhd.rho_meson << " " 
 					<< qhd.muB << " " 
 					<< qhd.muQ << " " 
 					<< qhd.proton.chemPot_eff  << " " << qhd.neutron.chemPot_eff + qhd.getRearrangementEnergy() << " " 
@@ -226,7 +226,7 @@ int main(){
 	Esym		= interpolation_func(rho0, esymv, rhobv);
 	Lsym		= interpolation_func(rho0, lsymv, rhobv); //3.*rho0*deriv_func(rho0, esymv, rhobv);
 	K0			= interpolation_func(rho0, k0v, 	rhobv); //pow(3.*rho0, 2.)*deriv2_func(rho0, enerv, rhobv);
-	double K 	= interpolation_func(rho0, Kv, 	rhobv);
+	// double K 	= interpolation_func(rho0, Kv, 	rhobv);
 	cs2			= interpolation_func(rho0, cs2v, 	rhobv); // deriv_func(rho0, pressv, rhobv)/deriv_func(rho0, enerdensv, rhobv);
 	double Un= 	interpolation_func(rho0, Unv, rhobv);
 	double Ul0= 	interpolation_func(rho0, Ul0v, rhobv);

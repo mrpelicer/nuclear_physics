@@ -1,13 +1,11 @@
-//Standard & math libs:
-#ifndef PARTICLES_H
-#define PARTICLES_H
+#pragma once
 
 #include <iostream>
 #include <vector>
 #include <cmath>
 //Gsl for integration 
 #include <functional>
-#include "constant.h"
+#include "constant.hpp"
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_vector.h>
 #include "ceres/ceres.h"
@@ -52,7 +50,10 @@ struct particle{
   void calculateDensity();
   void calculateCondensate();
 	void solveChemPotEff();
-  void setBaryonEff(double mub_, double muq_, double gphi0_, double gv0_, double gb0_);
+  // void setBaryonEff(double mub_, double muq_, double gphi0_, double gv0_, double gb0_);
+  void setChemicalPotential(double mu_);
+  void setBaryonEff(double chemPotEff_, double massEff_);
+
   void setQuarkEff(double mueff_);
   void setLepton(double muq_);
 
@@ -111,4 +112,4 @@ double density_condensateFunc_src(double x, void *p);
 double energyFunc_src(double x, void *p);
 double pressureFunc_src(double x, void *p);
 
-#endif
+

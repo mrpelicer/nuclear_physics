@@ -1,4 +1,4 @@
-#include "particles.h"
+#include "particles.hpp"
 
 //Call functions to calculate particle properties
 void particle::calculateProperties(){
@@ -214,11 +214,15 @@ void particle::calculateCondensate(){
 	}
 }
 
-void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0, double gbb0){
-//std::cout << doB << std::endl;
-  chemPot= mub_+Q*muq_;
-	mass_eff	=mass - gbphi;
-	chemPot_eff= chemPot - gbv0 - gbb0*I3;
+void particle::setChemicalPotential(double mu_){
+  chemPot=mu_;
+}
+
+// void particle::setBaryonEff(double mub_, double muq_, double gbphi, double gbv0, double gbb0){
+void particle::setBaryonEff(double chemPotEff_, double massEff_){
+
+	chemPot_eff= chemPotEff_;
+	mass_eff	=massEff_;
 
   if(!doamm){
 
@@ -743,9 +747,9 @@ double integrate(double (func)(double, void *), void *parametersPointer)
   size_t max_steps = 1e8;
 	
   if(part.temperature< 1./Mnucleon && part.temperature >0.){
-    double err_abs = 1e-16; //1e-13
-    double err_rel = 1e-15; //1e-10;
-    size_t max_steps = 5e8;
+    err_abs = 1e-16; //1e-13
+    err_rel = 1e-15; //1e-10;
+    max_steps = 5e8;
     gsl_set_error_handler_off();
   }
 

@@ -1,7 +1,6 @@
-#ifndef bag_model_h
-#define bag_model_h
+#pragma once
 
-#include "particles.h"
+#include "particles.hpp"
 
 class bag_model_class{
 public:
@@ -72,7 +71,7 @@ void setEoSFlavor_muBFixed2(double mub_, double temp_,
 	void setDensities(double mub_, double muq_, double phi0_, double v0_, double b0_, double theta0_);
 
 	double getBaryonDens();
-	double getIsoDens();
+	double getIsospinDensity();
 	double getChargeDens();
 
 	double getSigmaEffDens();
@@ -212,4 +211,4 @@ private:
 		particle 					&muon;
 };
 
-#endif
+

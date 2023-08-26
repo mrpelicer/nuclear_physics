@@ -50,27 +50,27 @@ $(BUILDDIR):
 	$(MKDIR) $(BUILDDIR)
 
 
-$(BUILDDIR)/pasta.o : $(LIBDIR)/particles.h \
+$(BUILDDIR)/pasta.o : $(LIBDIR)/particles.hpp \
 	$(LIBDIR)/pasta.cpp \
-	$(LIBDIR)/pasta.h
+	$(LIBDIR)/pasta.hpp
 	$(CC) -c $(LIBDIR)/pasta.cpp -o $(BUILDDIR)/pasta.o $(GSL_LIB) $(CERES_LIB) $(WALL)
 
 
-$(BUILDDIR)/particles.o : $(LIBDIR)/particles.h \
+$(BUILDDIR)/particles.o : $(LIBDIR)/particles.hpp \
 	$(LIBDIR)/particles.cpp \
-	$(LIBDIR)/particles.h
+	$(LIBDIR)/particles.hpp
 	$(CC) -c $(LIBDIR)/particles.cpp -o $(BUILDDIR)/particles.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
 
 
-$(BUILDDIR)/rmf_non_linear_walecka.o : $(LIBDIR)/rmf_non_linear_walecka.h \
-	$(LIBDIR)/rmf_non_linear_walecka.cpp \
-	$(LIBDIR)/particles.h
-	$(CC) -c $(LIBDIR)/rmf_non_linear_walecka.cpp -o $(BUILDDIR)/rmf_non_linear_walecka.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
+$(BUILDDIR)/rmf_non_linear_walecka.o : $(LIBDIR)/rmf_walecka.hpp \
+	$(LIBDIR)/rmf_walecka.cpp \
+	$(LIBDIR)/particles.hpp
+	$(CC) -c $(LIBDIR)/rmf_walecka.cpp -o $(BUILDDIR)/rmf_non_linear_walecka.o $(GSL_LIB) $(CERES_LIB)  $(WALL)
 
 
-$(BUILDDIR)/interpolator.o : $(LIBDIR)/interpolator.h \
+$(BUILDDIR)/interpolator.o : $(LIBDIR)/interpolator.hpp \
 	$(LIBDIR)/interpolator.cpp \
-	$(LIBDIR)/interpolator.h
+	$(LIBDIR)/interpolator.hpp
 	$(CC) -c $(LIBDIR)/interpolator.cpp -o $(BUILDDIR)/interpolator.o $(GSL_LIB)  $(WALL) 
 
 clean:

@@ -1,8 +1,8 @@
 //Nuclear matter properties using Mean Feild Theory (NLWM) at T=0.
-#include "../../include/constant.h"
-#include "../../include/particles.h"
-#include "../../include/rmf_non_linear_walecka.h"
-#include "../../include/interpolator.h"
+#include "../../include/constant.hpp"
+#include "../../include/particles.hpp"
+#include "../../include/rmf_walecka.hpp"
+#include "../../include/interpolator.hpp"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -87,9 +87,9 @@ int main(int argc, char** argv)
 					<< Mnucleon*qhd.neutron.chemPot << " " 
 					<< qhd.proton.mass_eff << " " 
 					<< qhd.neutron.mass_eff << " " 
-					<< qhd.phi0 << " " 
-					<< qhd.V0 << " " 
-					<< qhd.b0 << " " 
+					<< qhd.sigma_meson << " " 
+					<< qhd.omega_meson << " " 
+					<< qhd.rho_meson << " " 
 					<< qhd.muB << " " 
 					<< qhd.muQ << " " 
 					<< qhd.proton.chemPot_eff  << " "

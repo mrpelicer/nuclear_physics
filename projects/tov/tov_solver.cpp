@@ -10,9 +10,9 @@
 #include <vector> 
 #include <fstream>
 
-#include "../../include/constant.h"
-#include "../../include/interpolator.h"
-#include "../../include/tov_solver.h"
+#include "../../include/constant.hpp"
+#include "../../include/interpolator.hpp"
+#include "../../include/tov_solver.hpp"
 #include <boost/math/interpolators/barycentric_rational.hpp>
 #include <boost/array.hpp>
 #include <boost/numeric/odeint.hpp>

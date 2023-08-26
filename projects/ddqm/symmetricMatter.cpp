@@ -1,8 +1,8 @@
 //Nuclear matter properties using Mean Feild Theory (NLWM) at T=0.
-#include "../../include/constant.h"
-#include "../../include/particles.h"
-#include "../../include/quark_model.h"
-#include "../../include/interpolator.h"
+#include "../../include/constant.hpp"
+#include "../../include/particles.hpp"
+#include "../../include/ddqm_model.hpp"
+#include "../../include/interpolator.hpp"
 
 #include <iostream>
 #include <iterator>

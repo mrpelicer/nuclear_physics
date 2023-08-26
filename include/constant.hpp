@@ -1,5 +1,4 @@
-#ifndef CONSTANT_H
-#define CONSTANT_H
+#pragma once
 
 #include <iostream>
 #include <cmath>
@@ -48,4 +47,4 @@ const double km_to_mSun = G_cte/(c_vel*c_vel);
 const double Tmin_integration=0.01/Mnucleon ;  // minimum temperature for fermi dirac integration (in MeV)
 const double hdif= 5e-3;
 
-#endif
+

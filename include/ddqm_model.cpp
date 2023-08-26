@@ -1,4 +1,4 @@
-#include "quark_model.h"
+#include "ddqm_model.hpp"
 
 quarks_class::quarks_class(){
   qu.mass=5./Mnucleon;       qu.gamma = 6.;    qu.Q=  2./3.;  qu.type="Q";   
