@@ -930,7 +930,7 @@ bool SFunctor::operator()(const T* x, T* residuals) const{
 
 
 //=============== Set EoS for pure neutron matter  ===============
-void nlwm_class::setEOS_neutrons(double rhoB_, double temp_, particle &electron_, particle &muon_){
+void nlwm_class::setEOS_neutrons(double rhoB_, double temp_){
 
 	rhoB=rhoB_;
 	
@@ -938,31 +938,30 @@ void nlwm_class::setEOS_neutrons(double rhoB_, double temp_, particle &electron_
   
 //	if(rhoB/rho0 < 1.) {useHyperons=false; useDeltas=false;}
 	double mub_;
-	double mue_;
 	double sigma_ ;
 	double omega_ ;       
 	double rho_;
 	
+	double mue_;
 	if(firstRun){
 		if(Bfield==0) setInitial_hd(mub_, mue_, sigma_, omega_, rho_);
 		else					setInitial_hdb(mub_, mue_, sigma_, omega_, rho_);		
 	}else{
 		mub_	= muB;
-		mue_= electron_.chemPot;
-		sigma_=sigma_meson ;
+		sigma_	=sigma_meson ;
 		omega_	=omega_meson;       
 		rho_	= rho_meson;
 	}
-
+	(void) mue_;
 	// if(parametrization=="fsu2h"){
 
-		double x[]={mub_, mue_, sigma_, omega_, rho_};
+		double x[]={mub_, sigma_, omega_, rho_};
 		
 
 		Problem pBetaEq;
 		CostFunction* costBetaEq= 
-								new NumericDiffCostFunction<NeutronFunctor,ceres::CENTRAL, 5, 5>
-								(new  NeutronFunctor(*this, electron_, muon_));
+								new NumericDiffCostFunction<NeutronFunctor,ceres::CENTRAL, 4, 4>
+								(new  NeutronFunctor(*this));
 
 		pBetaEq.AddResidualBlock(costBetaEq, NULL, x);
 
@@ -994,29 +993,18 @@ void nlwm_class::setEOS_neutrons(double rhoB_, double temp_, particle &electron_
 		//Print if convergence was achieved.
 		std::cout << summaryBetaEq.BriefReport() << "\n";
 		std::cout << "rhob= " << rhoB*pow(Mnucleon/hc, 3) << std::endl;
-		std::cout << mub_ << " " << mue_ << " " 
+		std::cout << mub_ << " " 
 							<< sigma_ << " " << omega_  << " " << rho_ << 
-		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3] << " " << x[4]
+		"---> "<< x[0] << " " << x[1] << " " << x[2]  << " " << x[3]
 		<< std::endl << std::endl;
 				
 		mub_	 =x[0];
-		mue_	 =x[1];
-		sigma_	 =x[2];
-		omega_		 =x[3];
-		rho_		 =x[4];
-		electron_.setLepton(mue_);
-		//electron_.calculateProperties();
-		muon_.setLepton(mue_);
-		//muon_.calculateProperties();
+		sigma_	 =x[1];
+		omega_		 =x[2];
+		rho_		 =x[3];
 
-		setDensities(mub_, -mue_,  sigma_, 0.,  omega_, rho_, 0., 0.);
+		setDensities(mub_, 0.,  sigma_, 0.,  omega_, rho_, 0., 0.);
 		setThermodynamics();
-	//  std::cout << 
-	//   rhoB 		-	getBaryonDens() << " "  <<
-	//   getChargeDens() +	electron_.Qdens + muon_.Qdens << " "  <<
-	//   sigmaMeson_eom_residue(	getSigmaSource()) << " "  <<
-	//   omegaMeson_eom_residue(	getOmegaSource()) << " "  <<
-	//   rhoMeson_eom_residue(		getRhoSource()) << " " << std::endl;
 	 	firstRun=false;
 
 }
@@ -1026,28 +1014,20 @@ void nlwm_class::setEOS_neutrons(double rhoB_, double temp_, particle &electron_
 template<typename T>
 bool NeutronFunctor::operator()(const T* x, T* residuals) const{
 
-	electron.setLepton(x[1]);
-	muon.setLepton(x[1]);
 
 	baryons.muB		=x[0];
-	baryons.muQ		=x[1];
-	baryons.sigma_meson	=x[2];
-	baryons.omega_meson		=x[3];
-	baryons.rho_meson		=x[4];
+	baryons.sigma_meson	=x[1];
+	baryons.omega_meson		=x[2];
+	baryons.rho_meson		=x[3];
 
 	baryons.neutron.setChemicalPotential(x[0]);
 	baryons.neutron.setBaryonEff(	x[0] -  baryons.gv*x[3]- baryons.gr*baryons.neutron.I3*x[4], 
 									baryons.neutron.mass- baryons.gs*x[2]);
-	baryons.proton.setChemicalPotential(x[0] + x[1]);
-	baryons.proton.setBaryonEff(	x[0] -  baryons.gv*x[3]- baryons.gr*baryons.proton.I3*x[4], 
-									baryons.proton.mass - baryons.gs*x[2]);
 
 	residuals[0] = baryons.rhoB - baryons.getBaryonDens();
-	residuals[1] = baryons.getChargeDens();//+	electron.Qdens + muon.Qdens;
-	residuals[2] = baryons.sigmaMeson_eom_residue(	baryons.getSigmaSource());
-	residuals[3] = baryons.omegaMeson_eom_residue(	baryons.getOmegaSource());
-	residuals[4] = baryons.rhoMeson_eom_residue(		baryons.getRhoSource());
-	//residuals[5] = baryons.phiMeson_eom_residue(	baryons.getPhiSource()) ;
+	residuals[1] = baryons.sigmaMeson_eom_residue(	baryons.getSigmaSource());
+	residuals[2] = baryons.omegaMeson_eom_residue(	baryons.getOmegaSource());
+	residuals[3] = baryons.rhoMeson_eom_residue(		baryons.getRhoSource());
 	return true;
 }
 
@@ -1408,11 +1388,11 @@ void nlwm_class::setEOS_betaEq(double rhoB_, double temp_, particle &electron_, 
 		setDensities(mub_, -mue_,  sigma_, delta_, omega_, rho_, phi_, rear_);
 		
 		setThermodynamics();
-		if(baryons.useElectron){
+		if(useElectron){
 			electron_.setLepton(mue_);
 			electron_.calculateProperties();
 		}
-		if(baryons.useMuon){
+		if(useMuon){
 			muon_.setLepton(mue_);
 			muon_.calculateProperties();
 		}

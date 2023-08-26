@@ -83,9 +83,8 @@ public:
 	void setEOS_src_nucleons(double rhoB_, double Yp_, double temp_); //npe
 	
 	//Set EOS beta-equilibrium: input density and temperature
-	void setEOS_neutrons(double rhoB_, double temp_, particle &electron_, particle &muon_);
+	void setEOS_neutrons(double rhoB_, double temp_);
 	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_, particle &muon_);
-	void setEOS_betaEq(double rhoB_, double temp_,	particle &electron_);
 	void setEOS_fixedYl(double rhoB_, double temp_, double Yle_, double Ylm_, 
 												particle &electron_, particle &muon_, particle &ne_, particle &nm_);
 
@@ -186,8 +185,7 @@ public:
 
 struct NeutronFunctor{
 	public:
-	NeutronFunctor(nlwm_class &baryons_, particle &electron_, particle &muon_):
-													baryons(baryons_), electron(electron_), muon(muon_)
+	NeutronFunctor(nlwm_class &baryons_):baryons(baryons_)
 	{}
 
   template <typename T>
@@ -195,8 +193,6 @@ struct NeutronFunctor{
 	
   private:
 		nlwm_class 		&baryons;
-		particle 		&electron;
-		particle 		&muon;
 };
 
 
