@@ -63,6 +63,7 @@ public:
 												// afterwards, the previous solution is used!
 // Construct (initialize) the object:
 	nlwm_class(std::string parameters);
+	nlwm_class();
   	~nlwm_class(void){};
 	
 	void includeHyperons(bool do_, std::string parameters_);
@@ -93,10 +94,13 @@ public:
 	void setEOS_coexistence(double nup_, double nun_, double mef_);	
 	void setEOS_coexistence_src(double nup_, double nun_, double mef_, double yp_);	
 
-	//Set the solver for vector meson equations of motion given the densitties
+	//Set the solver for scalar meson equations of motion given the densities
+	void setSigmaMeanField();
+	//Set the solver for vector meson equations of motion given the densities and effective_mass
 	void setVectorMeanFields(); 
-	//Set the solver for scalar meson equations of motion given effective chemical potentials
-	void setScalarMeanFields();
+	//Set the solver for all meson equations of motion given proton and neutron densities
+	void setMesonFields();
+
 
 //Input chemical potentials and meson fields and calculate density:
 	// void setDensities(double mub_, double muq_, double sigma_, double omega_, double rho_);
@@ -155,6 +159,19 @@ public:
 	double getMagnetization(void);
 };
 
+
+
+struct MesonFieldsFunctor{
+public:
+	MesonFieldsFunctor(nlwm_class & baryons_):baryons(baryons_)
+	{}
+
+  template <typename T>
+  bool operator()(const T* x, T* residuals) const;
+	
+  private:
+		nlwm_class & baryons;
+};
 
 struct VFunctor{
 public:

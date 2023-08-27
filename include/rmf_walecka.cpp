@@ -6,6 +6,11 @@ nlwm_class::nlwm_class(std::string parametrization_){
 	neutron.spin	= 1./2.;	neutron.I3		=-1./2.;	neutron.Q			= 0.;
 }
 
+nlwm_class::nlwm_class(){
+	proton.spin		= 1./2.;	proton.I3			= 1./2.;	proton.Q			= 1.;
+	neutron.spin	= 1./2.;	neutron.I3		=-1./2.;	neutron.Q			= 0.;
+}
+
 //=============== Set RMF parameters: nucleons/meson couplings and masses  ===============
 void nlwm_class::setParametrization(std::string parametrization_){
 		parametrization=parametrization_;
@@ -686,44 +691,90 @@ void nlwm_class::setAMM(bool doa_){							//MUB			Kb
 
 //=============== Set nucleon EoS with fixed proton fraction and temperature  ===============
 void nlwm_class::setEOS_nucleons(double rhoB_, double Yp_, double temp_){
-  rhoB=rhoB_;
-  Yp=Yp_;  
+  	rhoB=rhoB_;
+  	Yp=Yp_;  
 	setTemperature(temp_);
 
-  proton.density=Yp*rhoB;
-  proton.kf=pow(3.*pi2*proton.density, 1./3.);
-  proton.kf2=pow(proton.kf, 2.);
+  	proton.density=Yp*rhoB;
+  	proton.kf=pow(3.*pi2*proton.density, 1./3.);
+  	proton.kf2=pow(proton.kf, 2.);
 
-  neutron.density=(1.-Yp)*rhoB;
-  neutron.kf=pow(3.*pi2*neutron.density, 1./3.);
-  neutron.kf2=pow(neutron.kf, 2.);
+  	neutron.density=(1.-Yp)*rhoB;
+  	neutron.kf=pow(3.*pi2*neutron.density, 1./3.);
+  	neutron.kf2=pow(neutron.kf, 2.);
 
-  rho3= proton.I3*proton.density+neutron.I3*neutron.density;
+  	rho3= proton.I3*proton.density+neutron.I3*neutron.density;
 	
-	setVectorMeanFields();
-	setScalarMeanFields();			
-	
-  proton.solveChemPotEff();
-  neutron.solveChemPotEff();
+	setMesonFields();
 
-	double gv_= useDensityDependentCoupling ? gv*getCoupling_omega(rhoB) 	: gv;
-	double gr_= useDensityDependentCoupling ? gr*getCoupling_rho(rhoB) 		: gr;
+	double gs_= 	useDensityDependentCoupling ? gs*getCoupling_sigma(rhoB) 	: gs;
+	double gd_= 	useDensityDependentCoupling ? gd*getCoupling_delta(rhoB)	: gd;
+	double gv_= 	useDensityDependentCoupling ? gv*getCoupling_omega(rhoB) 	: gv;
+	double gr_= 	useDensityDependentCoupling ? gr*getCoupling_rho(rhoB) 	 	: gr;
 
-  proton.chemPot  =  proton.chemPot_eff  + gv_*omega_meson + gr_*rho_meson*proton.I3;
-  neutron.chemPot =  neutron.chemPot_eff + gv_*omega_meson + gr_*rho_meson*neutron.I3;
+	proton.mass_eff= proton.mass - gs_*sigma_meson - gd_*proton.I3*delta_meson;
+	neutron.mass_eff= neutron.mass - gs_*sigma_meson - gd_*neutron.I3*delta_meson;
 	
-	if(useDensityDependentCoupling){
-		proton.chemPot += getRearrangementEnergy();
-		neutron.chemPot += getRearrangementEnergy();
-	}
-	muB = neutron.chemPot;
-	muQ = proton.chemPot - neutron.chemPot;
+	proton.solveChemPotEff();
+	neutron.solveChemPotEff();
 
 	proton.calculateCondensate();
 	neutron.calculateCondensate();
 	rhoS= proton.condensate + neutron.condensate;
+
+  	proton.chemPot  = proton.chemPot_eff  + gv_*omega_meson + proton.I3*gr_*rho_meson;
+  	neutron.chemPot = neutron.chemPot_eff + gv_*omega_meson + neutron.I3*gr_*rho_meson;
+
+	if(useDensityDependentCoupling){
+		proton.chemPot += getRearrangementEnergy();
+		neutron.chemPot += getRearrangementEnergy();
+	}
+
 	proton.calculateProperties();
-  neutron.calculateProperties();
+  	neutron.calculateProperties();
+
+	muB = neutron.chemPot;
+	muQ = proton.chemPot - neutron.chemPot;
+
+
+// 	  rhoB=rhoB_;
+//   Yp=Yp_;  
+// 	setTemperature(temp_);
+
+//   proton.density=Yp*rhoB;
+//   proton.kf=pow(3.*pi2*proton.density, 1./3.);
+//   proton.kf2=pow(proton.kf, 2.);
+
+//   neutron.density=(1.-Yp)*rhoB;
+//   neutron.kf=pow(3.*pi2*neutron.density, 1./3.);
+//   neutron.kf2=pow(neutron.kf, 2.);
+
+//   rho3= proton.I3*proton.density+neutron.I3*neutron.density;
+	
+// 	setVectorMeanFields();
+// 	setSigmaMeanField();			
+	
+//   proton.solveChemPotEff();
+//   neutron.solveChemPotEff();
+
+// 	double gv_= useDensityDependentCoupling ? gv*getCoupling_omega(rhoB) 	: gv;
+// 	double gr_= useDensityDependentCoupling ? gr*getCoupling_rho(rhoB) 		: gr;
+
+//   proton.chemPot  =  proton.chemPot_eff  + gv_*omega_meson + gr_*rho_meson*proton.I3;
+//   neutron.chemPot =  neutron.chemPot_eff + gv_*omega_meson + gr_*rho_meson*neutron.I3;
+	
+// 	if(useDensityDependentCoupling){
+// 		proton.chemPot += getRearrangementEnergy();
+// 		neutron.chemPot += getRearrangementEnergy();
+// 	}
+// 	muB = neutron.chemPot;
+// 	muQ = proton.chemPot - neutron.chemPot;
+
+// 	proton.calculateCondensate();
+// 	neutron.calculateCondensate();
+// 	rhoS= proton.condensate + neutron.condensate;
+// 	proton.calculateProperties();
+//   neutron.calculateProperties();
 
 }
 
@@ -771,7 +822,7 @@ void nlwm_class::setEOS_src_nucleons(double rhoB_, double Yp_, double temp_){
   rho3= proton.I3*proton.density+neutron.I3*neutron.density;
 	
 	setVectorMeanFields();
-	setScalarMeanFields();			
+	setSigmaMeanField();			
 	
   proton.solveChemPotEff();
   neutron.solveChemPotEff();
@@ -813,7 +864,107 @@ void nlwm_class::setEOS_src_nucleons(double rhoB_, double Yp_, double temp_){
 
 }
 
-//=============== Solve for the vector meson fields with Ceres library: ===============
+
+
+
+//=============== Solve for the meson fields given the proton & neutron number densities: ===============
+void nlwm_class::setMesonFields(){
+	
+	double sigma_;
+	double delta_;
+	double omega_;
+	double rho_;
+	
+	if(firstRun){
+		sigma_= 0.0847402;	//(1. - neutron.mass_eff)/gs;
+		delta_= 0.;	//0.;
+		omega_= 0.0774968;	//getOmegaSource()*gv/pow(Mv , 2) ;       
+		rho_= 1e-5;// getRhoSource()*gr/(pow(Mr, 2) );   
+	}
+	else{
+		sigma_ 	= sigma_meson;
+		delta_ 	= delta_meson;
+		omega_ 	= omega_meson;
+		rho_ 	= rho_meson;
+	}
+	double x[]= {sigma_, delta_, omega_, rho_};
+
+	Problem fieldsProblem;
+    CostFunction* fieldsCost =	new NumericDiffCostFunction<MesonFieldsFunctor, ceres::CENTRAL, 4, 4>
+														(new MesonFieldsFunctor(*this) );
+
+
+    fieldsProblem.AddResidualBlock(fieldsCost, NULL, x);
+
+   Solver::Options options;
+    // options.parameter_tolerance = 1e-10;
+    // options.function_tolerance = 1e-8;
+    // options.gradient_tolerance=1e-12;
+    //options.trust_region_strategy_type = ceres::DOGLEG;
+    //options.dogleg_type = ceres::TRADITIONAL_DOGLEG;
+		options.dense_linear_algebra_library_type=ceres::LAPACK;
+		options.linear_solver_type= ceres::DENSE_QR;
+
+    // options.minimizer_progress_to_stdout = true;
+
+    Solver::Summary summaryV;
+    Solve(options, &fieldsProblem, &summaryV);
+ 	// std::cout << summaryV.BriefReport() << "\n";
+    
+	// std::cout << sigma_ << " " << delta_ << " " << omega_ << " " << rho_ << " ----> " << x[0] <<  " " << x[1] <<  " " << x[2] <<  " " << x[3] << std::endl;
+	sigma_meson	= x[0];
+	delta_meson	= x[1];
+	omega_meson	= x[2];
+	rho_meson	= x[3];
+
+
+  firstRun=false;
+}
+
+
+// =============== Functor to solve mean fields, given the densities and effective chemical potentials: ===============
+template <typename T>
+bool MesonFieldsFunctor::operator()(const T* x, T* residuals) const{
+
+	double sigma_=x[0];
+	double delta_=x[1];
+	double omega_=x[2];
+	double rho_=x[3];
+
+	baryons.sigma_meson=sigma_;
+	baryons.delta_meson=delta_;
+	baryons.omega_meson=omega_;
+	baryons.rho_meson=rho_;
+
+	double gs_= 	baryons.useDensityDependentCoupling ? baryons.gs*baryons.getCoupling_sigma(baryons.rhoB) 	: baryons.gs;
+	double gd_= 	baryons.useDensityDependentCoupling ? baryons.gd*baryons.getCoupling_delta(baryons.rhoB)	: baryons.gd;
+	// double gv_= 	baryons.useDensityDependentCoupling ? baryons.gv*baryons.getCoupling_omega(baryons.rhoB) 	: baryons.gv;
+	// double gr_= 	baryons.useDensityDependentCoupling ? baryons.gr*baryons.getCoupling_rho(baryons.rhoB) 	 	: baryons.gr;
+
+	baryons.neutron.mass_eff= baryons.neutron.mass 	- gs_*sigma_ - gd_*baryons.neutron.I3*delta_;
+	baryons.proton.mass_eff = baryons.proton.mass 	- gs_*sigma_ - gd_*baryons.proton.I3*delta_;
+
+
+	baryons.proton.solveChemPotEff();
+	baryons.neutron.solveChemPotEff();
+
+	baryons.proton.calculateCondensate();
+	baryons.neutron.calculateCondensate();
+
+	baryons.rhoS= baryons.proton.condensate + baryons.neutron.condensate;
+
+  	residuals[0] = baryons.sigmaMeson_eom_residue(baryons.getSigmaSource());
+  	residuals[1] = baryons.deltaMeson_eom_residue(baryons.getDeltaSource());
+  	residuals[2] = baryons.omegaMeson_eom_residue(baryons.getOmegaSource());
+  	residuals[3] = baryons.rhoMeson_eom_residue(baryons.getRhoSource());
+	return true;
+}
+
+
+
+
+//=============== Solve for the Vector Fields fields with Ceres library: ===============
+
 void nlwm_class::setVectorMeanFields(){
 	
 	double omega_= getOmegaSource()*gv/pow(Mv , 2) ;       
@@ -852,7 +1003,6 @@ void nlwm_class::setVectorMeanFields(){
 	rho_meson=rho_;
 }
 
-
 // =============== Functor Vector meson solver for Ceres: ===============
 template <typename T>
 bool VFunctor::operator()(const T* x, T* residuals) const{
@@ -867,8 +1017,9 @@ bool VFunctor::operator()(const T* x, T* residuals) const{
 
 
 
+
 //===============  Solve for the scalar meson fields with Ceres library:  ===============
-void nlwm_class::setScalarMeanFields(){
+void nlwm_class::setSigmaMeanField(){
 	double mef_=neutron.mass_eff;
 	
 	Problem pS;
