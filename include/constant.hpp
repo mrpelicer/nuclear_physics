@@ -8,7 +8,7 @@ using namespace std;
 const double pi2=M_PI*M_PI;                  //pi squared
 
 //physical parameters
-const double hc=197.326;                    // MeV*fm // 1 fm^-1 = 197.326 MeV for hc=1
+const double hc=197.327;                    // MeV*fm // 1 fm^-1 = 197.326 MeV for hc=1
 const double alphaEM= 1./137.;              //= 1.44 MeV fm/hc
 const double Mnucleon= 939.;                // nucleon mass in MeV
 const double Me=0.511;                      //electron mass in MeV

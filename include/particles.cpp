@@ -21,8 +21,8 @@ void particle::calculateProperties(){
             if(dosrc){
               energy*= delta_;
               pressure*= delta_;
-              energy+=  energyT0_src();//integrate_src(energyFunc_src, this);
-              pressure+=pressureT0_src();//integrate_src(pressureFunc_src, this);
+              energy+=  c_*energyT0_src();//integrate_src(energyFunc_src, this);
+              pressure+=c_*pressureT0_src();//integrate_src(pressureFunc_src, this);
             } 
           }
         }
@@ -208,7 +208,7 @@ void particle::calculateCondensate(){
       condensate = condensateT0();
       if(dosrc){
         condensate*= delta_;
-        condensate+=condensateT0_src();//integrate_src(density_condensateFunc_src, this);
+        condensate+=c_*condensateT0_src();//integrate_src(density_condensateFunc_src, this);
       }
     }else{condensate=0.;}
 	}
@@ -1013,7 +1013,7 @@ double density_condensateFunc_src(double x, void *p){
   particle &part_= *reinterpret_cast<particle*>(p);
   double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F=1.;
-  return part_.c_*pow(part_.kf, 4. )*part_.gamma
+  return pow(part_.kf, 4. )*part_.gamma
                   *part_.mass_eff*F/(2.*pow(x, 2.)*ener*pi2);
 }
 
@@ -1022,7 +1022,7 @@ double energyFunc_src(double x, void *p){
   double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F=1.;
 
-  return part_.gamma*part_.c_*pow(part_.kf, 4. )*ener*F/(2.*pow(x, 2.)*pi2);
+  return part_.gamma*pow(part_.kf, 4. )*ener*F/(2.*pow(x, 2.)*pi2);
 }
 
 double pressureFunc_src(double x, void *p){
@@ -1030,29 +1030,28 @@ double pressureFunc_src(double x, void *p){
   double ener= sqrt ( pow(x, 2.) + pow(part_.mass_eff, 2.) );
   double F=1.;
 
-  return part_.gamma*part_.c_*pow(part_.kf, 4. )*F/(6.*pi2*ener);
+  return part_.gamma*pow(part_.kf, 4. )*F/(6.*pi2*ener);
 }
 
 
 double particle::condensateT0_src(){
   double cond=0.;
   if(kf>0. && mass_eff >0)
-     cond= gamma*c_*pow(kf, 4.)*( sqrt(1.+pow(mass_eff/kf, 2.)) 
+     cond= gamma*pow(kf, 4.)*( sqrt(1.+pow(mass_eff/kf, 2.)) 
                       - sqrt(1.+pow(mass_eff/(phi_*kf), 2.)) )/(2.*pi2* mass_eff);
   
   return cond;
 }
 
 double particle::energyT0_src(){
-
-   return   gamma*c_*pow(kf, 4.)*( sqrt(1.+pow(mass_eff/kf, 2.)) - asinh(kf/mass_eff)
-            - sqrt(1.+pow(mass_eff/(phi_*kf), 2.)) + asinh(phi_*kf/mass_eff))/(2.*pi2);
+   return kf==0.? 0. :  gamma*pow(kf, 4.)*( sqrt(1.+pow(mass_eff/kf, 2.)) - sqrt(1.+pow(mass_eff/(phi_*kf), 2.))
+   - asinh(kf/mass_eff) + asinh(phi_*kf/mass_eff))/(2.*pi2);
   
 }
 
 double particle::pressureT0_src(){
  
-   return   gamma*c_*pow(kf, 4.)*( asinh(phi_*kf/mass_eff)-asinh(kf/mass_eff)
+   return   gamma*pow(kf, 4.)*( asinh(phi_*kf/mass_eff)-asinh(kf/mass_eff)
            )/(6.*pi2);
 }
         

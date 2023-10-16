@@ -61,9 +61,9 @@ int main(int argc, char** argv)
 			electron.chemPot=electron.chemPot_eff;
 			electron.calculateProperties();
 
-			Energy= qhd.getEnergy()		 	; //+electron.energy; 		
-			Pressure= qhd.getPressure()	; //+electron.pressure;
-			Entropy= qhd.getEntropy()	 	; //+electron.entropy;
+			Energy= qhd.getEnergy()		  +electron.energy; 		
+			Pressure= qhd.getPressure_thermodynamic_relation() +electron.pressure;
+			Entropy= qhd.getEntropy()	  +electron.entropy;
 			FreeEn= Energy -temperature*Entropy;
 			
 			rhobv.push_back(rhoB);

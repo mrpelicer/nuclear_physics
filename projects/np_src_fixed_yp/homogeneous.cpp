@@ -24,7 +24,7 @@ int main(){
 // 	qhd.printParameters();
 	qhd.printParameters();
 //Set system variables
-	double rhoB,Yle=0.5, temperature=0.;
+	double rhoB,Yle=0.1, temperature=0.;
   double rhoBMax=1./pow(Mnucleon/hc, 3);
   int iR=200;
   double dRho= rhoBMax/iR;
@@ -33,8 +33,10 @@ int main(){
 	double Energy, FreeEn, Pressure, Entropy;
 	double Bind0En, Esym, Lsym, K0, cs2, Esym_anl, Lsym_anl;
 	// VectorXd ener(iR), esym(iR), enerDens(iR), press(iR);
-	vector<double> enerv, enerdensv, esymv, pressv, rhobv, esym_anlv;
-	vector<double> Dedens_Dyp;
+	vector<double> enerv, enerdensv, esymv, pressv, rhobv, esym_anlv, de_dyp;
+	vector<double> munv, mupv;
+
+	vector<double> D2edens_Dyp2;
 
 	bool doHyperons	=	false;
 	bool doDeltas		=	false;
@@ -96,9 +98,9 @@ int main(){
 
 			// double 	Esym_anl_pot= pow(qhd.gb, 2.)*rhoB/(2.*(pow(qhd.Mb, 2.) + 2.*qhd.Lv*pow(qhd.gb*qhd.gv*qhd.V0, 2.)));
 			
-			double Qr= pow(qhd.Mb, 2.)+ 2.*qhd.Lv*pow(qhd.gb*qhd.gv*qhd.V0, 2.);
+			double Qr= pow(qhd.Mr, 2.)+ 2.*qhd.Lvr*pow(qhd.gr*qhd.gv*qhd.omega_meson, 2.);
 			// + qhd.gs*pow(qhd.gb, 2.)*qhd.sigma0*
-			double 	Esym_anl_pot= pow(qhd.gb, 2.)*rhoB/(8.*Qr);
+			double 	Esym_anl_pot= pow(qhd.gr, 2.)*rhoB/(8.*Qr);
 
 			
 			Esym_anl=(kf*kf/(6.*ef_))*(1.-3.*c0*(1.-1./phi0)) - 3.*ef_*c0*( c1*(1.-1./phi0)+ phi1/phi0) 
@@ -123,6 +125,8 @@ int main(){
 			enerdensv.push_back(FreeEn);
 			pressv.push_back(Pressure);
 			esym_anlv.push_back(Esym_anl);
+			munv.push_back(qhd.neutron.chemPot);
+			mupv.push_back(qhd.proton.chemPot);
 
 			outFile << rhoB*pow(Mnucleon/hc, 3) << " "
 					<< Pressure*Mnucleon*pow(Mnucleon/hc, 3) << " " 
@@ -144,7 +148,7 @@ int main(){
 			double h=1e-2;
 			double e0, em1, em2, ep1, ep2;
 			double ed0, edm1, edm2, edp1, edp2;
-
+//esym:
 			qhd.setEOS_src_nucleons(rhoB, Yle, temperature);
 			e0= qhd.getEnergy()/rhoB;
 			ed0= qhd.getEnergy();
@@ -165,8 +169,11 @@ int main(){
 			ep2= qhd.getEnergy()/rhoB;
 			edp2=qhd.getEnergy();
 
+			
 			esymv.push_back( (-ep2+ 16.*ep1 -30.*e0 + 16.*em1 - em2)/(8.*12.*h*h) );	
-			Dedens_Dyp.push_back((-edp2+ 16.*edp1 -30.*ed0 + 16.*edm1 - edm2)/(8.*12.*h*h) );	
+			D2edens_Dyp2.push_back((-edp2+ 16.*edp1 -30.*ed0 + 16.*edm1 - edm2)/(8.*12.*h*h) );	
+			de_dyp.push_back( (-edp2+ 8.*edp1 - 8.*edm1 + edm2)/(12.*h) );
+
 
 		}
 		
@@ -192,7 +199,24 @@ int main(){
 	reverse(Udppv.begin(),	Udppv.end()); 
 
 	reverse(esym_anlv.begin(), esym_anlv.end());
-	reverse(Dedens_Dyp.begin(), Dedens_Dyp.end());
+	reverse(D2edens_Dyp2.begin(), D2edens_Dyp2.end());
+	reverse(de_dyp.begin(), de_dyp.end());
+	reverse(munv.begin(),		munv.end());
+	reverse(mupv.begin(),		mupv.end());
+
+
+	std::ofstream outchempots("data/chempots_"+parametrization+".txt");
+	for(int irho=0; irho<iR; irho++){
+		double rho_= rhoB=	rhobv[0]+irho*dRho;
+		outchempots << rho_ *pow(Mnucleon/hc, 3) 
+		<< " " <<  (deriv_func(rho_, enerdensv, rhobv) - Yle*interpolate(rho_,  de_dyp, rhobv)/rho_)*Mnucleon 
+		<< " " << interpolate(rho_, munv, rhobv)*Mnucleon <<  " " 
+		<< (deriv_func(rho_, enerdensv, rhobv) + (1.-Yle)*interpolate(rho_,  de_dyp, rhobv)/rho_)*Mnucleon 
+		<< " " << interpolate(rho_, mupv, rhobv)*Mnucleon << endl;
+
+	}
+	outchempots.close();
+
 
 	vector<double> enerd1v, enerd2v,enerd3v, esymd1v, esymd2v, esymd3v, esymanld1v; 
 	for(int irho=0; irho<iR; irho++){
@@ -243,9 +267,9 @@ int main(){
 				<< interpolation_func(rhoB, lsymv, rhobv)*Mnucleon << " "
 				<< interpolation_func(rhoB, ksymv, rhobv)*Mnucleon << " "
 				<< deriv_func(rhoB, enerdensv, rhobv) 
-							+ interpolation_func(rhoB, Dedens_Dyp, rhobv)*qhd.neutron.density/pow(rhoB, 2.) << " "
+							+ interpolation_func(rhoB, D2edens_Dyp2, rhobv)*qhd.neutron.density/pow(rhoB, 2.) << " "
 				<< deriv_func(rhoB, enerdensv, rhobv) 
-							- interpolation_func(rhoB, Dedens_Dyp, rhobv)*qhd.proton.density/pow(rhoB, 2.)
+							- interpolation_func(rhoB, D2edens_Dyp2, rhobv)*qhd.proton.density/pow(rhoB, 2.)
 				<< endl;
 
 		outUpar << rhoB*pow(Mnucleon/hc, 3) << " " 
@@ -312,4 +336,3 @@ int main(){
 	cout << "test slop: " << Lsym*Mnucleon << " " << L_anl0*Mnucleon << " " << endl;
   return 0;
  }
-

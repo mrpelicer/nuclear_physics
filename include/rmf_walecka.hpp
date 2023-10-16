@@ -92,7 +92,7 @@ public:
 	
 	//Set EOS for the pasta: input effective chemical potentials and mass
 	void setEOS_coexistence(double nup_, double nun_, double mef_);	
-	void setEOS_coexistence_src(double nup_, double nun_, double mef_, double yp_);	
+	void setEOS_coexistence_src(double kfp2_, double kfn2_, double mef_);	
 
 	//Set the solver for scalar meson equations of motion given the densities
 	void setSigmaMeanField();
@@ -152,6 +152,7 @@ public:
 //get the thermodynamic quantities for baryons:
   double getEnergy(void);
   double getPressure(void);
+  double getPressure_thermodynamic_relation(void);
   double getEntropy(void);
 
   double getPressureParallel(void);

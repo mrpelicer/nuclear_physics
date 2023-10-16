@@ -30,21 +30,25 @@ int main(){
 	nlwm_class gas(parametrization);
 	pasta_class pasta(cluster, gas);
 
+	pasta_class pasta_dummy(cluster, gas);
+
 	nlwm_class hmg_matter(parametrization);
 
 
-	double rhoBMax;
-	if(Yp>0.4)			rhoBMax= 0.16;
-	else if(Yp>0.3)	rhoBMax= 0.10;
-	else if(Yp>0.28)	rhoBMax= 0.075;
-	else if(Yp>0.26)	rhoBMax= 0.07;
-	else if(Yp>0.2)	rhoBMax= 0.06;
-	else if(Yp>0.19)	rhoBMax= 0.051;
-	else if(Yp>0.14)	rhoBMax= 0.041;
-	else 						rhoBMax= 0.034;
+	double rhoBMax=0.05;
+
+	//iufsu-src:
+	// if(Yp>0.4)			rhoBMax= 0.16;
+	// else if(Yp>0.3)	rhoBMax= 0.1;
+	// else if(Yp>0.28)	rhoBMax= 0.1;
+	// else if(Yp>0.26)	rhoBMax= 0.07;
+	// else if(Yp>0.2)	rhoBMax= 0.06;
+	// else if(Yp>0.19)	rhoBMax= 0.051;
+	// else if(Yp>0.14)	rhoBMax= 0.041;
+	// else 						rhoBMax= 0.03;
 	rhoBMax*=pow(hc/Mnucleon, 3);
 
-	int iRhoMax=200;
+	int iRhoMax=100;
 	double dRho= rhoBMax/iRhoMax;
 		
 	particle electron;
@@ -98,7 +102,6 @@ int main(){
 		hmg_matter.setEOS_src_nucleons(rhoB, Yp, temperature);
 		FreeEn_hmg	= (hmg_matter.getEnergy() + electron.energy -temperature*(hmg_matter.getEntropy()+electron.entropy))/rhoB;
 		
-		//pasta:
 		pasta.solveCPA_src(rhoB, Yp, temperature);
 		
 		f=pasta.f;
@@ -222,18 +225,30 @@ int main(){
 						<< pasta.gas.Yp*pasta.gas.rhoB - pasta.gas.proton.density						
 						<< endl;
 
+			
+			cout << "test_2: " << pasta.cluster.proton.chemPot << " " <<   pasta.gas.proton.chemPot << " "
+						<< 			pasta.cluster.neutron.chemPot << " " <<   pasta.gas.neutron.chemPot << " "
+						<< pasta.cluster.getPressure() - pasta.gas.getPressure() << " "
+						<< f*pasta.cluster.proton.density + (1.-f)*pasta.gas.proton.density << " "
+						<< 																							-pasta.YpG*pasta.rhoB << " "
+						<< pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS) << " "
+						<< pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS) << " " 
+						<< pasta.cluster.Yp*pasta.cluster.rhoB - pasta.cluster.proton.density << " " 
+						<< pasta.gas.Yp*pasta.gas.rhoB - pasta.gas.proton.density						
+						<< endl;
+
 		}
 		else{
 			std::cout << "no pasta: " << rhoB*pow(Mnucleon/hc, 3.) << " " << f << std::endl;
 			//setInitialGibbs(nup1, nun1, Mef1, nup2, nun2, Mef2);
 
-		outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " " << Pressure << " " 
-				  << 1./0 << " " << GibbsEn - Mnucleon << " " 
-				  << BulkEn << " "   << Entropy*temperature*Mnucleon/rhoB << " " 
-				  << coulEn << " " << surfEn << " "
-				  << f << " " << Rd << " " << Rw << " " << iPlot << " " 
-					<< Ae << " " << Ze << " " << (FreeEn_hmg -1.)*Mnucleon 
-				  << std::endl;
+		// outGlobal << rhoB*pow(Mnucleon/hc, 3.) << " " << Pressure << " " 
+		// 		  << 1./0 << " " << GibbsEn - Mnucleon << " " 
+		// 		  << BulkEn << " "   << Entropy*temperature*Mnucleon/rhoB << " " 
+		// 		  << coulEn << " " << surfEn << " "
+		// 		  << f << " " << Rd << " " << Rw << " " << iPlot << " " 
+		// 			<< Ae << " " << Ze << " " << (FreeEn_hmg -1.)*Mnucleon 
+		// 		  << std::endl;
 
 outSol  << rhoB*pow(Mnucleon/hc, 3.) << " " << cluster.Yp << " " << gas.Yp << " " 
 				<< cluster.proton.density*pow(Mnucleon/hc, 3.) << " " 
@@ -246,6 +261,29 @@ outSol  << rhoB*pow(Mnucleon/hc, 3.) << " " << cluster.Yp << " " << gas.Yp << " 
 				<< gas.proton.chemPot_eff << " " << gas.neutron.chemPot_eff << " " 
 				<< gas.proton.mass_eff  << " "
 			    << std::endl;
+
+			cout << "test: " << pasta.cluster.proton.chemPot -  pasta.gas.proton.chemPot << " "
+						<< 			pasta.cluster.neutron.chemPot -  pasta.gas.neutron.chemPot << " "
+						<< pasta.cluster.getPressure() - pasta.gas.getPressure() << " "
+						<< f*pasta.cluster.proton.density + (1.-f)*pasta.gas.proton.density << " "
+						<< 																							-pasta.YpG*pasta.rhoB << " "
+						<< pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS) << " "
+						<< pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS) << " " 
+						<< pasta.cluster.Yp*pasta.cluster.rhoB - pasta.cluster.proton.density << " " 
+						<< pasta.gas.Yp*pasta.gas.rhoB - pasta.gas.proton.density						
+						<< endl;
+
+			
+			cout << "test_2: " << pasta.cluster.proton.chemPot << " " <<   pasta.gas.proton.chemPot << " "
+						<< 			pasta.cluster.neutron.chemPot << " " <<   pasta.gas.neutron.chemPot << " "
+						<< pasta.cluster.getPressure() - pasta.gas.getPressure() << " "
+						<< f*pasta.cluster.proton.density + (1.-f)*pasta.gas.proton.density << " "
+						<< 																							-pasta.YpG*pasta.rhoB << " "
+						<< pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS) << " "
+						<< pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS) << " " 
+						<< pasta.cluster.Yp*pasta.cluster.rhoB - pasta.cluster.proton.density << " " 
+						<< pasta.gas.Yp*pasta.gas.rhoB - pasta.gas.proton.density						
+						<< endl;
 		}
 	}
 

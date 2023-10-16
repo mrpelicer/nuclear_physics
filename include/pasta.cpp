@@ -8,7 +8,7 @@ pasta_class::pasta_class(nlwm_class &cluster_, nlwm_class &gas_):cluster(cluster
 void pasta_class::setInitialCPA(double &nup1_, double &nun1_, double &mef1_,
 									double &nup2_, double &nun2_, double &mef2_){
 
-	if(cluster.parametrization=="iufsu"){
+	if(cluster.parametrization=="iufsu" || cluster.parametrization=="iufsu-src"){
     if(YpG>0.3){
       nup1_ = 0.669306;
       nun1_ = 0.669306;
@@ -122,15 +122,40 @@ void pasta_class::setInitialCPA_src(double &nup1_, double &nun1_, double &mef1_,
 									double &nup2_, double &nun2_, double &mef2_, double &yp2_){
 
 	if(cluster.parametrization=="iufsu-src"){
+    // nup1_ =0.673505; // 0.35
+    // nun1_ =0.69511;
+    // mef1_ =0.629071;
+    // yp1_=YpG;
+    // nup2_ =0.964886;
+    // nun2_ =0.999831;
+    // mef2_ =1;
+    // yp2_=39.99903e-11;
+
+//     nup1_= 0.67535; //0.34
+// nun1_= 0.698135;
+// mef1_= 0.632216;
+// yp1_= 0.340275;
+// nup2_= 0.962691;
+// nun2_= 0.99995;
+// mef2_= 0.999073;
+// yp2_= -2.79576e-19;
     if(YpG>=0.45){
+        // nup1_ =0.669237;
+        // nun1_ =0.669237;
+        // mef1_ =0.609244;
+        // yp1_=YpG;
+        // nup2_ =0.98498;
+        // nun2_ =0.987025;
+        // mef2_ =1;
+        // yp2_=3.55946e-21;
       nup1_ = 0.669306;
       nun1_ = 0.669306;
       mef1_ = 0.609329;
-      yp1_=0.5;
+      yp1_=0.48;
       nup2_ = 0.982546; 
       nun2_ = 0.982546;
       mef2_ = 0.999;
-      yp2_=0.;
+      yp2_=1e-6;
     }else if(YpG>=0.4){
        nup1_ = 0.667804;
       nun1_ = 0.682713;
@@ -141,60 +166,77 @@ void pasta_class::setInitialCPA_src(double &nup1_, double &nun1_, double &mef1_,
       mef2_ = 0.997986;
       yp2_=0.;
     }else if(YpG>=0.35){
-       nup1_ = 0.667804;
-      nun1_ = 0.682713;
-      mef1_ = 0.617251;
-      yp1_=YpG;
-      nup2_ = 0.963167; 
-      nun2_ = 0.999459;
-      mef2_ = 0.997986;
-      yp2_=0.;
+       nup1_ = 0.673498;
+      nun1_ = 0.695104;
+      mef1_ = 0.629063;
+      yp1_= YpG;
+      nup2_ = 0.964886;
+      nun2_ = 0.999831;
+      mef2_ = 0.999;
+      yp2_= 3.33292e-15;
     }else if(YpG>0.3){
-      nup1_ = 0.667804;
-      nun1_ = 0.682713;
-      mef1_ = 0.617251;
-      yp1_=YpG;
-      nup2_ = 0.963167; 
-      nun2_ = 0.999459;
-      mef2_ = 0.997986;
-      yp2_=0.;
+      // nup1_ = 0.669683;
+      // nun1_ = 0.700425;
+      // mef1_ = 0.631141;
+      // yp1_= 0.286031;
+      // nup2_ = 0.947702;
+      // nun2_ = 0.997326;
+      // mef2_ = 0.992678;
+      // yp2_= 1.04269e-06;
+nup1_= 0.673498;
+nun1_= 0.695098;
+mef1_= 0.629059;
+yp1_= 0.350041;
+nup2_= 0.964892;
+nun2_= 0.999828;
+mef2_= 1;
+yp2_= 2.07384e-13;
     }else if(YpG>0.26){
-      nup1_= 0.667177;
-      nun1_= 0.68762;
-      mef1_= 0.620302;
-      yp1_= 0.362036;
-      nup2_= 0.925531;
-      nun2_= 0.946895;
-      mef2_= 0.929183;
-      yp2_=0.;
+nup1_= 0.667471;
+nun1_= 0.688706;
+mef1_= 0.621227;
+yp1_= 0.356327;
+nup2_= 0.966053;
+nun2_= 0.999848;
+mef2_= 1.00002;
+yp2_= 1.91698e-10;
+      // nup1_= 0.667177;
+      // nun1_= 0.68762;
+      // mef1_= 0.620302;
+      // yp1_= 0.362036;
+      // nup2_= 0.925531;
+      // nun2_= 0.946895;
+      // mef2_= 0.929183;
+      // yp2_=0.;
     }else if(YpG>0.19){
-        nup1_= 0.666744;
-        nun1_= 0.688117;
-        mef1_= 0.620414;
-        yp1_= 0.355784;
-        nup2_= 0.912302;
-        nun2_= 0.931726;
-        mef2_= 0.910713; 
-        yp2_=0.;
+nup1_= 0.667471;
+nun1_= 0.688707;
+mef1_= 0.621227;
+yp1_= 0.356319;
+nup2_= 0.966053;
+nun2_= 0.999848;
+mef2_= 1.00002;
+yp2_= 1.91844e-10;
       }else if(YpG>0.15){
-        nup1_= 0.666402;
-        nun1_= 0.687817;
-        mef1_= 0.620012;
-        yp1_= 0.355697;
-        nup2_= 0.916107;
-        nun2_= 0.935586;
-        mef2_= 0.915281;
-        yp2_=0.;
+        nup1_= 0.667472;
+nup1_= 0.667473;
+nun1_= 0.688686;
+mef1_= 0.621213;
+yp1_= 0.356483;
+nup2_= 0.966083;
+nun2_= 0.999833;
+mef2_= 1.00002;
+yp2_= 1.92819e-10;
       }
       else{
-      nup1_= 0.666448;
-      nun1_= 0.687866;
-      mef1_= 0.620073;
-      yp1_= 0.355646;
-      nup2_= 0.915324;
-      nun2_= 0.934799;
-      mef2_= 0.914344;
-      yp2_=0.;
+      nup1_= 0.667405;
+      nun1_= 0.688748;
+      mef1_= 0.621224;
+      yp1_= 0.255596;
+      nup2_= 0.9659;
+      nun2_= 0.999896;
+      mef2_= 1;
+      yp2_= 7.5939e-13;
     }
     }else if(cluster.parametrization=="iufsu"){
     if(YpG>0.3){
@@ -332,6 +374,9 @@ void pasta_class::solveCPA(double rhoB_, double Yp_, double temp_){
       "nun2_= "  << x[4] << ";" << endl << 
       "mef2_= "  << x[5] << ";" << endl;
 
+      std::cout << "kfs: " << cluster.proton.kf << " " << cluster.neutron.kf << " " 
+      << gas.proton.kf << " " << gas.neutron.kf << endl;
+
 
 	cluster.setEOS_coexistence(x[0], x[1], x[2]);
 	gas.setEOS_coexistence(x[3], x[4], x[5]);
@@ -346,14 +391,24 @@ bool cpaFunctor::operator()(const T* x, T* residuals) const{
 		pasta.cluster.setEOS_coexistence(x[0], x[1], x[2]);
 		pasta.gas.setEOS_coexistence(x[3], x[4], x[5]);
 		double u= (pasta.rhoB- pasta.gas.rhoB)/(pasta.cluster.rhoB - pasta.gas.rhoB);
+    // std::cout << "u: " << u  << endl;
 		// 
-		residuals[0] = pasta.cluster.proton.chemPot -  pasta.gas.proton.chemPot;
-		residuals[1] = pasta.cluster.neutron.chemPot -  pasta.gas.neutron.chemPot;
-		residuals[2] = pasta.cluster.getPressure() - pasta.gas.getPressure();
-		residuals[3] = u*pasta.cluster.proton.density + (1.-u)*pasta.gas.proton.density
-																																-pasta.YpG*pasta.rhoB;
-		residuals[4] = pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS);
-		residuals[5] = pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS);
+    double test1= pasta.cluster.proton.chemPot -  pasta.gas.proton.chemPot;
+    double test2= pasta.cluster.neutron.chemPot -  pasta.gas.neutron.chemPot;
+    double test3= pasta.cluster.getPressure() - pasta.gas.getPressure();
+    double test4= u*pasta.cluster.proton.density + (1.-u)*pasta.gas.proton.density-pasta.YpG*pasta.rhoB;
+    double test5= pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS);
+    double test6= pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS);
+    // std::cout << "residuals: " <<  test1 << " " << test2 << " " << test3 << " " << test4 << " " << test5 << " " << test6 << endl;
+    // double yp1=pasta.cluster.proton.density/pasta.cluster.rhoB;
+    // double yp2=pasta.gas.prot  on.density/pasta.gas.rhoB;
+		residuals[0] = test1; // pasta.cluster.proton.chemPot -  pasta.gas.proton.chemPot;
+		residuals[1] = test2; // pasta.cluster.neutron.chemPot -  pasta.gas.neutron.chemPot;
+		residuals[2] = test3; // pasta.cluster.getPressure() - pasta.gas.getPressure();
+		residuals[3] = test4; // u*pasta.cluster.proton.density + (1.-u)*pasta.gas.proton.density
+									// 																							-pasta.YpG*pasta.rhoB;
+		residuals[4] = test5; // pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS);
+		residuals[5] = test6; // pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS);
 		// 
 		return true;
 }
@@ -374,72 +429,102 @@ void pasta_class::solveCPA_src(double rhoB_, double Yp_, double temp_){
   gas.proton.dosrc=true;
   gas.neutron.dosrc=true;
 
-  double nup1, nun1, mef1, yp1, nup2, nun2, mef2, yp2;
+  double nup1, nun1, nup2, nun2;
+  double kfp1_2, kfn1_2, mef1, kfp2_2, kfn2_2, mef2;
 
-  if(firstRun) setInitialCPA_src(nup1, nun1, mef1, yp1, nup2, nun2, mef2, yp2);
-  else{ nup1 = cluster.proton.chemPot_eff;
-        nun1 = cluster.neutron.chemPot_eff;
-        mef1 = cluster.proton.mass_eff;
-        yp1= cluster.Yp;
-        nup2 = gas.proton.chemPot_eff;
-        nun2 = gas.neutron.chemPot_eff;
-        mef2 = gas.proton.mass_eff;
-        yp2= 1e-6;
+  if(firstRun){
+
+    setInitialCPA(nup1, nun1, mef1, nup2, nun2, mef2);
+    // kfp1_2 = 0.0766887; // cluster.proton.kf*cluster.proton.kf;
+    // kfn1_2 = 0.0766887; // cluster.neutron.kf*cluster.neutron.kf;
+    // mef1 = 0.609329; // cluster.proton.mass_eff;
+    // kfp2_2 = 0. ; //gas.proton.kf*gas.proton.kf;
+    // kfn2_2 = 0.;  //gas.neutron.kf*gas.neutron.kf;
+    // mef2 =1.; // gas.proton.mass_eff;
+    kfp1_2= nup1*nup1 - mef1*mef1;
+    kfn1_2= nun1*nun1 - mef1*mef1;
+    kfp2_2= nup2*nup2 - mef2*mef2 ;//  >0.? nup2*nup2 - mef2*mef2 : 0.;
+    kfn2_2= nun2*nun2 - mef2*mef2 ;//  >0.? nun2*nun2 - mef2*mef2 : 0.;
+
+// kfp1_2= 0.00255531;
+// kfn1_2= 0.00742519;
+// mef1= 0.990385;
+// kfp2_2= -0.00678008;
+// kfn2_2= 0.00268925;
+// mef2= 0.99824;
+
+    // kfp1_2= kfp1_2<0. ? 0. : kfp1_2;
+    // kfn1_2= kfn1_2<0. ? 0. : kfn1_2;
+    // kfp2_2= kfp2_2<0. ? 0. : kfp2_2;  
+    // kfn2_2= kfn2_2<0. ? 0. : kfn2_2;
+    //  yp1= YpG;
+    //  yp2=1e-6;
+    // setInitialCPA_src(nup1, nun1, mef1, yp1, nup2, nun2, mef2,yp2);
+  }
+  else{ 
+        kfp1_2 =  cluster.proton.kf2;
+        kfn1_2 =  cluster.neutron.kf2;
+        mef1 =  cluster.proton.mass_eff;
+        kfp2_2 =gas.proton.kf2;
+        kfn2_2 = gas.neutron.kf2;
+        mef2 =  gas.proton.mass_eff;
   }
 
-	double x[]={nup1, nun1, mef1, yp1,  nup2, nun2, mef2, yp2};
+	double x[]={kfp1_2, kfn1_2, mef1,  kfp2_2, kfn2_2, mef2};
   
 	Problem pCPA;
-	CostFunction* costCPA =	new NumericDiffCostFunction<cpa_srcFunctor, ceres::CENTRAL, 8, 8>
+	CostFunction* costCPA =	new NumericDiffCostFunction<cpa_srcFunctor, ceres::CENTRAL, 6, 6>
 																														(new cpa_srcFunctor(*this));
 	// 
 	pCPA.AddResidualBlock(costCPA, NULL, x);
-	// pCPA.SetParameterLowerBound(x, 3, 0.);
-  // pCPA.SetParameterLowerBound(x, 7, 0.);
-  // pCPA.SetParameterUpperBound(x, 7, 0.1);
+	// pCPA.SetParameterLowerBound(x, 0, 0.);
+  // pCPA.SetParameterLowerBound(x, 1, 0.);
+  // pCPA.SetParameterLowerBound(x, 3, 0.);
+  // pCPA.SetParameterLowerBound(x, 4, 0.);
 
 	Solver::Options optionsCPA; 		
 	optionsCPA.dense_linear_algebra_library_type=ceres::LAPACK;
 	// 
-	optionsCPA.parameter_tolerance = 1e-12;	 		//1e-8					
-	optionsCPA.function_tolerance = 1e-12;			//1e-6				
-	optionsCPA.gradient_tolerance=1e-14;			//1e-10			
+	optionsCPA.parameter_tolerance = 1e-10;	 		//1e-8					
+	optionsCPA.function_tolerance = 1e-10;			//1e-6				
+	optionsCPA.gradient_tolerance=1e-12;			//1e-10			
 	optionsCPA.max_num_iterations=2e3;	
 	// 
 	optionsCPA.use_nonmonotonic_steps=true;	
 	optionsCPA.linear_solver_type= ceres::DENSE_QR;
 	//optionsCPA.trust_region_strategy_type = ceres::LEVENBERG_MARQUARDT; //default
-	//optionsCPA.dogleg_type = ceres::TRADITIONAL_DOGLEG;// default	
+	optionsCPA.dogleg_type = ceres::TRADITIONAL_DOGLEG;// default	
 // 
 	//optionsCPA.minimizer_type= ceres::LINE_SEARCH;
 	//optionsCPA.line_search_direction_type= 	ceres::NONLINEAR_CONJUGATE_GRADIENT;
 	//optionsCPA.line_search_type= ceres::ARMIJO;
 	//optionsCPA.trust_region_strategy_type = ceres::DOGLEG;
-	//optionsCPA.dogleg_type = ceres::SUBSPACE_DOGLEG;
+	optionsCPA.dogleg_type = ceres::SUBSPACE_DOGLEG;
 
-	optionsCPA.minimizer_progress_to_stdout = true;	
+	// optionsCPA.minimizer_progress_to_stdout = true;	
 	Solver::Summary summaryCPA;
 	Solve(optionsCPA, &pCPA, &summaryCPA);
 
 	std::cout << summaryCPA.BriefReport() << "\n";
 
-	 std::cout << "Solution-> "  << nup1 <<  " " << nun1 << " " << mef1 <<  " " << yp1 << " " 
-	 					<< nup2 <<  " " <<  nun2 << " " << mef2 << " " << yp2 << std::endl;
-	 
-	 std::cout << "----> " << endl << 
-      "nup1_= "  << x[0] << endl << 
-      "nun1_= "  << x[1] << endl << 
-      "mef1_= "  << x[2] << endl << 
-      "yp1_= "   << x[3] << endl <<
-      "nup2_= "  << x[4] << endl << 
-      "nun2_= "  << x[5] << endl << 
-      "mef2_= "  << x[6] << endl << 
-      "yp2_= "   << x[7] << endl;
 
-	cluster.setEOS_coexistence_src(x[0], x[1], x[2], x[3]);
-	gas.setEOS_coexistence_src( x[4], x[5], x[6], x[7]);
-	f= (rhoB- gas.rhoB)/(cluster.rhoB-gas.rhoB);
+	  cluster.setEOS_coexistence_src(x[0], x[1], x[2]);
+	  gas.setEOS_coexistence_src( x[3], x[4], x[5]);
+	  f= (rhoB- gas.rhoB)/(cluster.rhoB-gas.rhoB);
 	 
+
+	 std::cout << "Solution-> "  << kfp1_2 <<  " " << kfn1_2 << " " << mef1 <<  " " << cluster.Yp << " " 
+	 					<< kfp2_2 <<  " " <<  kfn2_2 << " " << mef2 << " " << gas.Yp << std::endl;
+	 
+   std::cout << "Density, f: " << rhoB*pow(Mnucleon/hc, 3) << " " << f <<  endl;
+	 std::cout << "----> " << endl << 
+      "kfp1_2= "  << x[0] << ";" << endl << 
+      "kfn1_2= "  << x[1] << ";" << endl << 
+      "mef1= "  << x[2] << ";" << endl << 
+      "kfp2_2= "  << x[3] << ";" << endl << 
+      "kfn2_2= "  << x[4] << ";" << endl << 
+      "mef2= "  << x[5] << ";" << endl;
+
   firstRun=false;
 }
  
@@ -447,27 +532,40 @@ void pasta_class::solveCPA_src(double rhoB_, double Yp_, double temp_){
  //=============== Functor for CPA equilibrium w/ fixed yp ===============
 template <typename T>
 bool cpa_srcFunctor::operator()(const T* x, T* residuals) const{
-		pasta.cluster.setEOS_coexistence_src(x[0], x[1], x[2], x[3]);
-		pasta.gas.setEOS_coexistence_src( x[4], x[5], x[6], x[7]);
+
+//     std::cout << x[0] << " " <<  x[1] << " " <<  x[2] << " " <<
+// x[3] << " " <<  x[4] << " " <<  x[5] << endl;
+		
+    pasta.cluster.setEOS_coexistence_src(x[0], x[1], x[2]);
+		pasta.gas.setEOS_coexistence_src(x[3], x[4], x[5]);
 		double u= (pasta.rhoB- pasta.gas.rhoB)/(pasta.cluster.rhoB - pasta.gas.rhoB);
 		
+      // std::cout << "u: " << u  << endl;
     //calculated yp:
-    double yp1= pasta.cluster.rhoB == 0.? 0.: pasta.cluster.proton.density/pasta.cluster.rhoB;
-    double yp2= pasta.gas.rhoB == 0.? 0.    : pasta.gas.proton.density/pasta.gas.rhoB;
+    // double yp1= pasta.cluster.rhoB == 0.? 0.: pasta.cluster.proton.density/pasta.cluster.rhoB;
+    // double yp2= pasta.gas.rhoB == 0.? 0.    : pasta.gas.proton.density/pasta.gas.rhoB;
 
+
+    double test1= pasta.cluster.proton.chemPot -  pasta.gas.proton.chemPot;
+    double test2= pasta.cluster.neutron.chemPot -  pasta.gas.neutron.chemPot;
+    double test3= pasta.cluster.getPressure() - pasta.gas.getPressure();
+    double test4= u*pasta.cluster.proton.density + (1.-u)*pasta.gas.proton.density-pasta.YpG*pasta.rhoB;
+    double test5= pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS);
+    double test6= pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS);
+    // std::cout << "residuals: " <<  test1 << " " << test2 << " " << test3 << " " << test4 << " " << test5 << " " << test6 << endl;
     // double yp1=pasta.cluster.proton.density/pasta.cluster.rhoB;
     // double yp2=pasta.gas.prot  on.density/pasta.gas.rhoB;
-		residuals[0] = pasta.cluster.proton.chemPot -  pasta.gas.proton.chemPot;
-		residuals[1] = pasta.cluster.neutron.chemPot -  pasta.gas.neutron.chemPot;
-		residuals[2] = pasta.cluster.getPressure() - pasta.gas.getPressure();
-		residuals[3] = u*pasta.cluster.proton.density + (1.-u)*pasta.gas.proton.density
-																																-pasta.YpG*pasta.rhoB;
-		residuals[4] = pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS);
-		residuals[5] = pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS);
+		residuals[0] = test1; // pasta.cluster.proton.chemPot -  pasta.gas.proton.chemPot;
+		residuals[1] = test2; // pasta.cluster.neutron.chemPot -  pasta.gas.neutron.chemPot;
+		residuals[2] = test3; // pasta.cluster.getPressure() - pasta.gas.getPressure();
+		residuals[3] = test4; // u*pasta.cluster.proton.density + (1.-u)*pasta.gas.proton.density
+									// 																							-pasta.YpG*pasta.rhoB;
+		residuals[4] = test5; // pasta.cluster.sigmaMeson_eom_residue(pasta.cluster.rhoS);
+		residuals[5] = test6; // pasta.gas.sigmaMeson_eom_residue(pasta.gas.rhoS);
 
 
-    residuals[6] = pasta.cluster.Yp - yp1;
-    residuals[7] = pasta.gas.Yp     - yp2;
+    // residuals[6] = pasta.cluster.Yp - yp1;
+    // residuals[7] = pasta.gas.Yp     - yp2;
 		// 
 		return true;
 }
