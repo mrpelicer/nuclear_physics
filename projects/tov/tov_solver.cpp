@@ -146,11 +146,11 @@ int main(){
         // if(ie>0 && ie < iener)tov.solve_tidal_euler(e_center, dr);
         double mass=tov.getMass();
         double radius=tov.getRadius();
-        double compactness=  tov.getCompactness();
+        // double compactness=  tov.getCompactness();
         // double  y= tov.gety();
         // double  beta= tov.getBeta();
         // double  h= tov.getH();
-        double Lambda= tov.getLambda();
+        // double Lambda= tov.getLambda();
         cout << radius << " " << mass << " " << e_center << endl;
         // << Lambda << " "            << compactness <<  " " << y << " " << beta << " " << h 
         // << endl;
