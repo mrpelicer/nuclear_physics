@@ -9,7 +9,6 @@ GSL_LIB= -lgsl -lgslcblas
 CERES_LIB= -I/usr/include/eigen3 -lceres -lglog 
 
 OBJS = 	$(BUILDDIR)/particles.o \
-				$(BUILDDIR)/MesonFieldSolver.o \
 				$(BUILDDIR)/rmf_non_linear_walecka.o \
 				$(BUILDDIR)/interpolator.o
 
